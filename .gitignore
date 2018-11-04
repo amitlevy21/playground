@@ -24,6 +24,9 @@
 /nbdist/
 /.nb-gradle/
 
+### Class files directory ###
+bin/
+
 # Compiled class file
 *.class
 
