@@ -49,3 +49,6 @@
 hs_err_pid*
 /.metadata/
 /.recommenders/
+
+# Amit Levy files
+.vscode
