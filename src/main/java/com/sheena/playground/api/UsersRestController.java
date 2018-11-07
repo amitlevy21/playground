@@ -1,4 +1,4 @@
-package com.sheena.playground.layout;
+package com.sheena.playground.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsersRestController {
 	//TODO: Add dependencies once there is a logic layer
 	private final String DUMMY_CODE = "code";
+	private final String DUMMY_PLAYGROUND = "playground";
 	
 	@RequestMapping(
 			method=RequestMethod.POST,
@@ -19,7 +20,10 @@ public class UsersRestController {
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 	public UserTO registerNewUser(@RequestBody NewUserForm newUserForm) {
 		//TODO: use newUserForm object to build a new user entity
-		return new UserTO("bison@flex.org", "playground", "username", "avatar", "player");
+		return new UserTO(
+				newUserForm.getEmail(), DUMMY_PLAYGROUND, 
+				newUserForm.getUsername(), 
+				newUserForm.getAvatar(), newUserForm.getRole());
 	}
 	
 	@RequestMapping(
@@ -32,7 +36,7 @@ public class UsersRestController {
 		if (!this.DUMMY_CODE.equals(code)) {
 			//TODO: throw invalid code exception (maybe a custom class?)
 		}
-		return new UserTO(email, "playground", "username", "avatar", "player");
+		return new UserTO(email, DUMMY_PLAYGROUND, "username", "avatar", "player");
 	}
 	
 	@RequestMapping(
@@ -52,6 +56,6 @@ public class UsersRestController {
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 	public void updateUserProfile(@RequestBody UserTO userTO) {
-		//TODO: Right now there is no need to return something - once there is logic layer - rethink it
+		//TODO: Once there is logic layer - an update to the DB will be required
 	}
 }

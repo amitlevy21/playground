@@ -1,4 +1,4 @@
-package com.sheena.playground.layout;
+package com.sheena.playground.api;
 
 public class UserTO {
 	
@@ -16,6 +16,7 @@ public class UserTO {
 		this.username = username;
 		this.avatar = avatar;
 		this.role = role;
+		this.points = 0L;
 	}
 
 	public String getEmail() {
