@@ -31,12 +31,13 @@ public class UsersRestController {
 			path="/playground/users/confirm/{playground}/{email}/{code}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public UserTO verifyUserRegistration(
+			@PathVariable("playground") String playground,
 			@PathVariable("email") String email, 
-			@PathVariable("code")String code) {
+			@PathVariable("code") String code) {
 		if (!this.DUMMY_CODE.equals(code)) {
 			//TODO: throw invalid code exception (maybe a custom class?)
 		}
-		return new UserTO(email, DUMMY_PLAYGROUND, "username", "avatar", "player");
+		return new UserTO(email, playground, "username", "avatar", "player");
 	}
 	
 	@RequestMapping(
@@ -55,7 +56,10 @@ public class UsersRestController {
 			path="/playground/users/{playground}/{email}",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
-	public void updateUserProfile(@RequestBody UserTO userTO) {
+	public void updateUserProfile(
+			@PathVariable("playground") String playground,
+			@PathVariable("email") String email,
+			@RequestBody UserTO userTO) {
 		//TODO: Once there is logic layer - an update to the DB will be required
 	}
 }
