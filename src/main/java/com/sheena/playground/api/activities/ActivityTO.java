@@ -1,4 +1,4 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.activities;
 
 import java.util.Map;
 

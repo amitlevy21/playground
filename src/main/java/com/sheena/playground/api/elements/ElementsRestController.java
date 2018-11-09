@@ -1,4 +1,4 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.elements;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.sheena.playground.api.Location;
 
 @RestController
 public class ElementsRestController {

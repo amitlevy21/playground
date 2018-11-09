@@ -1,7 +1,9 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.elements;
 
 import java.util.Date;
 import java.util.Map;
+
+import com.sheena.playground.api.Location;
 
 public class ElementTO {
 	

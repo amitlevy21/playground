@@ -1,4 +1,4 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.users;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;

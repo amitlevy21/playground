@@ -1,18 +1,22 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.users;
 
-public class NewUserForm {
+public class UserTO {
 	
 	private String email;
+	private String playground;
 	private String username;
 	private String avatar;
 	private String role;
+	private Long points;
 	
-	public NewUserForm(String email, String username, String avatar, String role) {
+	public UserTO(String email, String playground, String username, String avatar, String role) {
 		super();
 		this.email = email;
+		this.playground = playground;
 		this.username = username;
 		this.avatar = avatar;
 		this.role = role;
+		this.points = 0L;
 	}
 
 	public String getEmail() {
@@ -21,6 +25,14 @@ public class NewUserForm {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getPlayground() {
+		return playground;
+	}
+
+	public void setPlayground(String playground) {
+		this.playground = playground;
 	}
 
 	public String getUsername() {
@@ -47,8 +59,17 @@ public class NewUserForm {
 		this.role = role;
 	}
 
+	public Long getPoints() {
+		return points;
+	}
+
+	public void setPoints(Long points) {
+		this.points = points;
+	}
+
 	@Override
 	public String toString() {
-		return "NewUserForm [email=" + email + ", username=" + username + ", avatar=" + avatar + ", role=" + role + "]";
+		return "UserTO [email=" + email + ", playground=" + playground + ", username=" + username + ", avatar=" + avatar
+				+ ", role=" + role + ", points=" + points + "]";
 	}
 }
