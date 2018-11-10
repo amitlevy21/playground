@@ -113,7 +113,7 @@ public class ElementsRestController {
 			method=RequestMethod.GET,
 			path="/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
-	public ElementTO[] getElementsNear(
+	public ElementTO[] getElementsAttribute(
 			@PathVariable("userPlayground") String userPlayground, 
 			@PathVariable("email") String email,
 			@PathVariable("attributeName") String attributeName,
