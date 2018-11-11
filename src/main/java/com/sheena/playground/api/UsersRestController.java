@@ -1,5 +1,7 @@
 package com.sheena.playground.api;
 
+import java.util.Date;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +14,8 @@ public class UsersRestController {
 	//TODO: Add dependencies once there is a logic layer
 	private final String DUMMY_CODE = "code";
 	private final String DUMMY_PLAYGROUND = "playground";
+	private final Location DUMMY_LOCATION = new Location();
+	private final Date DUMMY_DATE = new Date();
 	
 	@RequestMapping(
 			method=RequestMethod.POST,
@@ -61,5 +65,6 @@ public class UsersRestController {
 			@PathVariable("email") String email,
 			@RequestBody UserTO userTO) {
 		//TODO: Once there is logic layer - an update to the DB will be required
-	}
+	}	
+	
 }
