@@ -18,14 +18,7 @@ public class ActivityRestController {
         @PathVariable("email") String email,
         @RequestBody ActivityTO newActivityTO) {
     
-    //TODO: Once there is logic layer - an update to the DB will be required
-    return new ActivityTO(newActivityTO.getPlayground(), // OR: userPlayground 
-            newActivityTO.getId(),
-            newActivityTO.getElementPlayground(),
-            newActivityTO.getElementId(),
-            newActivityTO.getType(),
-            newActivityTO.getPlayerPlayground(),
-            newActivityTO.getPlayerEmail(),// OR: email
-            newActivityTO.getAttributes());
+    	//TODO: Once there is logic layer - an update to the DB will be required
+    	return new Object();
     }
 }
