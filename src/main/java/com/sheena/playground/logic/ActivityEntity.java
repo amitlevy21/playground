@@ -1,8 +1,12 @@
 package com.sheena.playground.logic;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ActivityEntity {
+	
+	final AtomicLong orderIdGenerator = new AtomicLong(0);
+	
 	private String playground;
 	private String id;
 	private String elementPlayground;
@@ -16,7 +20,7 @@ public class ActivityEntity {
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
 		super();
 		this.playground = playground;
-		this.id = id;
+		this.id = id; // convert long to string
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
@@ -25,10 +29,6 @@ public class ActivityEntity {
 		this.attributes = attributes;
 	}
 	
-	/*
-	 * maybe we should add here a c'tor that get something else as parameter and
-	 * call to the default c'tor
-	 * */
 
 	public String getPlayground() {
 		return playground;

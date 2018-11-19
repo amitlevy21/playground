@@ -1,10 +1,14 @@
 package com.sheena.playground.api;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.sheena.playground.logic.ActivityEntity;
+import com.sheena.playground.logic.ActivityNotFoundException;
 
 public class ActivityTO {
+	
+	final AtomicLong orderIdGenerator = new AtomicLong(0);
 	
 	private String playground;
 	private String id;
@@ -15,17 +19,31 @@ public class ActivityTO {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 	
-	public ActivityTO(String playground, String id, String elementPlayground, String elementId, String type,
-			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
+	public ActivityTO(String playground, String elementPlayground, String elementId, String type,
+			/*String playerPlayground, String playerEmail,*/ Map<String, Object> attributes) {
 		super();
 		this.playground = playground;
-		this.id = id;
+		this.id = String.valueOf(orderIdGenerator.incrementAndGet());
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
-		this.playerPlayground = playerPlayground;
-		this.playerEmail = playerEmail;
+		//this.playerPlayground = playerPlayground;
+		//this.playerEmail = playerEmail;
 		this.attributes = attributes;
+	}
+
+	public ActivityTO(ActivityEntity entity) throws ActivityNotFoundException {
+		if (entity == null) 
+			throw new ActivityNotFoundException();
+		
+		this.playground = entity.getPlayground();
+		this.id = entity.getId();
+		this.elementPlayground = entity.getElementPlayground();
+		this.elementId = entity.getElementId();
+		this.type = entity.getType();
+		this.playerPlayground = entity.getPlayerPlayground();
+		this.playerEmail = entity.getPlayerEmail();
+		this.attributes = entity.getAttributes();
 	}
 
 	public String getPlayground() {
@@ -94,14 +112,14 @@ public class ActivityTO {
 	
 	public ActivityEntity toActivityEntity() {
 		ActivityEntity entity = new ActivityEntity(
-				getPlayground(),
-				getId(),
-				getElementPlayground(),
-				getElementId(),
-				getType(),
-				getPlayerPlayground(),
-				getPlayerEmail(),
-				getAttributes());
+				this.playground,
+				this.id,
+				this.elementPlayground,
+				this.elementId,
+				this.type,
+				this.playerPlayground,
+				this.playerEmail,
+				this.attributes);
 		return entity;
 	}
 
