@@ -1,11 +1,8 @@
-package com.sheena.playground.api;
+package com.sheena.playground.logic;
 
 import java.util.Map;
 
-import com.sheena.playground.logic.ActivityEntity;
-
-public class ActivityTO {
-	
+public class ActivityEntity {
 	private String playground;
 	private String id;
 	private String elementPlayground;
@@ -14,8 +11,8 @@ public class ActivityTO {
 	private String playerPlayground;
 	private String playerEmail;
 	private Map<String, Object> attributes;
-	
-	public ActivityTO(String playground, String id, String elementPlayground, String elementId, String type,
+
+	public ActivityEntity(String playground, String id, String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
 		super();
 		this.playground = playground;
@@ -27,6 +24,11 @@ public class ActivityTO {
 		this.playerEmail = playerEmail;
 		this.attributes = attributes;
 	}
+	
+	/*
+	 * maybe we should add here a c'tor that get something else as parameter and
+	 * call to the default c'tor
+	 * */
 
 	public String getPlayground() {
 		return playground;
@@ -91,24 +93,12 @@ public class ActivityTO {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
-	public ActivityEntity toActivityEntity() {
-		ActivityEntity entity = new ActivityEntity(
-				getPlayground(),
-				getId(),
-				getElementPlayground(),
-				getElementId(),
-				getType(),
-				getPlayerPlayground(),
-				getPlayerEmail(),
-				getAttributes());
-		return entity;
-	}
 
 	@Override
 	public String toString() {
-		return "ActivityTO [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
+		return "ActivityEntity [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
 				+ ", elementId=" + elementId + ", type=" + type + ", playerPlayground=" + playerPlayground
 				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
 	}
+
 }
