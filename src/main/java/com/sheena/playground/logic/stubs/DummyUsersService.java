@@ -8,6 +8,9 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import com.sheena.playground.logic.AttributeUpdateException;
+import com.sheena.playground.logic.RoleDoesNotExistException;
+import com.sheena.playground.logic.Roles;
 import com.sheena.playground.logic.UserAlreadyExistsException;
 import com.sheena.playground.logic.UserDoesNotExistException;
 import com.sheena.playground.logic.UserEntity;
@@ -27,12 +30,16 @@ public class DummyUsersService implements UsersService {
 	}
 	
 	@Override
-	public UserEntity createNewUser(UserEntity userEntity) throws UserAlreadyExistsException {
+	public UserEntity createNewUser(UserEntity userEntity) throws UserAlreadyExistsException, RoleDoesNotExistException {
 		String email = userEntity.getEmail();
 		
-		if(this.users.containsKey(email)) {
+		if(email != null && this.users.containsKey(email)) {
 			throw new UserAlreadyExistsException("There is already a registered user with email: " + email);
 		}
+		
+		boolean existsRole = isRoleExists(userEntity.getRole());
+		if(!existsRole)
+			throw new RoleDoesNotExistException("Requested role: " + userEntity.getRole() + " does not exist");
 		
 		String verificationCode = generateUserVerificationCode(userEntity);
 		
@@ -68,9 +75,14 @@ public class DummyUsersService implements UsersService {
 	}
 
 	@Override
-	public void updateUserDetails(String email, UserEntity entityUpdates) throws UserDoesNotExistException {
+	public void updateUserDetails(String email, UserEntity entityUpdates) throws UserDoesNotExistException, AttributeUpdateException {
 		synchronized (this.users) {
 			UserEntity existing = this.getUser(email);
+			
+			if(entityUpdates.getPoints() != null && 
+					!entityUpdates.getPoints().equals(existing.getPoints())) {
+				throw new AttributeUpdateException("Attribute: points cannot be updated");
+			}
 			
 			boolean dirty = false;
 			if(entityUpdates.getUsername() != null) {
@@ -93,7 +105,9 @@ public class DummyUsersService implements UsersService {
 
 	@Override
 	public String generateUserVerificationCode(UserEntity userEntity) {
-		return userEntity.hashCode() + "";
+		//TODO: maybe use a more sophisticated implementation like:
+		//return userEntity.hashCode() + "";
+		return userEntity.getEmail().toString() + "007";
 	}
 	
 	public UserEntity getUser(String email) throws UserDoesNotExistException {
@@ -102,5 +116,16 @@ public class DummyUsersService implements UsersService {
 			throw new UserDoesNotExistException("No user with email: " + email);
 		}
 		return existing;
+	}
+	
+	private boolean isRoleExists(String givenRole) {
+		Roles roles[] = Roles.values();
+		
+		boolean existsRole = false;
+		for(Roles role: roles) {
+			if(givenRole.equalsIgnoreCase(role.name()))
+				existsRole = true;
+		}
+		return existsRole; 
 	}
 }

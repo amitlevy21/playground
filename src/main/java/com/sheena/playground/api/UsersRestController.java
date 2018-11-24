@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sheena.playground.logic.AttributeUpdateException;
+import com.sheena.playground.logic.RoleDoesNotExistException;
 import com.sheena.playground.logic.UserAlreadyExistsException;
 import com.sheena.playground.logic.UserDoesNotExistException;
 import com.sheena.playground.logic.UsersException;
@@ -32,7 +34,7 @@ public class UsersRestController {
 			path="/playground/users",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
-	public UserTO registerNewUser(@RequestBody NewUserForm newUserForm) throws UserAlreadyExistsException {
+	public UserTO registerNewUser(@RequestBody NewUserForm newUserForm) throws UserAlreadyExistsException, RoleDoesNotExistException {
 		return new UserTO(this.usersService.createNewUser(
 				new UserTO(newUserForm, this.PLAYGROUND).toEntity()));
 	}
@@ -68,7 +70,7 @@ public class UsersRestController {
 	public void updateUserProfile(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,
-			@RequestBody UserTO userTO) throws UserDoesNotExistException {
+			@RequestBody UserTO userTO) throws UserDoesNotExistException, AttributeUpdateException {
 		this.usersService.updateUserDetails(email, userTO.toEntity());
 	}
 	
