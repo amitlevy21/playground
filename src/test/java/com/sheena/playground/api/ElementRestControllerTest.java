@@ -2,7 +2,6 @@ package com.sheena.playground.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.ElementTO;
-import com.sheena.playground.logic.ElementNotExistException;
 import com.sheena.playground.logic.entity.ElementEntity;
 import com.sheena.playground.api.Location;
 
@@ -45,6 +43,8 @@ public class ElementRestControllerTest {
 
     private ElementTO dummyElement;
     private ElementTO dummy2;
+    private ElementTO dummy3;
+
 
     @PostConstruct
     public void init() {
@@ -67,7 +67,7 @@ public class ElementRestControllerTest {
                 this.dummyElement.getCreationDate(), this.dummyElement.getExpirationDate(), this.dummyElement.getType(),
                 this.dummyElement.getAttributes(), this.dummyElement.getCreatorPlayground(),
                 this.dummyElement.getCreatorEmail());
-        this.dummy2 = new ElementTO("playground", "789", new Location(4.0, 24.9), this.dummyElement.getName(),
+        this.dummy3 = new ElementTO("playground", "789", new Location(4.0, 24.9), this.dummyElement.getName(),
                 this.dummyElement.getCreationDate(), this.dummyElement.getExpirationDate(), this.dummyElement.getType(),
                 this.dummyElement.getAttributes(), this.dummyElement.getCreatorPlayground(),
                 this.dummyElement.getCreatorEmail());
@@ -164,15 +164,37 @@ public class ElementRestControllerTest {
 
         // Given
         this.restTemplate.postForObject(postTargetUrl, this.dummyElement, ElementTO.class);
+        this.restTemplate.postForObject(postTargetUrl, this.dummy3, ElementTO.class);
         this.restTemplate.postForObject(postTargetUrl, this.dummy2, ElementTO.class);
 
+
         // When
-        ///playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}
         String getAllUrl = String.format("%s/playground/elements/%s/%s/near/%d/%d/%d", this.url,
                 this.dummyElement.getCreatorPlayground(), this.dummyElement.getCreatorEmail(), 10, 20, 5);
         ElementTO[] elements = this.restTemplate.getForObject(getAllUrl, ElementTO[].class);
 
-        assertThat(elements).containsOnly(this.dummyElement);
+        ElementTO[] expected = { this.dummyElement, dummy2 };
+        assertThat(elements).isNotNull().hasSize(2).isEqualTo(expected);
 
+    }
+
+    @Test
+    public void getElementsThatShareAttributeSuccesfully() {
+        String postTargetUrl = String.format("%s/playground/elements/%s/%s", this.url,
+                this.dummyElement.getCreatorPlayground(), this.dummyElement.getCreatorEmail());
+
+        // Given
+        this.restTemplate.postForObject(postTargetUrl, this.dummyElement, ElementTO.class);
+        this.restTemplate.postForObject(postTargetUrl, this.dummy2, ElementTO.class);
+        this.restTemplate.postForObject(postTargetUrl, this.dummy3, ElementTO.class);
+
+        // When
+        String getAllUrl = String.format("%s/playground/elements/%s/%s/search/%s/%s", this.url,
+                this.dummyElement.getCreatorPlayground(), this.dummyElement.getCreatorEmail(), "attribute1", "{}");
+        ElementTO[] elements = this.restTemplate.getForObject(getAllUrl, ElementTO[].class);
+
+
+        ElementTO[] expected = { this.dummyElement, this.dummy2 , this.dummy3};
+        assertThat(elements).isNotNull().hasSize(3).isEqualTo(expected);
     }
 }

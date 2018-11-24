@@ -3,7 +3,7 @@ package com.sheena.playground.logic;
 /**
  * ElementNotExistException
  */
-public class ElementNotExistException extends Exception {
+public class ElementNotExistException extends ElementException {
 
 	private static final long serialVersionUID = 1L;
 

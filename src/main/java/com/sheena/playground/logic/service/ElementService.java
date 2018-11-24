@@ -1,53 +1,26 @@
 package com.sheena.playground.logic.service;
 
-import java.util.Collection;
 
-import com.sheena.playground.api.ElementTO;
+import java.util.List;
+
 import com.sheena.playground.logic.ElementNotExistException;
-import com.sheena.playground.logic.dao.ElementDao;
-import com.sheena.playground.logic.dao.stubs.ElementFakeDataImp;
 import com.sheena.playground.logic.entity.ElementEntity;
-
-import org.springframework.stereotype.Service;
 
 /**
  * ElementService
  */
-@Service
-public class ElementService {
+public interface ElementService {
 
-	private ElementDao elementDao;
+    public void addNewElement(ElementEntity elementTO);
 
-	public ElementService() {
-		elementDao = new ElementFakeDataImp();
-	}
+    public void updateElement(ElementEntity elementTO);
 
-	public void addNewElement(ElementTO elementTO) {
-		ElementEntity et = elementTO.toEntity();
-		elementDao.addElement(et);
-	}
+    ElementEntity getElementById(String id) throws ElementNotExistException;
 
-	public void updateElement(ElementTO elementTO) {
-		ElementEntity et = elementTO.toEntity();
-		elementDao.updateElement(et);
-	}
+    List<ElementEntity> getAllElements(int size, int page);
 
-	public ElementTO getElementById(String id) throws ElementNotExistException {
-		ElementTO eTo = new ElementTO(elementDao.getElementById(id));
-		return eTo;
-	}
+    List<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance)
+            throws ElementNotExistException;
 
-	public Collection<ElementEntity> getAllElements(int size, int page) {
-		return elementDao.getAllElements(size, page);
-	}
-
-	public Collection<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance)
-			throws ElementNotExistException {
-		return elementDao.getElementsNearCoordinates(x, y, distance);
-	}
-
-	public Collection<ElementTO> getElementsAttribute(String attributeName, Double value) {
-		return null;
-	}
-
+    List<ElementEntity> getElementsAttribute(String attributeName, Object value) throws ElementNotExistException;
 }

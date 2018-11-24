@@ -1,6 +1,7 @@
 package com.sheena.playground.logic.dao;
 
-import java.util.Collection;
+
+import java.util.List;
 
 import com.sheena.playground.logic.ElementNotExistException;
 import com.sheena.playground.logic.entity.ElementEntity;
@@ -10,7 +11,7 @@ import com.sheena.playground.logic.entity.ElementEntity;
  */
 public interface ElementDao {
 
-    Collection<ElementEntity> getAllElements(int size, int page);
+    List<ElementEntity> getAllElements(int size, int page);
 
     ElementEntity getElementById(String id) throws ElementNotExistException;
 
@@ -20,5 +21,7 @@ public interface ElementDao {
 
     void addElement(ElementEntity et);
 
-    Collection<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance) throws ElementNotExistException;
+    List<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance) throws ElementNotExistException;
+
+	List<ElementEntity> getElementsAttribute(String attributeName, Object value) throws ElementNotExistException;
 }

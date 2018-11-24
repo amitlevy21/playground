@@ -3,7 +3,7 @@ package com.sheena.playground.logic;
 /**
  * InvalidCreationDateException
  */
-public class InvalidExpirationDateException extends Exception {
+public class InvalidExpirationDateException extends ElementException {
 
 	private static final long serialVersionUID = 1L;
 
