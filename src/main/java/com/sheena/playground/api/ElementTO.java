@@ -3,6 +3,8 @@ package com.sheena.playground.api;
 import java.util.Date;
 import java.util.Map;
 
+import com.sheena.playground.logic.entity.ElementEntity;
+
 public class ElementTO {
 	
 	private String playground;
@@ -19,17 +21,24 @@ public class ElementTO {
 	public ElementTO(String playground, String id, Location location, String name, Date creationDate,
 			Date expirationDate, String type, Map<String, Object> attributes, String creatorPlayground,
 			String creatorEmail) {
-		super();
 		this.playground = playground;
 		this.id = id;
 		this.location = location;
 		this.name = name;
-		this.creationDate = creationDate;
-		this.expirationDate = expirationDate;
+		setCreationDate(creationDate);
+		setExpirationDate(expirationDate);
 		this.type = type;
 		this.attributes = attributes;
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
+	}
+
+	public ElementTO(ElementEntity et) {
+		this(et.getPlayground(), et.getId(), et.getLocation(), et.getName(), et.getCreationDate(), et.getExpirationDate(),
+			et.getType(), et.getAttributes(), et.getCreatorPlayground(), et.getCreatorEmail());
+	}
+
+	public ElementTO() {
 	}
 
 	public String getPlayground() {
@@ -111,6 +120,27 @@ public class ElementTO {
 	public void setCreatorEmail(String creatorEmail) {
 		this.creatorEmail = creatorEmail;
 	}
+
+	public ElementEntity toEntity() {
+		ElementEntity rv = new ElementEntity(this.playground, this.id, this.location, this.name, this.creationDate, this.expirationDate, this.type, this.attributes, this.creatorPlayground, this.creatorEmail);
+		return rv;
+	}
 	
+	@Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof ElementTO)) {
+            return false;
+        }
+        ElementTO elementTO = (ElementTO) o;
+        return playground.equals(elementTO.playground) && id.equals(elementTO.id)
+                && location.equals(elementTO.location) && name.equals(elementTO.name)
+                && creationDate.equals(elementTO.creationDate)
+                && expirationDate.equals(elementTO.expirationDate) && type.equals(elementTO.type)
+                && attributes.equals(elementTO.attributes)
+                && creatorPlayground.equals(elementTO.creatorPlayground)
+                && creatorEmail.equals(elementTO.creatorEmail);
+    }
 	
 }
