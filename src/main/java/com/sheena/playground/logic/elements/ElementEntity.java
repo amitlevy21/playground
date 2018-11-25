@@ -1,10 +1,9 @@
-package com.sheena.playground.logic.entity;
+package com.sheena.playground.logic.elements;
 
 import java.util.Date;
 import java.util.Map;
 
 import com.sheena.playground.api.Location;
-import com.sheena.playground.logic.InvalidExpirationDateException;
 
 /**
  * ElementEntity

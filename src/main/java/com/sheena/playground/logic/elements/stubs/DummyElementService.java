@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.service.stubs;
+package com.sheena.playground.logic.elements.stubs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sheena.playground.logic.ElementNotExistException;
-import com.sheena.playground.logic.entity.ElementEntity;
-import com.sheena.playground.logic.service.ElementService;
+import com.sheena.playground.logic.elements.ElementEntity;
+import com.sheena.playground.logic.elements.ElementNotExistException;
+import com.sheena.playground.logic.elements.ElementService;
 
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package com.sheena.playground.api;
 
-import com.sheena.playground.logic.UserEntity;
+import com.sheena.playground.logic.users.UserEntity;
 
 public class UserTO {
 	

@@ -1,4 +1,4 @@
-package com.sheena.playground;
+package com.sheena.playground.api.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.NewUserForm;
 import com.sheena.playground.api.UserTO;
-import com.sheena.playground.logic.UserDoesNotExistException;
-import com.sheena.playground.logic.UserEntity;
-import com.sheena.playground.logic.UsersService;
+import com.sheena.playground.logic.users.UserDoesNotExistException;
+import com.sheena.playground.logic.users.UserEntity;
+import com.sheena.playground.logic.users.UsersService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)

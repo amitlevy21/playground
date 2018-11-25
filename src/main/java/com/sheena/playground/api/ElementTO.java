@@ -3,7 +3,7 @@ package com.sheena.playground.api;
 import java.util.Date;
 import java.util.Map;
 
-import com.sheena.playground.logic.entity.ElementEntity;
+import com.sheena.playground.logic.elements.ElementEntity;
 
 public class ElementTO {
 	
