@@ -7,6 +7,10 @@ public class NewUserForm {
 	private String avatar;
 	private String role;
 	
+	public NewUserForm() {
+		
+	}
+	
 	public NewUserForm(String email, String username, String avatar, String role) {
 		super();
 		this.email = email;

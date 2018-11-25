@@ -8,4 +8,5 @@ public interface UsersService {
 	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException;
 	public void updateUserDetails(String email, UserEntity entityUpdates) throws UserDoesNotExistException, AttributeUpdateException;
 	public UserEntity getUser(String email) throws UserDoesNotExistException;
+	public void cleanup();
 }

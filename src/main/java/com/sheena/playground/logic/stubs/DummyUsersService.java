@@ -128,4 +128,10 @@ public class DummyUsersService implements UsersService {
 		}
 		return existsRole; 
 	}
+
+	@Override
+	public void cleanup() {
+		this.users.clear();
+		this.userVerificationCodes.clear();
+	}
 }
