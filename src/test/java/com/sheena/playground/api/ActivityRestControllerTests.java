@@ -9,7 +9,9 @@ import javax.annotation.PostConstruct;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sheena.playground.api.ActivityTO;
+import com.sheena.playground.logic.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.ActivityEntity;
 import com.sheena.playground.logic.ActivityService;
+import com.sheena.playground.logic.ActivityTypeNotAllowedException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -37,19 +41,50 @@ public class ActivityRestControllerTests {
 
 	@Autowired
 	private ActivityService activityService;
+	
+	private ActivityTO dummy1;
+	private ActivityTO dummy2;
+	
+	private String playground;
+	private String allowedType;
+	private String dummyEmail;
 
 	@PostConstruct
 	public void init() {
 		this.restTemplate = new RestTemplate();
-		this.url = "http://localhost:" + port + "/playground/activities";
-		System.err.println(this.url);
-
+		this.url = "http://localhost:" + port + "/playground/activities/{userPlayground}/{email}";
+		this.playground = "Sheena.2019A";
+		this.allowedType  = "allowedType";
+		this.dummyEmail = "MyDummyEmail";
 		// Jackson init
 		this.jsonMapper = new ObjectMapper();
+		
+		//System.err.println(this.url);
 	}
 
 	@Before
 	public void setup() {
+		Map<String, Object> customAttributes = new HashMap<>();
+		customAttributes.put("language", "java");
+		customAttributes.put("numOfStudyYrs", 4);
+		
+		this.dummy1 = new ActivityTO(
+				"playground",
+				"elementPlayground",
+				"elementId",
+				this.allowedType,
+				this.playground,
+				this.dummyEmail,
+				customAttributes);
+		
+		this.dummy2 = new ActivityTO(
+				"playground",
+				"elementPlayground",
+				"elementId",
+				this.allowedType,
+				this.playground,
+				this.dummyEmail,
+				customAttributes);
 	}
 
 	@After
@@ -57,46 +92,41 @@ public class ActivityRestControllerTests {
 		this.activityService.cleanup();
 	}
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
 	@Test
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
 
 	@Test
 	public void testCreateActivitySuccessfully() throws Exception {
-		String allowdType = "allowdType";
-
-		Map<String, Object> customAttributes = new HashMap<>();
-		customAttributes.put("language", "java");
-		customAttributes.put("numOfStudyYrs", 4);
-
-		ActivityTO postActivity = new ActivityTO(
-				"playground",
-				"elementPlayground",
-				"elementId",
-				allowdType,
-				customAttributes);
+		//String aimURL = this.url + "/{userPlayground}/{email}";
 		
-		postActivity.setPlayerPlayground("myUserPlayground");
-		postActivity.setPlayerEmail("myEmail");
+		ActivityTO actualActivity = this.restTemplate.postForObject(
+				this.url,
+				this.dummy1,
+				ActivityTO.class,
+				this.playground, 
+				this.dummyEmail);
 		
-		
-		System.err.println(postActivity.toString());
+		assertThat(actualActivity.getType()).isEqualTo(allowedType);
 
-		ActivityTO actualReturnedValue = this.restTemplate.postForObject(
-				this.url + "/{userPlayground}/{email}",
-				postActivity,
-				ActivityTO.class);
-		
-		
-		assertThat(actualReturnedValue.getType()).isEqualTo(allowdType);
+		ActivityEntity expectedOutcome = this.dummy1.toActivityEntity();
 
-		ActivityEntity expectedOutcome = postActivity.toActivityEntity();
-
-		assertThat(this.activityService.getActivityByType(allowdType)).isNotNull().isEqualTo(expectedOutcome);
+		assertThat(this.activityService.getActivityByType(allowedType)).isNotNull().isEqualTo(expectedOutcome);
 	}
 
 	@Test(expected = Exception.class)
-	public void testCreateActivityWithExistingActivity() {
+	public void testCreateActivityWithExistingActivity() throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
+		this.activityService.addNewActivity(this.dummy1.toActivityEntity());
+		
+		this.restTemplate.patchForObject(
+				this.url,
+				this.dummy2,
+				ActivityTO.class,
+				this.playground, 
+				this.dummyEmail);
 	}
 
 }

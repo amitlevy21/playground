@@ -19,31 +19,31 @@ public class ActivityTO {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 	
+	public ActivityTO() {
+		this.id = String.valueOf(orderIdGenerator.incrementAndGet());
+	}
+	
 	public ActivityTO(String playground, String elementPlayground, String elementId, String type,
-			/*String playerPlayground, String playerEmail,*/ Map<String, Object> attributes) {
+			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
 		super();
 		this.playground = playground;
 		this.id = String.valueOf(orderIdGenerator.incrementAndGet());
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
-		//this.playerPlayground = playerPlayground;
-		//this.playerEmail = playerEmail;
+		this.playerPlayground = playerPlayground;
+		this.playerEmail = playerEmail;
 		this.attributes = attributes;
 	}
 
 	public ActivityTO(ActivityEntity entity) throws ActivityNotFoundException {
-		if (entity == null) 
-			throw new ActivityNotFoundException();
-		
-		this.playground = entity.getPlayground();
-		this.id = entity.getId();
-		this.elementPlayground = entity.getElementPlayground();
-		this.elementId = entity.getElementId();
-		this.type = entity.getType();
-		this.playerPlayground = entity.getPlayerPlayground();
-		this.playerEmail = entity.getPlayerEmail();
-		this.attributes = entity.getAttributes();
+		this(entity.getPlayground(), 
+				entity.getElementPlayground(),
+				entity.getElementId(),
+				entity.getType(),
+				entity.getPlayerPlayground(),
+				entity.getPlayerEmail(),
+				entity.getAttributes());
 	}
 
 	public String getPlayground() {

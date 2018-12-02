@@ -22,7 +22,7 @@ import com.sheena.playground.logic.ActivityTypeNotAllowedException;
 public class DummyActivityService implements ActivityService {
 	private Map<String, ActivityEntity> activities;
 
-	private final String ALLOWED_TYPE = "allowdType";
+	private final String ALLOWED_TYPE = "allowedType";
 
 	@PostConstruct
 	public void init() {
@@ -37,7 +37,7 @@ public class DummyActivityService implements ActivityService {
 	@Override
 	public List<ActivityEntity> getAllActivities(int size, int page) {
 		return new ArrayList<>(this.activities.values() // collection of MessageEntity
-		)// list copy of MessageEntity
+				)// list copy of MessageEntity
 				.stream() // MessageEntity stream
 				.skip(size * page) // MessageEntity stream
 				.limit(size) // MessageEntity stream
@@ -52,7 +52,7 @@ public class DummyActivityService implements ActivityService {
 		}
 
 		if (this.activities.containsKey(activityEntity.getType())) {
-			throw new ActivityAlreadyExistsException("Activity exists with type: " + activityEntity.getType());
+			throw new ActivityAlreadyExistsException("Activity already exists with type: " + activityEntity.getType());
 		}
 
 		this.activities.put(activityEntity.getType(), activityEntity);
@@ -63,7 +63,7 @@ public class DummyActivityService implements ActivityService {
 	public ActivityEntity getActivityByType(String type) throws ActivityNotFoundException {
 		ActivityEntity rv = this.activities.get(type);
 		if (rv == null) {
-			throw new ActivityNotFoundException("No activity for type: " + type);
+			throw new ActivityNotFoundException("Activity not found for type: " + type);
 		}
 		return rv;
 	}

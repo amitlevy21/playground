@@ -35,8 +35,7 @@ public class ActivityRestController {
     	  	
     	//TODO: Once there is logic layer - an update to the DB will be required
     	
-    	newActivityTO.setPlayerPlayground(userPlayground);
-    	newActivityTO.setPlayerEmail(email);
+    	// TODO: add checks for the path variables equals to the json fields
     	
     	return new ActivityTO(
     				this.activityService.addNewActivity(
