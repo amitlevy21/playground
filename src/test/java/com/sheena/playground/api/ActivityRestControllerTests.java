@@ -42,6 +42,7 @@ public class ActivityRestControllerTests {
 	@Autowired
 	private ActivityService activityService;
 	
+	//dummy1 and dummy2 are equals
 	private ActivityTO dummy1;
 	private ActivityTO dummy2;
 	
@@ -101,8 +102,10 @@ public class ActivityRestControllerTests {
 
 	@Test
 	public void testCreateActivitySuccessfully() throws Exception {
-		//String aimURL = this.url + "/{userPlayground}/{email}";
+		// Given
+		// The server is up and an activity is provided (in the setup() function)
 		
+		// When 
 		ActivityTO actualActivity = this.restTemplate.postForObject(
 				this.url,
 				this.dummy1,
@@ -110,6 +113,7 @@ public class ActivityRestControllerTests {
 				this.playground, 
 				this.dummyEmail);
 		
+		// Then
 		assertThat(actualActivity.getType()).isEqualTo(allowedType);
 
 		ActivityEntity expectedOutcome = this.dummy1.toActivityEntity();
@@ -119,14 +123,21 @@ public class ActivityRestControllerTests {
 
 	@Test(expected = Exception.class)
 	public void testCreateActivityWithExistingActivity() throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
+		// Given
+		// The server is up and a specific activity already exists (in the setup() function)
 		this.activityService.addNewActivity(this.dummy1.toActivityEntity());
 		
+		// When
 		this.restTemplate.patchForObject(
 				this.url,
 				this.dummy2,
 				ActivityTO.class,
 				this.playground, 
 				this.dummyEmail);
+		
+		// Then 
+		// an ActivityAlreadyExistsException occurs
 	}
-
+	
+	
 }
