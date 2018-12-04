@@ -1,8 +1,17 @@
 package com.sheena.playground.logic;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.Lob;
+import javax.persistence.Id;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Entity
+@Table(name = "Activities")
 public class ActivityEntity {
 	
 	private String playground;
@@ -34,7 +43,7 @@ public class ActivityEntity {
 	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
-
+	
 	public String getId() {
 		return id;
 	}
@@ -59,6 +68,7 @@ public class ActivityEntity {
 		this.elementId = elementId;
 	}
 
+	@Id
 	public String getType() {
 		return type;
 	}
@@ -82,13 +92,31 @@ public class ActivityEntity {
 	public void setPlayerEmail(String playerEmail) {
 		this.playerEmail = playerEmail;
 	}
-
+	
+	@Transient
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
+	}
+	
+	@Lob
+	public String getJsonAttributes() {
+		try {
+			return new ObjectMapper().writeValueAsString(this.attributes);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setJsonAttributes(String jsonAttributes) {
+		try {
+			this.attributes = new ObjectMapper().readValue(jsonAttributes, Map.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

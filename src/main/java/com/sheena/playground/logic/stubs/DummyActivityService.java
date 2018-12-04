@@ -18,7 +18,7 @@ import com.sheena.playground.logic.ActivityService;
 import com.sheena.playground.logic.ActivityTypeNotAllowedException;
 
 
-@Service
+//@Service
 public class DummyActivityService implements ActivityService {
 	private Map<String, ActivityEntity> activities;
 
