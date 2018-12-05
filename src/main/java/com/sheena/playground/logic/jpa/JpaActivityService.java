@@ -36,7 +36,8 @@ public class JpaActivityService implements ActivityService {
 	@Transactional(readOnly=true)
 	public ActivityEntity getActivityByType(String type) throws ActivityNotFoundException {
 		return 
-				this.activities.findById(type)
+				this.activities
+				.findById(type)
 				.orElseThrow(()->
 					new ActivityNotFoundException(
 						"No activity with type: " + type));
