@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sheena.playground.logic.ActivityAlreadyExistsException;
-import com.sheena.playground.logic.ActivityNotFoundException;
-import com.sheena.playground.logic.ActivityService;
-import com.sheena.playground.logic.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activity.ActivityAlreadyExistsException;
+import com.sheena.playground.logic.activity.ActivityNotFoundException;
+import com.sheena.playground.logic.activity.ActivityService;
+import com.sheena.playground.logic.activity.ActivityTypeNotAllowedException;
 
 @RestController
 public class ActivityRestController {

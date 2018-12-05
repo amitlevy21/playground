@@ -3,8 +3,8 @@ package com.sheena.playground.api;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.sheena.playground.logic.ActivityEntity;
-import com.sheena.playground.logic.ActivityNotFoundException;
+import com.sheena.playground.logic.activity.ActivityEntity;
+import com.sheena.playground.logic.activity.ActivityNotFoundException;
 
 public class ActivityTO {
 	

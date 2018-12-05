@@ -1,4 +1,4 @@
-package com.sheena.playground.logic;
+package com.sheena.playground.logic.activity;
 
 public class ActivityAlreadyExistsException extends Exception {
 
