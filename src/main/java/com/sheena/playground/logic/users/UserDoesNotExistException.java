@@ -1,4 +1,4 @@
-package com.sheena.playground.logic;
+package com.sheena.playground.logic.users;
 
 public class UserDoesNotExistException extends UsersException {
 

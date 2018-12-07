@@ -1,4 +1,6 @@
-package com.sheena.playground.logic;
+package com.sheena.playground.logic.users;
+
+import com.sheena.playground.logic.elements.AttributeUpdateException;
 
 public interface UsersService {
 	

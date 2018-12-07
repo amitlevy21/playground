@@ -1,10 +1,7 @@
-package com.sheena.playground.logic.service;
+package com.sheena.playground.logic.elements;
 
 
 import java.util.List;
-
-import com.sheena.playground.logic.ElementNotExistException;
-import com.sheena.playground.logic.entity.ElementEntity;
 
 /**
  * ElementService

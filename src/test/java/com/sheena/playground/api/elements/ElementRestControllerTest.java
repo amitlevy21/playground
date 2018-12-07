@@ -1,4 +1,4 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.elements;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,8 +22,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.ElementTO;
-import com.sheena.playground.logic.entity.ElementEntity;
 import com.sheena.playground.api.Location;
+import com.sheena.playground.logic.elements.ElementEntity;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

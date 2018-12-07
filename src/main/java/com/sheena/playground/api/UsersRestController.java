@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sheena.playground.logic.AttributeUpdateException;
-import com.sheena.playground.logic.RoleDoesNotExistException;
-import com.sheena.playground.logic.UserAlreadyExistsException;
-import com.sheena.playground.logic.UserDoesNotExistException;
-import com.sheena.playground.logic.UsersException;
-import com.sheena.playground.logic.UsersService;
-import com.sheena.playground.logic.VerificationCodeMismatchException;
+import com.sheena.playground.logic.elements.AttributeUpdateException;
+import com.sheena.playground.logic.users.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.UserDoesNotExistException;
+import com.sheena.playground.logic.users.UsersException;
+import com.sheena.playground.logic.users.UsersService;
+import com.sheena.playground.logic.users.VerificationCodeMismatchException;
 
 @RestController
 public class UsersRestController {

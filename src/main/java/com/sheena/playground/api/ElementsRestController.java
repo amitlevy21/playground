@@ -1,8 +1,9 @@
 package com.sheena.playground.api;
 
 import java.util.stream.Collectors;
-import com.sheena.playground.logic.ElementNotExistException;
-import com.sheena.playground.logic.service.ElementService;
+
+import com.sheena.playground.logic.elements.ElementNotExistException;
+import com.sheena.playground.logic.elements.ElementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

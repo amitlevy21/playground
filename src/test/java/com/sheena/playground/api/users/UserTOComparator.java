@@ -1,4 +1,4 @@
-package com.sheena.playground;
+package com.sheena.playground.api.users;
 
 import java.util.Comparator;
 
