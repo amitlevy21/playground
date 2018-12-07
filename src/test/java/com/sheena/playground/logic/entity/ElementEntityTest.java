@@ -28,7 +28,7 @@ public class ElementEntityTest {
     @Before
     public void setup() {
         Map<String, Object> att = new HashMap<>();
-        att.put("attribute1", new HashMap());
+        att.put("attribute1", new HashMap<>());
         this.et = new ElementEntity(
             "sheena",
             "123",
@@ -52,7 +52,7 @@ public class ElementEntityTest {
     @Test
     public void compareElementEntityShouldEqual() {
         Map<String, Object> att = new HashMap<>();
-        att.put("attribute1", new HashMap());
+        att.put("attribute1", new HashMap<>());
         ElementEntity et2 = new ElementEntity(
             "sheena",
             "123",
@@ -71,7 +71,7 @@ public class ElementEntityTest {
     @Test
     public void compareElementEntityShouldNotEqual() {
         Map<String, Object> att = new HashMap<>();
-        att.put("attribute1", new HashMap());
+        att.put("attribute1", new HashMap<>());
         ElementEntity et2 = new ElementEntity(
             "sheena",
             "123",

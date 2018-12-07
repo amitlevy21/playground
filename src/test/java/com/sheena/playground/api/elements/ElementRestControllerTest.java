@@ -59,7 +59,7 @@ public class ElementRestControllerTest {
     @Before
     public void setup() {
         Map<String, Object> att = new HashMap<>();
-        att.put("attribute1", new HashMap());
+        att.put("attribute1", new HashMap<>());
         this.dummyElement = new ElementTO("sheena", "123", new Location(13.0, 25.0), "Pen", new Date("20/11/18"),
                 new Date("19/11/19"), "tool", att, "sheena", "123@gmail.com");
 
