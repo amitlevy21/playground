@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sheena.playground.dao.ActivityDao;
+import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activity.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activity.ActivityEntity;
 import com.sheena.playground.logic.activity.ActivityNotFoundException;
@@ -20,10 +20,8 @@ public class JpaActivityService implements ActivityService {
 	private ActivityDao activities;
 	private IdGeneratorDao idGenerator;
 
-	private final String ALLOWED_TYPE = "Echo";
-
 	@Autowired
-	public JpaActivityService(ActivityDao activities, IdGeneratorDao idGenerator) {
+	public JpaActivityService(IdGeneratorDao idGenerator, ActivityDao activities) {
 		this.activities = activities;
 		this.idGenerator = idGenerator;
 	}
@@ -45,15 +43,17 @@ public class JpaActivityService implements ActivityService {
 		List<ActivityEntity> allList = new ArrayList<>();
 		this.activities.findAll().forEach(o -> allList.add(o));
 
-		return allList.stream() // MessageEntity stream
-				.skip(size * page) // MessageEntity stream
-				.limit(size) // MessageEntity stream
+		return allList.stream() // ActivityEntity stream
+				.skip(size * page) // ActivityEntity stream
+				.limit(size) // ActivityEntity stream
 				.collect(Collectors.toList()); // List
 	}
 
 	@Override
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
 			throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
+		final String ALLOWED_TYPE = "Echo";
+		
 		if (!activityEntity.getType().equals(ALLOWED_TYPE)) {
 			throw new ActivityTypeNotAllowedException("Activity type is not: " + ALLOWED_TYPE);
 		}
