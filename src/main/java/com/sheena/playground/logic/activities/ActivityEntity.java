@@ -1,6 +1,6 @@
-package com.sheena.playground.logic.activity;
+package com.sheena.playground.logic.activities;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Entity;
@@ -25,6 +25,7 @@ public class ActivityEntity {
 	private Map<String, Object> attributes;
 
 	public ActivityEntity() {
+		this.type = "Echo";
 	}
 
 	public ActivityEntity(String playground, String id, String elementPlayground, String elementId, String type,

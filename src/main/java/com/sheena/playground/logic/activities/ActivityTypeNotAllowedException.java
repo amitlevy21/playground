@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.activity;
+package com.sheena.playground.logic.activities;
 
 public class ActivityTypeNotAllowedException extends Exception {
 

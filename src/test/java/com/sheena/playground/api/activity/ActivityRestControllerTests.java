@@ -22,10 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sheena.playground.api.ActivityTO;
-import com.sheena.playground.logic.activity.ActivityAlreadyExistsException;
-import com.sheena.playground.logic.activity.ActivityEntity;
-import com.sheena.playground.logic.activity.ActivityService;
-import com.sheena.playground.logic.activity.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
+import com.sheena.playground.logic.activities.ActivityEntity;
+import com.sheena.playground.logic.activities.ActivityService;
+import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

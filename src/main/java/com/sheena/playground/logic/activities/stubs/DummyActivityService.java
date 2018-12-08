@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.activity.stubs;
+package com.sheena.playground.logic.activities.stubs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,18 +11,17 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-import com.sheena.playground.logic.activity.ActivityAlreadyExistsException;
-import com.sheena.playground.logic.activity.ActivityEntity;
-import com.sheena.playground.logic.activity.ActivityNotFoundException;
-import com.sheena.playground.logic.activity.ActivityService;
-import com.sheena.playground.logic.activity.ActivityTypeNotAllowedException;
-
+import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
+import com.sheena.playground.logic.activities.ActivityEntity;
+import com.sheena.playground.logic.activities.ActivityNotFoundException;
+import com.sheena.playground.logic.activities.ActivityService;
+import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
 
 //@Service
 public class DummyActivityService implements ActivityService {
 	private Map<String, ActivityEntity> activities;
 
-	private final String ALLOWED_TYPE = "allowedType";
+	private final String ALLOWED_TYPE = "Echo";
 
 	@PostConstruct
 	public void init() {
@@ -60,10 +59,10 @@ public class DummyActivityService implements ActivityService {
 	}
 
 	@Override
-	public ActivityEntity getActivityByType(String type) throws ActivityNotFoundException {
+	public ActivityEntity getActivityByType(String type) throws ActivityTypeNotAllowedException {
 		ActivityEntity rv = this.activities.get(type);
 		if (rv == null) {
-			throw new ActivityNotFoundException("Activity not found for type: " + type);
+			throw new ActivityTypeNotAllowedException("Activity not found for type: " + type);
 		}
 		return rv;
 	}

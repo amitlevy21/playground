@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.activity.jpa;
+package com.sheena.playground.logic;
 
 import org.springframework.data.repository.CrudRepository;
 
