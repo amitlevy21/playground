@@ -1,10 +1,20 @@
-package com.sheena.playground.logic;
+package com.sheena.playground.logic.activities;
 
+//import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Entity
+@Table(name = "ACTIVITIES")
 public class ActivityEntity {
-	
+
 	private String playground;
 	private String id;
 	private String elementPlayground;
@@ -14,9 +24,12 @@ public class ActivityEntity {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 
+	public ActivityEntity() {
+		this.type = "Echo";
+	}
+
 	public ActivityEntity(String playground, String id, String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
-		super();
 		this.playground = playground;
 		this.id = id;
 		this.elementPlayground = elementPlayground;
@@ -26,7 +39,7 @@ public class ActivityEntity {
 		this.playerEmail = playerEmail;
 		this.attributes = attributes;
 	}
-	
+
 	public String getPlayground() {
 		return playground;
 	}
@@ -59,6 +72,7 @@ public class ActivityEntity {
 		this.elementId = elementId;
 	}
 
+	@Id
 	public String getType() {
 		return type;
 	}
@@ -83,12 +97,30 @@ public class ActivityEntity {
 		this.playerEmail = playerEmail;
 	}
 
+	@Transient
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
+	}
+
+	@Lob
+	public String getJsonAttributes() {
+		try {
+			return new ObjectMapper().writeValueAsString(this.attributes);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setJsonAttributes(String jsonAttributes) {
+		try {
+			this.attributes = new ObjectMapper().readValue(jsonAttributes, Map.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -98,7 +130,6 @@ public class ActivityEntity {
 				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
 	}
 
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -165,6 +196,5 @@ public class ActivityEntity {
 			return false;
 		return true;
 	}
-	
-	
+
 }

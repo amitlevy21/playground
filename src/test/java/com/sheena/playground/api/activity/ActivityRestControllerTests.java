@@ -1,4 +1,4 @@
-package com.sheena.playground.api;
+package com.sheena.playground.api.activity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,10 +22,10 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sheena.playground.api.ActivityTO;
-import com.sheena.playground.logic.ActivityAlreadyExistsException;
-import com.sheena.playground.logic.ActivityEntity;
-import com.sheena.playground.logic.ActivityService;
-import com.sheena.playground.logic.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
+import com.sheena.playground.logic.activities.ActivityEntity;
+import com.sheena.playground.logic.activities.ActivityService;
+import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -55,7 +55,7 @@ public class ActivityRestControllerTests {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/activities/{userPlayground}/{email}";
 		this.playground = "Sheena.2019A";
-		this.allowedType  = "allowedType";
+		this.allowedType  = "Echo";
 		this.dummyEmail = "MyDummyEmail";
 		// Jackson init
 		this.jsonMapper = new ObjectMapper();
