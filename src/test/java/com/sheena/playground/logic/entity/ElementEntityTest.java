@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sheena.playground.api.ElementTO;
 import com.sheena.playground.api.Location;
-import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.InvalidExpirationDateException;
 
 import org.junit.Before;
@@ -23,15 +23,14 @@ public class ElementEntityTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private ElementEntity et;
+    private ElementTO et;
 
     @Before
     public void setup() {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
-        this.et = new ElementEntity(
+        this.et = new ElementTO(
             "sheena",
-            "123",
             new Location(13.0, 24.9),
             "Pen",
             new Date("20/11/18"),
@@ -45,17 +44,16 @@ public class ElementEntityTest {
     @Test
     public void addNewElementWhenElementCreationDateOlderThanExpirationDateShouldThrowException() throws InvalidExpirationDateException{
         this.thrown.expect(InvalidExpirationDateException.class);
-        this.et.setExpirationDate(new Date("12/1/11"));
+        this.et.toEntity().setExpirationDate(new Date("12/1/11"));
 
     }
 
     @Test
-    public void compareElementEntityShouldEqual() {
+    public void compareElementEntityShouldEqual() throws InvalidExpirationDateException {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
-        ElementEntity et2 = new ElementEntity(
+        ElementTO et2 = new ElementTO(
             "sheena",
-            "123",
             new Location(13.0, 24.9),
             "Pen",
             new Date("20/11/18"),
@@ -65,16 +63,15 @@ public class ElementEntityTest {
             "sheena",
             "123@gmail.com");
 
-        assertThat(et2).isEqualTo(et);
+        assertThat(et2.toEntity()).isEqualTo(et.toEntity());
     }
 
     @Test
-    public void compareElementEntityShouldNotEqual() {
+    public void compareElementEntityShouldNotEqual() throws InvalidExpirationDateException {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
-        ElementEntity et2 = new ElementEntity(
+        ElementTO et2 = new ElementTO(
             "sheena",
-            "123",
             new Location(12.0, 24.9),
             "Pen",
             new Date("20/11/18"),
@@ -83,6 +80,6 @@ public class ElementEntityTest {
             att,
             "sheena",
             "123@gmail.com");
-        assertThat(et2).isNotEqualTo(et);
+        assertThat(et2.toEntity()).isNotEqualTo(et.toEntity());
     }
 }

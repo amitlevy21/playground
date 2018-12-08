@@ -2,8 +2,10 @@ package com.sheena.playground.api;
 
 import java.util.stream.Collectors;
 
+import com.sheena.playground.logic.elements.ElementAlreadyExistsException;
 import com.sheena.playground.logic.elements.ElementNotExistException;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.logic.elements.InvalidExpirationDateException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,9 +24,9 @@ public class ElementsRestController {
 
 	@RequestMapping(method = RequestMethod.POST, path = "/playground/elements/{userPlayground}/{email}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ElementTO addNewElement(@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email, @RequestBody ElementTO newElementTO) {
+			@PathVariable("email") String email, @RequestBody ElementTO newElementTO) throws ElementAlreadyExistsException, InvalidExpirationDateException {
 		ElementTO elementTO = new ElementTO(newElementTO.getPlayground(),
-				newElementTO.getId(), newElementTO.getLocation(), newElementTO.getName(),
+				newElementTO.getLocation(), newElementTO.getName(),
 				newElementTO.getCreationDate(), newElementTO.getExpirationDate(), newElementTO.getType(),
 				newElementTO.getAttributes(), newElementTO.getCreatorPlayground(), newElementTO.getCreatorEmail());
 		elementService.addNewElement(elementTO.toEntity());
@@ -34,8 +36,8 @@ public class ElementsRestController {
 	@RequestMapping(method = RequestMethod.PUT, path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateElement(@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email, @PathVariable("playground") String playground,
-			@PathVariable("id") String id, @RequestBody ElementTO elementTO) {
-		elementService.updateElement(elementTO.toEntity());
+			@PathVariable("id") String id, @RequestBody ElementTO elementTO) throws ElementNotExistException, InvalidExpirationDateException {
+		elementService.updateElement(id, elementTO.toEntity());
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
