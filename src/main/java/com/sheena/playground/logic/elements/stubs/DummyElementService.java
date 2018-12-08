@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.sheena.playground.logic.elements.ElementAlreadyExistsException;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementNotExistException;
 import com.sheena.playground.logic.elements.ElementService;
 
-import org.springframework.stereotype.Service;
+//import org.springframework.stereotype.Service;
 
 /**
  * ElementService
  */
-@Service
+//@Service
 public class DummyElementService implements ElementService{
 
 	private Map<String, ElementEntity> idToElement;
@@ -24,13 +25,13 @@ public class DummyElementService implements ElementService{
 		idToElement = new HashMap<>();
 	}
 
-	public void addNewElement(ElementEntity et) {
+	public void addNewElement(ElementEntity et) throws ElementAlreadyExistsException{
 		
-		idToElement.put(et.getId(), et);
+		idToElement.put(et.getDummyId(), et);
 	}
 
-	public void updateElement(ElementEntity et) {
-		idToElement.put(et.getId(), et);
+	public void updateElement(String id, ElementEntity et) throws ElementNotExistException{
+		idToElement.put(id, et);
 	}
 
 	public ElementEntity getElementById(String id) throws ElementNotExistException {
@@ -48,8 +49,8 @@ public class DummyElementService implements ElementService{
 			throws ElementNotExistException {
 				List<ElementEntity> rv = new ArrayList<>();
 				for (ElementEntity e : idToElement.values()) {
-					Double distanceX = Math.abs(e.getLocation().getX() - x);
-					Double distanceY = Math.abs(e.getLocation().getY() - y);
+					Double distanceX = Math.abs(e.getX() - x);
+					Double distanceY = Math.abs(e.getY() - y);
 					if (distance.compareTo(distanceX) >= 0 && distance.compareTo(distanceY) >= 0) {
 						rv.add(e);
 					}
@@ -69,6 +70,11 @@ public class DummyElementService implements ElementService{
         if (rv.isEmpty())
             throw new ElementNotExistException();
         return rv;
+	}
+
+	@Override
+	public void cleanup() {
+		idToElement.clear();
 	}
 
 

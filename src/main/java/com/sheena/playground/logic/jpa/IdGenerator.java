@@ -1,4 +1,4 @@
-package com.sheena.playground.logic;
+package com.sheena.playground.logic.jpa;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,10 +6,11 @@ import javax.persistence.Id;
 
 @Entity
 public class IdGenerator {
-	Long id;
-	
-	public IdGenerator() {}
-	
+	private Long id;
+
+	public IdGenerator() {
+	}
+
 	@Id
 	@GeneratedValue
 	public Long getId() {
@@ -19,4 +20,5 @@ public class IdGenerator {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 }

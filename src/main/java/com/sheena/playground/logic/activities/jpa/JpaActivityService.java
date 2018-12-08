@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sheena.playground.dal.ActivityDao;
-import com.sheena.playground.logic.IdGenerator;
-import com.sheena.playground.logic.IdGeneratorDao;
+import com.sheena.playground.logic.jpa.IdGenerator;
+import com.sheena.playground.logic.jpa.IdGeneratorDao;
 import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;

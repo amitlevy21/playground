@@ -8,9 +8,9 @@ import java.util.List;
  */
 public interface ElementService {
 
-    public void addNewElement(ElementEntity elementTO);
+    public void addNewElement(ElementEntity element) throws ElementAlreadyExistsException;
 
-    public void updateElement(ElementEntity elementTO);
+    public void updateElement(String id, ElementEntity element) throws ElementNotExistException;
 
     ElementEntity getElementById(String id) throws ElementNotExistException;
 
@@ -20,4 +20,6 @@ public interface ElementService {
             throws ElementNotExistException;
 
     List<ElementEntity> getElementsAttribute(String attributeName, Object value) throws ElementNotExistException;
+
+    public void cleanup();
 }

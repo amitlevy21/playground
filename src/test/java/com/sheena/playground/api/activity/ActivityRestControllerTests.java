@@ -118,7 +118,10 @@ public class ActivityRestControllerTests {
 
 		ActivityEntity expectedOutcome = this.dummy1.toActivityEntity();
 
-		assertThat(this.activityService.getActivityByType(allowedType)).isNotNull().isEqualTo(expectedOutcome);
+		ActivityEntity actual = this.activityService.getActivityByType(allowedType);
+		actual.setId(expectedOutcome.getId());
+
+		assertThat(actual).isNotNull().isEqualTo(expectedOutcome);
 	}
 
 	@Test(expected = Exception.class)

@@ -1,18 +1,30 @@
 package com.sheena.playground.logic.elements;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-import com.sheena.playground.api.Location;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * ElementEntity
  */
+@Entity
+@Table(name = "ELEMENTS")
 public class ElementEntity {
 
+    private String dummyId;
     private String playground;
-    private String id;
-    private Location location;
+    private Double x;
+    private Double y;
     private String name;
     private Date creationDate;
     private Date expirationDate;
@@ -21,22 +33,16 @@ public class ElementEntity {
     private String creatorPlayground;
     private String creatorEmail;
 
-    public ElementEntity(String playground, String id, Location location, String name, Date creationDate,
-            Date expirationDate, String type, Map<String, Object> attributes, String creatorPlayground,
-            String creatorEmail) {
-        this.playground = playground;
-        this.id = id;
-        this.location = location;
-        this.name = name;
-        this.creationDate = creationDate;
-        this.expirationDate = expirationDate;
-        this.type = type;
-        this.attributes = attributes;
-        this.creatorPlayground = creatorPlayground;
-        this.creatorEmail = creatorEmail;
+    public ElementEntity() {
+        this.x = 0.0;
+        this.y = 0.0;
+        this.creationDate = new Date();
+        this.attributes = new HashMap<>();
     }
 
-    protected ElementEntity() {
+    public ElementEntity(String name) {
+        this();
+        this.name = name;
     }
 
     public String getPlayground() {
@@ -47,22 +53,31 @@ public class ElementEntity {
         this.playground = playground;
     }
 
-    public String getId() {
-        return this.id;
+    public String getDummyId() {
+        return dummyId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setDummyId(String dummyId) {
+        this.dummyId = dummyId;
     }
 
-    public Location getLocation() {
-        return this.location;
+    public Double getX() {
+        return x;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setX(Double x) {
+        this.x = x;
     }
 
+    public Double getY() {
+        return y;
+    }
+
+    public void setY(Double y) {
+        this.y = y;
+    }
+
+    @Id
     public String getName() {
         return this.name;
     }
@@ -71,6 +86,7 @@ public class ElementEntity {
         this.name = name;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getCreationDate() {
         return this.creationDate;
     }
@@ -97,11 +113,12 @@ public class ElementEntity {
         this.type = type;
     }
 
+    @Transient
     public Map<String, Object> getAttributes() {
         return this.attributes;
     }
 
-    public void setAtrributes(Map<String, Object> attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
@@ -121,6 +138,23 @@ public class ElementEntity {
         this.creatorEmail = creatorEmail;
     }
 
+    @Lob
+    public String getJsonAttributes() {
+        try {
+            return new ObjectMapper().writeValueAsString(this.attributes);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setJsonAttributes(String jsonAttributes) {
+        try {
+            this.attributes = new ObjectMapper().readValue(jsonAttributes, Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -129,22 +163,22 @@ public class ElementEntity {
             return false;
         }
         ElementEntity elementEntity = (ElementEntity) o;
-        return playground.equals(elementEntity.playground) && id.equals(elementEntity.id)
-                && location.equals(elementEntity.location) && name.equals(elementEntity.name)
-                && creationDate.equals(elementEntity.creationDate)
+        return playground.equals(elementEntity.playground) && x.equals(elementEntity.x) && y.equals(elementEntity.y)
+                && name.equals(elementEntity.name) && creationDate.equals(elementEntity.creationDate)
                 && expirationDate.equals(elementEntity.expirationDate) && type.equals(elementEntity.type)
                 && attributes.equals(elementEntity.attributes)
                 && creatorPlayground.equals(elementEntity.creatorPlayground)
                 && creatorEmail.equals(elementEntity.creatorEmail);
     }
 
+
     @Override
     public String toString() {
-        return "{" + " playground='" + getPlayground() + "'" + ", id='" + getId() + "'" + ", location='" + getLocation()
-                + "'" + ", name='" + getName() + "'" + ", creationDate='" + getCreationDate() + "'"
-                + ", expirationDate='" + getExpirationDate() + "'" + ", type='" + getType() + "'" + ", attributes='"
-                + getAttributes() + "'" + ", creatorPlayground='" + getCreatorPlayground() + "'" + ", creatorEmail='"
-                + getCreatorEmail() + "'" + "}";
+        return "{" + " dummyId='" + getDummyId() + "'" + ", playground='" + getPlayground() + "'" + ", x='" + getX()
+                + "'" + ", y='" + getY() + "'" + ", name='" + getName() + "'" + ", creationDate='" + getCreationDate()
+                + "'" + ", expirationDate='" + getExpirationDate() + "'" + ", type='" + getType() + "'"
+                + ", attributes='" + getAttributes() + "'" + ", creatorPlayground='" + getCreatorPlayground() + "'"
+                + ", creatorEmail='" + getCreatorEmail() + "'" + "}";
     }
 
 }
