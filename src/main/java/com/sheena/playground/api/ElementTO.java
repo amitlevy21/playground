@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.Map;
 
 import com.sheena.playground.logic.elements.ElementEntity;
+import com.sheena.playground.logic.elements.InvalidExpirationDateException;
 
 public class ElementTO {
 	
 	private String playground;
-	private String id;
 	private Location location;
 	private String name;
 	private Date creationDate;
@@ -18,11 +18,11 @@ public class ElementTO {
 	private String creatorPlayground;
 	private String creatorEmail;
 	
-	public ElementTO(String playground, String id, Location location, String name, Date creationDate,
+	
+	public ElementTO(String playground, Location location, String name, Date creationDate,
 			Date expirationDate, String type, Map<String, Object> attributes, String creatorPlayground,
 			String creatorEmail) {
 		this.playground = playground;
-		this.id = id;
 		this.location = location;
 		this.name = name;
 		setCreationDate(creationDate);
@@ -34,7 +34,7 @@ public class ElementTO {
 	}
 
 	public ElementTO(ElementEntity et) {
-		this(et.getPlayground(), et.getId(), et.getLocation(), et.getName(), et.getCreationDate(), et.getExpirationDate(),
+		this(et.getPlayground(), new Location(et.getX(), et.getY()), et.getName(), et.getCreationDate(), et.getExpirationDate(),
 			et.getType(), et.getAttributes(), et.getCreatorPlayground(), et.getCreatorEmail());
 	}
 
@@ -47,14 +47,6 @@ public class ElementTO {
 
 	public void setPlayground(String playground) {
 		this.playground = playground;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public Location getLocation() {
@@ -121,8 +113,18 @@ public class ElementTO {
 		this.creatorEmail = creatorEmail;
 	}
 
-	public ElementEntity toEntity() {
-		ElementEntity rv = new ElementEntity(this.playground, this.id, this.location, this.name, this.creationDate, this.expirationDate, this.type, this.attributes, this.creatorPlayground, this.creatorEmail);
+	public ElementEntity toEntity() throws InvalidExpirationDateException {
+		ElementEntity rv = new ElementEntity();
+		rv.setPlayground(this.playground);
+		rv.setX(this.location.getX());
+		rv.setY(this.location.getY());
+		rv.setName(this.name);
+		rv.setCreationDate(this.creationDate);
+		rv.setExpirationDate(this.expirationDate);
+		rv.setType(this.type);
+		rv.setAttributes(this.attributes);
+		rv.setCreatorPlayground(this.creatorPlayground);
+		rv.setCreatorEmail(this.creatorEmail);
 		return rv;
 	}
 	
@@ -134,7 +136,7 @@ public class ElementTO {
             return false;
         }
         ElementTO elementTO = (ElementTO) o;
-        return playground.equals(elementTO.playground) && id.equals(elementTO.id)
+        return playground.equals(elementTO.playground)
                 && location.equals(elementTO.location) && name.equals(elementTO.name)
                 && creationDate.equals(elementTO.creationDate)
                 && expirationDate.equals(elementTO.expirationDate) && type.equals(elementTO.type)

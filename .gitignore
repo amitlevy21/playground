@@ -55,3 +55,4 @@ hs_err_pid*
 
 # Amit Levy files
 .vscode
+.attach_pid*
