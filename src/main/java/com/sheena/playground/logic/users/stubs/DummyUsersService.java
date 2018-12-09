@@ -6,9 +6,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.stereotype.Service;
+//import org.springframework.stereotype.Service;
 
 import com.sheena.playground.logic.elements.AttributeUpdateException;
+import com.sheena.playground.logic.users.CodeDoesNotExistException;
 import com.sheena.playground.logic.users.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.Roles;
 import com.sheena.playground.logic.users.UserAlreadyExistsException;
@@ -17,7 +18,7 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.VerificationCodeMismatchException;
 
-@Service
+//@Service
 public class DummyUsersService implements UsersService {
 	
 	private Map<String, UserEntity> users;
@@ -50,24 +51,11 @@ public class DummyUsersService implements UsersService {
 	}
 
 	@Override
-	public void verifyUserRegistration(String email, String verificationCode) throws UserDoesNotExistException, VerificationCodeMismatchException {
-		synchronized (verificationCode) {
-			UserEntity existing = this.getUser(email);
-			if (!verificationCode.equals(this.userVerificationCodes.get(email))) {
-				throw new VerificationCodeMismatchException(
-						"Code: " + verificationCode + " does not match the code provided to email: " + email);
-			}
-			existing.setVerifiedUser(true);
-			this.users.put(email, existing);
-		}
-	}
-
-	@Override
 	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException {
 		UserEntity existing;
 		
 		synchronized (this.users) {
-			existing = this.getUser(userEntity.getEmail());
+			existing = this.getUserByEmail(userEntity.getEmail());
 			existing.setLastLogin(new Date());
 			this.users.put(existing.getEmail(), existing);
 		}
@@ -75,9 +63,9 @@ public class DummyUsersService implements UsersService {
 	}
 
 	@Override
-	public void updateUserDetails(String email, UserEntity entityUpdates) throws UserDoesNotExistException, AttributeUpdateException {
+	public void updateUserDetails(String playground, String email, UserEntity entityUpdates) throws UserDoesNotExistException, AttributeUpdateException {
 		synchronized (this.users) {
-			UserEntity existing = this.getUser(email);
+			UserEntity existing = this.getUserByEmail(email);
 			
 			if(entityUpdates.getPoints() != null && 
 					!entityUpdates.getPoints().equals(existing.getPoints())) {
@@ -110,14 +98,6 @@ public class DummyUsersService implements UsersService {
 		return userEntity.getEmail().toString() + "007";
 	}
 	
-	public UserEntity getUser(String email) throws UserDoesNotExistException {
-		UserEntity existing = this.users.get(email);
-		if (existing == null) {
-			throw new UserDoesNotExistException("No user with email: " + email);
-		}
-		return existing;
-	}
-	
 	private boolean isRoleExists(String givenRole) {
 		Roles roles[] = Roles.values();
 		
@@ -133,5 +113,26 @@ public class DummyUsersService implements UsersService {
 	public void cleanup() {
 		this.users.clear();
 		this.userVerificationCodes.clear();
+	}
+
+	@Override
+	public UserEntity verifyUserRegistration(String playground, String email, String verificationCode)
+			throws UserDoesNotExistException, VerificationCodeMismatchException, CodeDoesNotExistException {
+		synchronized (verificationCode) {
+			UserEntity existing = this.getUserByEmail(email);
+			if (!verificationCode.equals(this.userVerificationCodes.get(email))) {
+				throw new VerificationCodeMismatchException(
+						"Code: " + verificationCode + " does not match the code provided to email: " + email);
+			}
+			existing.setVerifiedUser(true);
+			this.users.put(email, existing);
+			return getUserByEmail(email);
+		}
+	}
+
+	@Override
+	public UserEntity getUserByEmail(String email) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

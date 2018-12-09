@@ -2,7 +2,19 @@ package com.sheena.playground.logic.users;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+@Entity
+@Table(name = "USERS")
 public class UserEntity {
+	
+	@Id
+	//Currently email + playground concatenated String
+	private String combinedId;
 	
 	private String email;
 	private String playground;
@@ -32,6 +44,15 @@ public class UserEntity {
 		this.setLastLogin(null);
 	}
 
+	public String getCombinedId() {
+		return combinedId;
+	}
+
+	public void setCombinedId(String combinedId) {
+		this.combinedId = combinedId;
+	}
+
+	//	@Id
 	public String getEmail() {
 		return email;
 	}
@@ -88,6 +109,7 @@ public class UserEntity {
 		this.verifiedUser = verifiedUser;
 	}
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getLastLogin() {
 		return lastLogin;
 	}

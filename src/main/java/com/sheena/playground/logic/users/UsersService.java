@@ -6,9 +6,9 @@ public interface UsersService {
 	
 	public UserEntity createNewUser(UserEntity userEntity) throws UserAlreadyExistsException, RoleDoesNotExistException, RoleDoesNotExistException;
 	public String generateUserVerificationCode(UserEntity userEntity);
-	public void verifyUserRegistration(String email, String verificationCode) throws UserDoesNotExistException, VerificationCodeMismatchException;
-	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException;
-	public void updateUserDetails(String email, UserEntity entityUpdates) throws UserDoesNotExistException, AttributeUpdateException;
-	public UserEntity getUser(String email) throws UserDoesNotExistException;
+	public UserEntity verifyUserRegistration(String playground, String email, String verificationCode) throws UserDoesNotExistException, VerificationCodeMismatchException, CodeDoesNotExistException, UserAlreadyVerifiedException;
+	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException, UnverifiedUserActionException;
+	public void updateUserDetails(String playground, String email, UserEntity entityUpdates) throws UserDoesNotExistException, AttributeUpdateException, RoleDoesNotExistException, UnverifiedUserActionException;
+	public UserEntity getUserByEmail(String email);
 	public void cleanup();
 }
