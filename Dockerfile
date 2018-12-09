@@ -7,4 +7,4 @@ WORKDIR /app
 RUN mvn clean install
 
 # keep container alive
-ENTRYPOINT [ "tail", "-f", "/etc/hosts" ] 
+#ENTRYPOINT [ "tail", "-f", "/etc/hosts" ] 
