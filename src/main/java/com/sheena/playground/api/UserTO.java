@@ -1,10 +1,14 @@
 package com.sheena.playground.api;
 
+import javax.validation.constraints.Email;
+
 import com.sheena.playground.logic.users.UserEntity;
 
 public class UserTO {
 	
+	@Email
 	private String email;
+	
 	private String playground;
 	private String username;
 	private String avatar;
@@ -41,6 +45,15 @@ public class UserTO {
 		setPoints(userEntity.getPoints());
 		setRole(userEntity.getRole());
 		setUsername(userEntity.getUsername());
+	}
+	
+	public UserTO(UserTO other) {
+		super();
+		setAvatar(other.getAvatar());
+		setEmail(other.getEmail());
+		setPlayground(other.getEmail());
+		setRole(other.getRole());
+		setUsername(other.getUsername());
 	}
 
 	public String getEmail() {
@@ -105,6 +118,7 @@ public class UserTO {
 		ue.setPoints(this.points);
 		ue.setRole(this.role);
 		ue.setUsername(this.username);
+		ue.setCombinedId(this.email + this.playground);
 		
 		return ue;
 	}
