@@ -3,7 +3,9 @@ package com.sheena.playground.api.users;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -34,6 +36,8 @@ import com.sheena.playground.logic.users.UsersService;
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 public class UsersTests {
 	
+	private final int numCases = 9;
+
 	@LocalServerPort
 	private int port;
 	
@@ -46,13 +50,16 @@ public class UsersTests {
 	@Autowired
 	private UsersService usersService;
 	
-	private String playground;
-	private String verificationCodeSuffix;
+	private final String playground = "Sheena.2019A";
+	private final String verificationCodeSuffix = "code";
 	
 	//Data attributes for test suite
-	private NewUserForm newUser; 
-	private NewUserForm newUserUndefinedRole;
-	private UserTO userWithUpdate;
+	private final String emailDomain = "@afeka.edu";
+	private final String userName = "user";
+	private final String avatar = "lion";
+	private final String playerRole = "player";
+	
+	private List<NewUserForm> newUserForms;
 	
 	@PostConstruct
 	public void init() {
@@ -60,20 +67,12 @@ public class UsersTests {
 		this.userTOComparator = new UserTOComparator();
 		this.url = "http://localhost:" + port + "/playground/users";		
 		this.jsonMapper = new ObjectMapper(); // Jackson init
-		this.playground = "Sheena.2019A";
-		this.verificationCodeSuffix = "code";
 		System.err.println(this.url);
 	}
 	
 	@Before
 	public void setup() {
-		this.newUser = new NewUserForm("moshe@afeka.edu", "moshe", "lion", "player");
-		this.newUserUndefinedRole = new NewUserForm("moshe@afeka.edu", "moshe", "lion", "admin");
-		
-		this.userWithUpdate = new UserTO(this.newUser, this.playground);
-		this.userWithUpdate.setUsername("leon");
-		this.userWithUpdate.setAvatar("giraffe");
-		this.userWithUpdate.setRole("manager");
+		this.newUserForms = this.generateNewUserForms(this.numCases);
 	}
 
 	@After
@@ -90,8 +89,8 @@ public class UsersTests {
 	
 	@Test
 	public void testRegisterNewUser() throws JsonParseException, JsonMappingException, IOException {
-		UserTO expectedUserTO = new UserTO(this.newUser, this.playground);
-		UserTO actualReturnedValue = this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		UserTO expectedUserTO = new UserTO(this.newUserForms.get(0), this.playground);
+		UserTO actualReturnedValue = this.restTemplate.postForObject(this.url, this.newUserForms.get(0), UserTO.class);
 		
 		assertThat(actualReturnedValue)
 		.isNotNull()
@@ -100,10 +99,13 @@ public class UsersTests {
 	
 	@Test
 	public void testRegisterNewUserWithUndefinedRole() throws JsonParseException, JsonMappingException, IOException {
+		NewUserForm newUserWithUndefinedRole = this.newUserForms.get(1);
+		newUserWithUndefinedRole.setRole("admin");
+		
 		this.exception.expect(HttpClientErrorException.class);
 		
 		//When
-		this.restTemplate.postForObject(this.url, this.newUserUndefinedRole, UserTO.class);
+		this.restTemplate.postForObject(this.url, newUserWithUndefinedRole, UserTO.class);
 		
 		//Then
 		//An HttpClientErrorException is caught with status code 404
@@ -111,14 +113,15 @@ public class UsersTests {
 	
 	@Test
 	public void testVerifyNewUserAccount() throws JsonParseException, JsonMappingException, IOException {
-		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
-		UserTO expectedUserTO = new UserTO(this.newUser, this.playground);
+		NewUserForm newUser = this.newUserForms.get(2);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
+		UserTO expectedUserTO = new UserTO(newUser, this.playground);
 
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
 				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, this.newUser.getEmail(), 
-				this.newUser.getEmail() + this.verificationCodeSuffix);
+				this.playground, newUser.getEmail(), 
+				newUser.getEmail() + this.verificationCodeSuffix);
 		
 		//Then
 		assertThat(returnedAnswer)
@@ -129,16 +132,17 @@ public class UsersTests {
 	@Test
 	public void testVerifyNewUserAccountWithWrongCode() throws JsonParseException, JsonMappingException, IOException {
 		//Given
-		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		NewUserForm newUser = this.newUserForms.get(3);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
 		
-		String wrongCode = this.newUser.getEmail() + this.verificationCodeSuffix + "NOPE";
+		String wrongCode = newUser.getEmail() + this.verificationCodeSuffix + "NOPE";
 		
 		this.exception.expect(HttpClientErrorException.class);
 		
 		//When
 		this.restTemplate.getForObject( 
 				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, this.newUser.getEmail(), wrongCode);
+				this.playground, newUser.getEmail(), wrongCode);
 		
 		//Then
 		//An HttpServerErrorException is caught with status code 404
@@ -147,20 +151,20 @@ public class UsersTests {
 	@Test
 	public void testUserSuccessfulLogin() throws JsonParseException, JsonMappingException, IOException {
 		//Given
+		NewUserForm newUser = this.newUserForms.get(4);
 		
-		
-		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
 		this.restTemplate.getForObject(
 				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, this.newUser.getEmail(), 
-				this.newUser.getEmail() + this.verificationCodeSuffix);
+				this.playground, newUser.getEmail(), 
+				newUser.getEmail() + this.verificationCodeSuffix);
 		
-		UserTO expectedUserTO = new UserTO(this.newUser, this.playground);
+		UserTO expectedUserTO = new UserTO(newUser, this.playground);
 		
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
 				this.url + "/login/{playground}/{email}", UserTO.class, 
-				this.playground, this.newUser.getEmail());
+				this.playground, newUser.getEmail());
 		//Then
 		assertThat(returnedAnswer)
 		.isNotNull()
@@ -171,19 +175,36 @@ public class UsersTests {
 	@Test
 	public void testUserLoginWithUnknownEmail() throws JsonParseException, JsonMappingException, IOException {
 		//Given
-		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		NewUserForm newUser = this.newUserForms.get(5);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
 		this.restTemplate.getForObject(
 				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, this.newUser.getEmail(), 
-				this.newUser.getEmail() + this.verificationCodeSuffix);
+				this.playground, newUser.getEmail(), 
+				newUser.getEmail() + this.verificationCodeSuffix);
 				
 		this.exception.expect(HttpClientErrorException.class);
 		
 		//When
 		this.restTemplate.getForObject(
 				this.url + "/login/{playground}/{email}", UserTO.class, 
-				this.playground, this.newUser.getEmail() + "NOPE");
+				this.playground, newUser.getEmail() + "NOPE");
 		
+		//Then
+		//An HttpClientErrorException is caught with status code 404
+	}
+	
+	@Test
+	public void testUnverifiedUserLogin() {
+		//Given there is a sign up request
+		NewUserForm newUser = this.newUserForms.get(6);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
+		
+		this.exception.expect(HttpClientErrorException.class);
+		
+		//When the unverified user tries to login
+		this.restTemplate.getForObject(
+				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.playground, newUser.getEmail());
 		//Then
 		//An HttpClientErrorException is caught with status code 404
 	}
@@ -191,35 +212,42 @@ public class UsersTests {
 	@Test
 	public void testUpdateUserDetailsSuccessfully() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
 		//Given
-		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		NewUserForm newUser = this.newUserForms.get(7);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
 		this.restTemplate.getForObject(
 				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, this.newUser.getEmail(), 
-				this.newUser.getEmail() + this.verificationCodeSuffix);
+				this.playground, newUser.getEmail(), 
+				newUser.getEmail() + this.verificationCodeSuffix);
+		
+		UserTO userWithUpdate = new UserTO(newUser, this.playground);
+		userWithUpdate.setUsername("leon");
+		userWithUpdate.setAvatar("giraffe");
+		userWithUpdate.setRole("manager");
 		
 		//When
 		this.restTemplate.put(
-				this.url + "/{playground}/{email}", this.userWithUpdate, this.playground, 
-				this.userWithUpdate.getEmail());
+				this.url + "/{playground}/{email}", userWithUpdate, this.playground, 
+				userWithUpdate.getEmail());
 		
 		//Then
-		UserEntity actualEntity = usersService.getUserByEmail(this.userWithUpdate.getEmail());
+		UserEntity actualEntity = usersService.getUserByEmail(userWithUpdate.getEmail());
 		
 		assertThat(new UserTO(actualEntity))
 		.isNotNull()
-		.usingComparator(this.userTOComparator).isEqualTo(this.userWithUpdate);
+		.usingComparator(this.userTOComparator).isEqualTo(userWithUpdate);
 	}
 	
 	@Test
 	public void testUpdateUserDetailsThatAreNotAllowed() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
 		//Given
-		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		NewUserForm newUser = this.newUserForms.get(8);
+		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
 		this.restTemplate.getForObject(
 				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, this.newUser.getEmail(), 
-				this.newUser.getEmail() + this.verificationCodeSuffix);
+				this.playground, newUser.getEmail(), 
+				newUser.getEmail() + this.verificationCodeSuffix);
 		
-		UserTO userWithUnAllowedUpdate = new UserTO(this.userWithUpdate);
+		UserTO userWithUnAllowedUpdate = new UserTO(newUser, this.playground);
 		userWithUnAllowedUpdate.setPoints(1250L);
 				
 		this.exception.expect(HttpClientErrorException.class);
@@ -230,5 +258,17 @@ public class UsersTests {
 		
 		//Then
 		//An HttpClientErrorException is caught with status code 404
+	}
+
+	private List<NewUserForm> generateNewUserForms(int numCases) {
+		List<NewUserForm> newUserForms = new ArrayList<>();
+		for (int i = 0; i < numCases; i++) {
+			newUserForms.add(new NewUserForm(
+					this.userName + "_" + i + "_" + this.emailDomain
+					,this.userName + "_" + i + "_"
+					,this.avatar
+					,this.playerRole));
+		}
+		return newUserForms;
 	}
 }
