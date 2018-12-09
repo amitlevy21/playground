@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sheena.playground.logic.elements.AttributeUpdateException;
+import com.sheena.playground.logic.users.CodeDoesNotExistException;
 import com.sheena.playground.logic.users.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.UnverifiedUserActionException;
 import com.sheena.playground.logic.users.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.UserAlreadyVerifiedException;
 import com.sheena.playground.logic.users.UserDoesNotExistException;
-import com.sheena.playground.logic.users.UsersException;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.VerificationCodeMismatchException;
 
@@ -46,10 +48,8 @@ public class UsersRestController {
 	public UserTO verifyUserRegistration(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email, 
-			@PathVariable("code") String code) throws UserDoesNotExistException, VerificationCodeMismatchException {
-		this.usersService.verifyUserRegistration(email, code);
-		
-		return new UserTO(this.usersService.getUser(email));
+			@PathVariable("code") String code) throws UserDoesNotExistException, VerificationCodeMismatchException, CodeDoesNotExistException, UserAlreadyVerifiedException {
+		return new UserTO(this.usersService.verifyUserRegistration(playground, email, code));
 	}
 	
 	@RequestMapping(
@@ -58,8 +58,8 @@ public class UsersRestController {
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	public UserTO userLoginRequest(
 			@PathVariable("playground") String playground, 
-			@PathVariable("email") String email) throws UserDoesNotExistException {
-		return new UserTO(this.usersService.login(this.usersService.getUser(email)));
+			@PathVariable("email") String email) throws UserDoesNotExistException, UnverifiedUserActionException {
+		return new UserTO(this.usersService.login(this.usersService.getUserByEmail(email)));
 	}
 	
 	@RequestMapping(
@@ -70,13 +70,13 @@ public class UsersRestController {
 	public void updateUserProfile(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,
-			@RequestBody UserTO userTO) throws UserDoesNotExistException, AttributeUpdateException {
-		this.usersService.updateUserDetails(email, userTO.toEntity());
+			@RequestBody UserTO userTO) throws UserDoesNotExistException, AttributeUpdateException, RoleDoesNotExistException, UnverifiedUserActionException {
+		this.usersService.updateUserDetails(playground, email, userTO.toEntity());
 	}
 	
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorMessage handleException (UsersException e) {
+	public ErrorMessage handleException (Exception e) {
 		String message = e.getMessage();
 		if (message == null) {
 			message = "There is no relevant message";

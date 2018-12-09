@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -34,35 +33,47 @@ import com.sheena.playground.logic.users.UsersService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 public class UsersTests {
+	
 	@LocalServerPort
 	private int port;
 	
 	private String url;
-	
 	private RestTemplate restTemplate;
-	
+	@SuppressWarnings("unused")
 	private ObjectMapper jsonMapper;
-	
 	private Comparator<UserTO> userTOComparator;
 	
 	@Autowired
 	private UsersService usersService;
 	
-	private String PLAYGROUND;
+	private String playground;
+	private String verificationCodeSuffix;
+	
+	//Data attributes for test suite
+	private NewUserForm newUser; 
+	private NewUserForm newUserUndefinedRole;
+	private UserTO userWithUpdate;
 	
 	@PostConstruct
 	public void init() {
 		this.restTemplate = new RestTemplate();
 		this.userTOComparator = new UserTOComparator();
 		this.url = "http://localhost:" + port + "/playground/users";		
-		// Jackson init
-		this.jsonMapper = new ObjectMapper();
-		this.PLAYGROUND = "Sheena.2019A";
+		this.jsonMapper = new ObjectMapper(); // Jackson init
+		this.playground = "Sheena.2019A";
+		this.verificationCodeSuffix = "code";
 		System.err.println(this.url);
 	}
 	
 	@Before
 	public void setup() {
+		this.newUser = new NewUserForm("moshe@afeka.edu", "moshe", "lion", "player");
+		this.newUserUndefinedRole = new NewUserForm("moshe@afeka.edu", "moshe", "lion", "admin");
+		
+		this.userWithUpdate = new UserTO(this.newUser, this.playground);
+		this.userWithUpdate.setUsername("leon");
+		this.userWithUpdate.setAvatar("giraffe");
+		this.userWithUpdate.setRole("manager");
 	}
 
 	@After
@@ -79,13 +90,8 @@ public class UsersTests {
 	
 	@Test
 	public void testRegisterNewUser() throws JsonParseException, JsonMappingException, IOException {
-		//Given
-		String newUserString = "{\"email\": \"bison@flex.gnu\", \"username\": \"moshes\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		
-		UserTO expectedUserTO = new UserTO(newUserPostObject, this.PLAYGROUND);
-		UserTO actualReturnedValue = this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
+		UserTO expectedUserTO = new UserTO(this.newUser, this.playground);
+		UserTO actualReturnedValue = this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
 		
 		assertThat(actualReturnedValue)
 		.isNotNull()
@@ -94,15 +100,10 @@ public class UsersTests {
 	
 	@Test
 	public void testRegisterNewUserWithUndefinedRole() throws JsonParseException, JsonMappingException, IOException {
-		//Given
-		String newUserString = "{\"email\": \"bison@flex.gnu\", \"username\": \"moshes\", \"avatar\": \"avatar\", \"role\": \"admin\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-				
 		this.exception.expect(HttpClientErrorException.class);
-		this.exception.expectMessage("404");
 		
 		//When
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
+		this.restTemplate.postForObject(this.url, this.newUserUndefinedRole, UserTO.class);
 		
 		//Then
 		//An HttpClientErrorException is caught with status code 404
@@ -110,14 +111,14 @@ public class UsersTests {
 	
 	@Test
 	public void testVerifyNewUserAccount() throws JsonParseException, JsonMappingException, IOException {
-		//Given
-		String newUserString = "{\"email\": \"bison@yacc.gnu\", \"username\": \"moshe\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
-		UserTO expectedUserTO = new UserTO(newUserPostObject, this.PLAYGROUND);
+		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		UserTO expectedUserTO = new UserTO(this.newUser, this.playground);
 
 		//When
-		UserTO returnedAnswer = this.restTemplate.getForObject(this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, "Sheena.2019A", "bison@yacc.gnu", "bison@yacc.gnu007");
+		UserTO returnedAnswer = this.restTemplate.getForObject(
+				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.playground, this.newUser.getEmail(), 
+				this.newUser.getEmail() + this.verificationCodeSuffix);
 		
 		//Then
 		assertThat(returnedAnswer)
@@ -128,51 +129,60 @@ public class UsersTests {
 	@Test
 	public void testVerifyNewUserAccountWithWrongCode() throws JsonParseException, JsonMappingException, IOException {
 		//Given
-		String newUserString = "{\"email\": \"bison@yacc.gnu\", \"username\": \"moshe\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
+		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
 		
-		this.exception.expect(HttpServerErrorException.class);
-		this.exception.expectMessage("500");
+		String wrongCode = this.newUser.getEmail() + this.verificationCodeSuffix + "NOPE";
+		
+		this.exception.expect(HttpClientErrorException.class);
 		
 		//When
-		this.restTemplate.getForObject(this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, "Sheena.2019A", "bison@yacc.gnu", "bison@yacc.gnu007" + "Bond");
+		this.restTemplate.getForObject( 
+				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.playground, this.newUser.getEmail(), wrongCode);
 		
 		//Then
-		//An HttpServerErrorException is caught with status code 500
+		//An HttpServerErrorException is caught with status code 404
 	}
 	
 	@Test
 	public void testUserSuccessfulLogin() throws JsonParseException, JsonMappingException, IOException {
 		//Given
-		String newUserString = "{\"email\": \"bison@bison.gnu\", \"username\": \"moshes123\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
-		this.restTemplate.getForObject(this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, "Sheena.2019A", "bison@bison.gnu", "bison@bison.gnu007");
 		
-		UserTO expectedUserTO = new UserTO(newUserPostObject, this.PLAYGROUND);
+		
+		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		this.restTemplate.getForObject(
+				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.playground, this.newUser.getEmail(), 
+				this.newUser.getEmail() + this.verificationCodeSuffix);
+		
+		UserTO expectedUserTO = new UserTO(this.newUser, this.playground);
 		
 		//When
-		UserTO returnedAnswer = this.restTemplate.getForObject(this.url + "/login/{playground}/{email}", UserTO.class, "Sheena.2019A", "bison@bison.gnu");
+		UserTO returnedAnswer = this.restTemplate.getForObject(
+				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.playground, this.newUser.getEmail());
 		//Then
 		assertThat(returnedAnswer)
 		.isNotNull()
 		.usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
+		
 	}
 	
 	@Test
 	public void testUserLoginWithUnknownEmail() throws JsonParseException, JsonMappingException, IOException {
 		//Given
-		String newUserString = "{\"email\": \"bison@bison.gnu\", \"username\": \"moshes123\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
-		this.restTemplate.getForObject(this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, "Sheena.2019A", "bison@bison.gnu", "bison@bison.gnu007");
+		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		this.restTemplate.getForObject(
+				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.playground, this.newUser.getEmail(), 
+				this.newUser.getEmail() + this.verificationCodeSuffix);
 				
 		this.exception.expect(HttpClientErrorException.class);
-		this.exception.expectMessage("404");
 		
 		//When
-		this.restTemplate.getForObject(this.url + "/login/{playground}/{email}", UserTO.class, "Sheena.2019A", "bison@bison.gnu" + "linux");
+		this.restTemplate.getForObject(
+				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.playground, this.newUser.getEmail() + "NOPE");
 		
 		//Then
 		//An HttpClientErrorException is caught with status code 404
@@ -181,44 +191,42 @@ public class UsersTests {
 	@Test
 	public void testUpdateUserDetailsSuccessfully() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
 		//Given
-		String newUserString = "{\"email\": \"bison@ubuntu.gnu\", \"username\": \"moshes123\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
-		this.restTemplate.getForObject(this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, "Sheena.2019A", "bison@ubuntu.gnu", "bison@ubuntu.gnu007");
-		
-		String updatedUserDetailsString = "{\"email\": \"bison@ubuntu.gnu\", \"playground\": \"Sheena.2019A\", \"username\": \"Leon\", \"avatar\": \"lion\", \"role\": \"player\"}";
-		UserTO putObject = this.jsonMapper.readValue(updatedUserDetailsString, UserTO.class);
-		
-		String userFormString = "{\"email\": \"bison@ubuntu.gnu\", \"username\": \"Leon\", \"avatar\": \"lion\", \"role\": \"player\"}";
-		UserTO expected = new UserTO(this.jsonMapper.readValue(userFormString, NewUserForm.class), this.PLAYGROUND);
+		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		this.restTemplate.getForObject(
+				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.playground, this.newUser.getEmail(), 
+				this.newUser.getEmail() + this.verificationCodeSuffix);
 		
 		//When
-		this.restTemplate.put(this.url + "/{playground}/{email}", putObject, this.PLAYGROUND, "bison@ubuntu.gnu");
+		this.restTemplate.put(
+				this.url + "/{playground}/{email}", this.userWithUpdate, this.playground, 
+				this.userWithUpdate.getEmail());
 		
 		//Then
-		UserEntity actualEntity = usersService.getUser("bison@ubuntu.gnu");
+		UserEntity actualEntity = usersService.getUserByEmail(this.userWithUpdate.getEmail());
 		
 		assertThat(new UserTO(actualEntity))
 		.isNotNull()
-		.usingComparator(this.userTOComparator).isEqualTo(expected);
+		.usingComparator(this.userTOComparator).isEqualTo(this.userWithUpdate);
 	}
 	
 	@Test
 	public void testUpdateUserDetailsThatAreNotAllowed() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
 		//Given
-		String newUserString = "{\"email\": \"bison@suse.gnu\", \"username\": \"moshes123\", \"avatar\": \"avatar\", \"role\": \"player\"}";
-		NewUserForm newUserPostObject = this.jsonMapper.readValue(newUserString, NewUserForm.class);
-		this.restTemplate.postForObject(this.url, newUserPostObject, UserTO.class);
-		this.restTemplate.getForObject(this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, "Sheena.2019A", "bison@suse.gnu", "bison@suse.gnu007");
+		this.restTemplate.postForObject(this.url, this.newUser, UserTO.class);
+		this.restTemplate.getForObject(
+				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.playground, this.newUser.getEmail(), 
+				this.newUser.getEmail() + this.verificationCodeSuffix);
 		
-		String updatedUserDetailsString = "{\"points\": \"1250\"}";
-		UserTO putObject = this.jsonMapper.readValue(updatedUserDetailsString, UserTO.class);
+		UserTO userWithUnAllowedUpdate = new UserTO(this.userWithUpdate);
+		userWithUnAllowedUpdate.setPoints(1250L);
 				
 		this.exception.expect(HttpClientErrorException.class);
-		this.exception.expectMessage("404");
 		
 		//When
-		this.restTemplate.put(this.url + "/{playground}/{email}", putObject, this.PLAYGROUND, "bison@ubuntu.gnu");
+		this.restTemplate.put(this.url + "/{playground}/{email}", userWithUnAllowedUpdate, this.playground, 
+				userWithUnAllowedUpdate.getEmail());
 		
 		//Then
 		//An HttpClientErrorException is caught with status code 404

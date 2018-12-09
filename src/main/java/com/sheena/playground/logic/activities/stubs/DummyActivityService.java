@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.stubs;
+package com.sheena.playground.logic.activities.stubs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,11 +11,11 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-import com.sheena.playground.logic.ActivityAlreadyExistsException;
-import com.sheena.playground.logic.ActivityEntity;
-import com.sheena.playground.logic.ActivityNotFoundException;
-import com.sheena.playground.logic.ActivityService;
-import com.sheena.playground.logic.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
+import com.sheena.playground.logic.activities.ActivityEntity;
+import com.sheena.playground.logic.activities.ActivityNotFoundException;
+import com.sheena.playground.logic.activities.ActivityService;
+import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
 
 
 @Service

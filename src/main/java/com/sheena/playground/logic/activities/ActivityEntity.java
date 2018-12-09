@@ -1,4 +1,4 @@
-package com.sheena.playground.logic;
+package com.sheena.playground.logic.activities;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
