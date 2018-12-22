@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sheena.playground.aop.IsExistUser;
+import com.sheena.playground.aop.IsExistVerifiedUser;
 import com.sheena.playground.logic.elements.AttributeUpdateException;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
@@ -45,6 +47,7 @@ public class UsersRestController {
 			method=RequestMethod.GET,
 			path="/playground/users/confirm/{playground}/{email}/{code}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
+	@IsExistUser
 	public UserTO verifyUserRegistration(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email, 
@@ -56,6 +59,7 @@ public class UsersRestController {
 			method=RequestMethod.GET,
 			path="/playground/users/login/{playground}/{email}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
+	@IsExistVerifiedUser
 	public UserTO userLoginRequest(
 			@PathVariable("playground") String playground, 
 			@PathVariable("email") String email) throws UserDoesNotExistException, UnverifiedUserActionException {
@@ -67,6 +71,7 @@ public class UsersRestController {
 			path="/playground/users/{playground}/{email}",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
+	@IsExistVerifiedUser
 	public void updateUserProfile(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,
