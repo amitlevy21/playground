@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sheena.playground.aop.MyLog;
 import com.sheena.playground.dal.UserDao;
 import com.sheena.playground.dal.VerificationCodeDao;
 import com.sheena.playground.logic.elements.AttributeUpdateException;
@@ -34,6 +35,7 @@ public class JpaUserService implements UsersService{
 
 	@Override
 	@Transactional
+	@MyLog
 	public UserEntity createNewUser(UserEntity userEntity)
 			throws UserAlreadyExistsException, RoleDoesNotExistException {
 		if(!this.userDao.existsById(userEntity.getEmail())) {
@@ -62,11 +64,13 @@ public class JpaUserService implements UsersService{
 
 	@SuppressWarnings("static-access")
 	@Override
+	@MyLog
 	public String generateUserVerificationCode(UserEntity userEntity) {
 		return userEntity.getEmail() + VerificationCodeDao.SUFFIX;
 	}
 
 	@Override
+	@MyLog
 	public UserEntity verifyUserRegistration(String playground, String email, String verificationCode)
 			throws UserDoesNotExistException, VerificationCodeMismatchException, CodeDoesNotExistException, UserAlreadyVerifiedException {
 		UserEntity user = getUserByEmail(email);
@@ -94,6 +98,7 @@ public class JpaUserService implements UsersService{
 	}
 
 	@Override
+	@MyLog
 	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException, UnverifiedUserActionException {
 		UserEntity user = getUserByEmail(userEntity.getEmail());
 		
@@ -109,6 +114,7 @@ public class JpaUserService implements UsersService{
 	}
 
 	@Override
+	@MyLog
 	public void updateUserDetails(String playground, String email, UserEntity entityUpdates)
 			throws UserDoesNotExistException, AttributeUpdateException, RoleDoesNotExistException, UnverifiedUserActionException {
 		UserEntity user = getUserByEmail(email);
