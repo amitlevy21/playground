@@ -47,7 +47,7 @@ public class JpaUserService implements UsersService{
 						verificationCode, 
 						userEntity.getEmail()));
 				
-				//Set PK for this tuple to be persisted
+				//Set PK for this user to be persisted
 				userEntity.setCombinedId(userEntity.getEmail() + userEntity.getPlayground());
 				return this.userDao.save(userEntity);
 			}
@@ -102,13 +102,6 @@ public class JpaUserService implements UsersService{
 	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException, UnverifiedUserActionException {
 		UserEntity user = getUserByEmail(userEntity.getEmail());
 		
-//		if(!isUserVerified(user)) {
-//			throw new UnverifiedUserActionException(
-//					"User with email: " + user.getEmail() 
-//					+ " cannot perform this action since the account is "
-//					+ "not verified");
-//		}
-		
 		user.setLastLogin(new Date());
 		return this.userDao.save(user);
 	}
@@ -118,13 +111,6 @@ public class JpaUserService implements UsersService{
 	public void updateUserDetails(String playground, String email, UserEntity entityUpdates)
 			throws UserDoesNotExistException, AttributeUpdateException, RoleDoesNotExistException, UnverifiedUserActionException {
 		UserEntity user = getUserByEmail(email);
-		
-//		if(!isUserVerified(user)) {
-//			throw new UnverifiedUserActionException(
-//					"User with email: " + user.getEmail() 
-//					+ " cannot perform this action since the account is "
-//					+ "not verified");
-//		}
 		
 		if(!entityUpdates.getEmail().equals(email)) {
 			throw new AttributeUpdateException("Attribute: email cannot be updated");
