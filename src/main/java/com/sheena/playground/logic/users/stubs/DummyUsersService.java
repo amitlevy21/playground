@@ -9,14 +9,14 @@ import javax.annotation.PostConstruct;
 //import org.springframework.stereotype.Service;
 
 import com.sheena.playground.logic.elements.AttributeUpdateException;
-import com.sheena.playground.logic.users.CodeDoesNotExistException;
-import com.sheena.playground.logic.users.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.Roles;
-import com.sheena.playground.logic.users.UserAlreadyExistsException;
-import com.sheena.playground.logic.users.UserDoesNotExistException;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
-import com.sheena.playground.logic.users.VerificationCodeMismatchException;
+import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 
 //@Service
 public class DummyUsersService implements UsersService {

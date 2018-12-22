@@ -28,14 +28,23 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.NewUserForm;
 import com.sheena.playground.api.UserTO;
-import com.sheena.playground.logic.users.UserDoesNotExistException;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
+import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyVerifiedException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 public class UsersTests {
 	
+	private static final String PREFIX_URL = "/{playground}/{email}";
+	private static final String LOGIN_URL = "/login/{playground}/{email}";
+	private static final String CONFIRM_URL = "/confirm/{playground}/{email}/{code}";
+
 	private final int numCases = 9;
 
 	@LocalServerPort
@@ -66,7 +75,7 @@ public class UsersTests {
 		this.restTemplate = new RestTemplate();
 		this.userTOComparator = new UserTOComparator();
 		this.url = "http://localhost:" + port + "/playground/users";		
-		this.jsonMapper = new ObjectMapper(); // Jackson init
+		this.jsonMapper = new ObjectMapper();
 		System.err.println(this.url);
 	}
 	
@@ -112,14 +121,14 @@ public class UsersTests {
 	}
 	
 	@Test
-	public void testVerifyNewUserAccount() throws JsonParseException, JsonMappingException, IOException {
+	public void testVerifyNewUserAccount() throws JsonParseException, JsonMappingException, IOException, UserAlreadyExistsException, RoleDoesNotExistException {
 		NewUserForm newUser = this.newUserForms.get(2);
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
-		UserTO expectedUserTO = new UserTO(newUser, this.playground);
+		UserTO expectedUserTO = new UserTO(this.usersService.createNewUser(
+				new UserTO(newUser, playground).toEntity()));
 
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
-				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.url + CONFIRM_URL, UserTO.class, 
 				this.playground, newUser.getEmail(), 
 				newUser.getEmail() + this.verificationCodeSuffix);
 		
@@ -130,10 +139,10 @@ public class UsersTests {
 	}
 	
 	@Test
-	public void testVerifyNewUserAccountWithWrongCode() throws JsonParseException, JsonMappingException, IOException {
+	public void testVerifyNewUserAccountWithWrongCode() throws JsonParseException, JsonMappingException, IOException, UserAlreadyExistsException, RoleDoesNotExistException {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(3);
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
+		this.usersService.createNewUser(new UserTO(newUser, playground).toEntity());
 		
 		String wrongCode = newUser.getEmail() + this.verificationCodeSuffix + "NOPE";
 		
@@ -141,7 +150,7 @@ public class UsersTests {
 		
 		//When
 		this.restTemplate.getForObject( 
-				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
+				this.url + CONFIRM_URL, UserTO.class, 
 				this.playground, newUser.getEmail(), wrongCode);
 		
 		//Then
@@ -149,21 +158,19 @@ public class UsersTests {
 	}
 	
 	@Test
-	public void testUserSuccessfulLogin() throws JsonParseException, JsonMappingException, IOException {
+	public void testUserSuccessfulLogin() throws JsonParseException, JsonMappingException, IOException, UserAlreadyExistsException, RoleDoesNotExistException, UserDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(4);
-		
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
-		this.restTemplate.getForObject(
-				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, newUser.getEmail(), 
-				newUser.getEmail() + this.verificationCodeSuffix);
-		
-		UserTO expectedUserTO = new UserTO(newUser, this.playground);
+		UserEntity newUserEntity = this.usersService.createNewUser(
+				new UserTO(newUser, playground).toEntity());
+		this.usersService.verifyUserRegistration(
+				playground, newUserEntity.getEmail(), 
+				newUserEntity.getEmail() + this.verificationCodeSuffix);
+		UserTO expectedUserTO = new UserTO(newUserEntity);
 		
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
-				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.url + LOGIN_URL, UserTO.class, 
 				this.playground, newUser.getEmail());
 		//Then
 		assertThat(returnedAnswer)
@@ -173,20 +180,20 @@ public class UsersTests {
 	}
 	
 	@Test
-	public void testUserLoginWithUnknownEmail() throws JsonParseException, JsonMappingException, IOException {
+	public void testUserLoginWithUnknownEmail() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException, UserAlreadyExistsException, RoleDoesNotExistException {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(5);
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
-		this.restTemplate.getForObject(
-				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, newUser.getEmail(), 
-				newUser.getEmail() + this.verificationCodeSuffix);
+		UserEntity newUserEntity = this.usersService.createNewUser(
+				new UserTO(newUser, playground).toEntity());
+		this.usersService.verifyUserRegistration(
+				playground, newUserEntity.getEmail(), 
+				newUserEntity.getEmail() + this.verificationCodeSuffix);
 				
 		this.exception.expect(HttpClientErrorException.class);
 		
 		//When
 		this.restTemplate.getForObject(
-				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.url + LOGIN_URL, UserTO.class, 
 				this.playground, newUser.getEmail() + "NOPE");
 		
 		//Then
@@ -194,30 +201,30 @@ public class UsersTests {
 	}
 	
 	@Test
-	public void testUnverifiedUserLogin() {
+	public void testUnverifiedUserLogin() throws UserAlreadyExistsException, RoleDoesNotExistException, UserDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException {
 		//Given there is a sign up request
 		NewUserForm newUser = this.newUserForms.get(6);
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
+		this.usersService.createNewUser(new UserTO(newUser, playground).toEntity());
 		
 		this.exception.expect(HttpClientErrorException.class);
 		
 		//When the unverified user tries to login
 		this.restTemplate.getForObject(
-				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.url + LOGIN_URL, UserTO.class, 
 				this.playground, newUser.getEmail());
 		//Then
 		//An HttpClientErrorException is caught with status code 404
 	}
 	
 	@Test
-	public void testUpdateUserDetailsSuccessfully() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
+	public void testUpdateUserDetailsSuccessfully() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException, UserAlreadyExistsException, RoleDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(7);
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
-		this.restTemplate.getForObject(
-				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, newUser.getEmail(), 
-				newUser.getEmail() + this.verificationCodeSuffix);
+		UserEntity newUserEntity = this.usersService.createNewUser(
+				new UserTO(newUser, playground).toEntity());
+		this.usersService.verifyUserRegistration(
+				playground, newUserEntity.getEmail(), 
+				newUserEntity.getEmail() + this.verificationCodeSuffix);
 		
 		UserTO userWithUpdate = new UserTO(newUser, this.playground);
 		userWithUpdate.setUsername("leon");
@@ -226,7 +233,7 @@ public class UsersTests {
 		
 		//When
 		this.restTemplate.put(
-				this.url + "/{playground}/{email}", userWithUpdate, this.playground, 
+				this.url + PREFIX_URL, userWithUpdate, this.playground, 
 				userWithUpdate.getEmail());
 		
 		//Then
@@ -238,14 +245,14 @@ public class UsersTests {
 	}
 	
 	@Test
-	public void testUpdateUserDetailsThatAreNotAllowed() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
+	public void testUpdateUserDetailsThatAreNotAllowed() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException, UserAlreadyExistsException, RoleDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(8);
-		this.restTemplate.postForObject(this.url, newUser, UserTO.class);
-		this.restTemplate.getForObject(
-				this.url + "/confirm/{playground}/{email}/{code}", UserTO.class, 
-				this.playground, newUser.getEmail(), 
-				newUser.getEmail() + this.verificationCodeSuffix);
+		UserEntity newUserEntity = this.usersService.createNewUser(
+				new UserTO(newUser, playground).toEntity());
+		this.usersService.verifyUserRegistration(
+				playground, newUserEntity.getEmail(), 
+				newUserEntity.getEmail() + this.verificationCodeSuffix);
 		
 		UserTO userWithUnAllowedUpdate = new UserTO(newUser, this.playground);
 		userWithUnAllowedUpdate.setPoints(1250L);
@@ -253,7 +260,7 @@ public class UsersTests {
 		this.exception.expect(HttpClientErrorException.class);
 		
 		//When
-		this.restTemplate.put(this.url + "/{playground}/{email}", userWithUnAllowedUpdate, this.playground, 
+		this.restTemplate.put(this.url + PREFIX_URL, userWithUnAllowedUpdate, this.playground, 
 				userWithUnAllowedUpdate.getEmail());
 		
 		//Then
