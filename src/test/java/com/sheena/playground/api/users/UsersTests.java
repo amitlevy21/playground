@@ -75,7 +75,9 @@ public class UsersTests {
 		this.restTemplate = new RestTemplate();
 		this.userTOComparator = new UserTOComparator();
 		this.url = "http://localhost:" + port + "/playground/users";		
+
 		this.jsonMapper = new ObjectMapper();
+
 		System.err.println(this.url);
 	}
 	
@@ -129,6 +131,7 @@ public class UsersTests {
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
 				this.url + CONFIRM_URL, UserTO.class, 
+
 				this.playground, newUser.getEmail(), 
 				newUser.getEmail() + this.verificationCodeSuffix);
 		
@@ -196,6 +199,12 @@ public class UsersTests {
 				this.url + LOGIN_URL, UserTO.class, 
 				this.playground, newUser.getEmail() + "NOPE");
 		
+		this.exception.expect(HttpClientErrorException.class);
+		
+		//When the unverified user tries to login
+		this.restTemplate.getForObject(
+				this.url + "/login/{playground}/{email}", UserTO.class, 
+				this.playground, newUser.getEmail());
 		//Then
 		//An HttpClientErrorException is caught with status code 404
 	}
