@@ -65,6 +65,7 @@ public class UserAspect {
 			UserEntity userEntity = this.usersService.getUserByEmail(emailArg);
 
 			log.info("check if user with email=" + emailArg + " is verified");
+			log.debug("user=" + userEntity.toString());
 
 			if (!userEntity.isVerifiedUser()) {
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
@@ -93,6 +94,7 @@ public class UserAspect {
 			UserEntity userEntity = this.usersService.getUserByEmail(emailArg);
 
 			log.info("check if user with email=" + emailArg + " is verified");
+			log.debug("user=" + userEntity.toString());
 
 			if (!userEntity.isVerifiedUser()) {
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
@@ -126,6 +128,7 @@ public class UserAspect {
 			UserEntity userEntity = this.usersService.getUserByEmail(emailArg);
 
 			log.info("check if user with email=" + emailArg + " is verified");
+			log.debug("user=" + userEntity.toString());
 
 			if (!userEntity.isVerifiedUser()) {
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
