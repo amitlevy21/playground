@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.users;
+package com.sheena.playground.logic.users.exceptions;
 
 public class VerificationCodeMismatchException extends Exception {
 
