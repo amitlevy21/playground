@@ -116,7 +116,7 @@ public class ActivityRestControllerTests {
 		// Then
 		assertThat(actualActivity.getType()).isEqualTo(allowedType);
 
-		ActivityEntity expectedOutcome = this.dummy1.toActivityEntity();
+		ActivityEntity expectedOutcome = actualActivity.toActivityEntity();
 
 		ActivityEntity actual = this.activityService.getActivityByType(allowedType);
 		actual.setId(expectedOutcome.getId());
@@ -131,7 +131,7 @@ public class ActivityRestControllerTests {
 		this.activityService.addNewActivity(this.dummy1.toActivityEntity());
 		
 		// When
-		this.restTemplate.patchForObject(
+		this.restTemplate.postForObject(
 				this.url,
 				this.dummy2,
 				ActivityTO.class,
