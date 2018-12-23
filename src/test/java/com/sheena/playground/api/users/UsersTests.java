@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.NewUserForm;
 import com.sheena.playground.api.UserTO;
-import com.sheena.playground.logic.users.UserDoesNotExistException;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)

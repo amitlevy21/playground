@@ -3,6 +3,7 @@ package com.sheena.playground.logic.users.jpa;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,27 +11,41 @@ import com.sheena.playground.aop.MyLog;
 import com.sheena.playground.dal.UserDao;
 import com.sheena.playground.dal.VerificationCodeDao;
 import com.sheena.playground.logic.elements.AttributeUpdateException;
-import com.sheena.playground.logic.users.CodeDoesNotExistException;
-import com.sheena.playground.logic.users.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.Mail;
+import com.sheena.playground.logic.users.MailService;
 import com.sheena.playground.logic.users.Roles;
-import com.sheena.playground.logic.users.UnverifiedUserActionException;
-import com.sheena.playground.logic.users.UserAlreadyExistsException;
-import com.sheena.playground.logic.users.UserAlreadyVerifiedException;
-import com.sheena.playground.logic.users.UserDoesNotExistException;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.VerificationCodeEntity;
-import com.sheena.playground.logic.users.VerificationCodeMismatchException;
+import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.UnverifiedUserActionException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyVerifiedException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 
 @Service
 public class JpaUserService implements UsersService{
+	//Dependency injections
 	private UserDao userDao;
 	private VerificationCodeDao VerificationCodeDao;
+	private MailService mailService;
 	
+	@Value("${user.verification.host}")
+	private String verificationUrlHost;
+	
+	//Constants
+	private final String VERIFICATION_URL = "/playground/users/confirm/%s/%s/%s";
+
 	@Autowired
-	public JpaUserService(UserDao userDao, VerificationCodeDao verificationCodeDao) {
+	public JpaUserService(
+			UserDao userDao, 
+			VerificationCodeDao verificationCodeDao, 
+			MailService mailService) {
 		this.userDao = userDao;
 		this.VerificationCodeDao = verificationCodeDao;
+		this.mailService = mailService;
 	}
 
 	@Override
@@ -46,6 +61,19 @@ public class JpaUserService implements UsersService{
 				this.VerificationCodeDao.save(new VerificationCodeEntity(
 						verificationCode, 
 						userEntity.getEmail()));
+				
+				//Send an email to the guest with verification link
+				Mail verificationEmail = new Mail();
+				verificationEmail.setSubject(MailService.VERIFICATION_SUBJECT);
+				verificationEmail.setContent(String.format(
+						verificationUrlHost + VERIFICATION_URL, 
+						userEntity.getPlayground(), 
+						userEntity.getEmail(), 
+						verificationCode));
+				verificationEmail.setTo(userEntity.getEmail());
+				
+				mailService.sendMessage(verificationEmail);
+				
 				
 				//Set PK for this user to be persisted
 				userEntity.setCombinedId(userEntity.getEmail() + userEntity.getPlayground());

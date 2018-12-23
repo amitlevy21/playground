@@ -1,6 +1,6 @@
 package com.sheena.playground.logic.elements;
 
-import com.sheena.playground.logic.users.UsersException;
+import com.sheena.playground.logic.users.exceptions.UsersException;
 
 public class AttributeUpdateException extends UsersException {
 
