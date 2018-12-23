@@ -9,17 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sheena.playground.dal.UserDao;
 import com.sheena.playground.dal.VerificationCodeDao;
 import com.sheena.playground.logic.elements.AttributeUpdateException;
-import com.sheena.playground.logic.users.CodeDoesNotExistException;
-import com.sheena.playground.logic.users.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.Roles;
-import com.sheena.playground.logic.users.UnverifiedUserActionException;
-import com.sheena.playground.logic.users.UserAlreadyExistsException;
-import com.sheena.playground.logic.users.UserAlreadyVerifiedException;
-import com.sheena.playground.logic.users.UserDoesNotExistException;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.VerificationCodeEntity;
-import com.sheena.playground.logic.users.VerificationCodeMismatchException;
+import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.UnverifiedUserActionException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.exceptions.UserAlreadyVerifiedException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
+import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 
 @Service
 public class JpaUserService implements UsersService{
