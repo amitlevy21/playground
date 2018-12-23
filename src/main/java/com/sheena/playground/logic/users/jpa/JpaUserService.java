@@ -73,8 +73,7 @@ public class JpaUserService implements UsersService{
 				verificationEmail.setTo(userEntity.getEmail());
 				
 				mailService.sendMessage(verificationEmail);
-				
-				
+        
 				//Set PK for this user to be persisted
 				userEntity.setCombinedId(userEntity.getEmail() + userEntity.getPlayground());
 				return this.userDao.save(userEntity);
