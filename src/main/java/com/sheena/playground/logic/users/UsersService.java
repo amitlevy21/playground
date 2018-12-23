@@ -1,6 +1,6 @@
 package com.sheena.playground.logic.users;
 
-import com.sheena.playground.logic.elements.AttributeUpdateException;
+import com.sheena.playground.logic.elements.exceptions.AttributeUpdateException;
 import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UnverifiedUserActionException;

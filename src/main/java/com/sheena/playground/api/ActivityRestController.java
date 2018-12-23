@@ -32,11 +32,7 @@ public class ActivityRestController {
         @PathVariable("userPlayground") String userPlayground,
         @PathVariable("email") String email,
         @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityAlreadyExistsException, ActivityTypeNotAllowedException {
-    	  	
-    	//TODO: Once there is logic layer - an update to the DB will be required
-    	
-    	// TODO: add checks for the path variables equals to the json fields
-    	
+    	  	    	
     	return new ActivityTO(
     				this.activityService.addNewActivity(
     						newActivityTO.toActivityEntity()));
