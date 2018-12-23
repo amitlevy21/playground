@@ -11,10 +11,8 @@ import com.sheena.playground.aop.MyLog;
 import com.sheena.playground.dal.UserDao;
 import com.sheena.playground.dal.VerificationCodeDao;
 import com.sheena.playground.logic.elements.AttributeUpdateException;
-
 import com.sheena.playground.logic.users.Mail;
 import com.sheena.playground.logic.users.MailService;
-
 import com.sheena.playground.logic.users.Roles;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
