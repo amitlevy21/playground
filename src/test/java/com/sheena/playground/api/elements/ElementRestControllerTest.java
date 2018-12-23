@@ -27,7 +27,7 @@ import com.sheena.playground.api.ElementTO;
 import com.sheena.playground.api.Location;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.logic.elements.InvalidExpirationDateException;
+import com.sheena.playground.logic.elements.exceptions.InvalidExpirationDateException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
