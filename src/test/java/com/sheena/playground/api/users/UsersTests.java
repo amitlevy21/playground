@@ -114,6 +114,7 @@ public class UsersTests {
 		newUserWithUndefinedRole.setRole("admin");
 		
 		this.exception.expect(HttpClientErrorException.class);
+		this.exception.expectMessage("404");
 		
 		//When
 		this.restTemplate.postForObject(this.url, newUserWithUndefinedRole, UserTO.class);
@@ -150,6 +151,7 @@ public class UsersTests {
 		String wrongCode = newUser.getEmail() + this.verificationCodeSuffix + "NOPE";
 		
 		this.exception.expect(HttpClientErrorException.class);
+		this.exception.expectMessage("404");
 		
 		//When
 		this.restTemplate.getForObject( 
@@ -191,20 +193,15 @@ public class UsersTests {
 		this.usersService.verifyUserRegistration(
 				playground, newUserEntity.getEmail(), 
 				newUserEntity.getEmail() + this.verificationCodeSuffix);
-				
-		this.exception.expect(HttpClientErrorException.class);
-		
-		//When
-		this.restTemplate.getForObject(
-				this.url + LOGIN_URL, UserTO.class, 
-				this.playground, newUser.getEmail() + "NOPE");
 		
 		this.exception.expect(HttpClientErrorException.class);
+		this.exception.expectMessage("404");
 		
 		//When the unverified user tries to login
 		this.restTemplate.getForObject(
-				this.url + "/login/{playground}/{email}", UserTO.class, 
-				this.playground, newUser.getEmail());
+				this.url + LOGIN_URL, UserTO.class, 
+				this.playground, newUser.getEmail() + "NOPE");
+	
 		//Then
 		//An HttpClientErrorException is caught with status code 404
 	}
@@ -216,6 +213,7 @@ public class UsersTests {
 		this.usersService.createNewUser(new UserTO(newUser, playground).toEntity());
 		
 		this.exception.expect(HttpClientErrorException.class);
+		this.exception.expectMessage("404");
 		
 		//When the unverified user tries to login
 		this.restTemplate.getForObject(
@@ -267,6 +265,7 @@ public class UsersTests {
 		userWithUnAllowedUpdate.setPoints(1250L);
 				
 		this.exception.expect(HttpClientErrorException.class);
+		this.exception.expectMessage("404");
 		
 		//When
 		this.restTemplate.put(this.url + PREFIX_URL, userWithUnAllowedUpdate, this.playground, 
