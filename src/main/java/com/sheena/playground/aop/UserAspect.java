@@ -29,6 +29,17 @@ public class UserAspect {
 		this.usersService = usersService;
 	}
 
+	/**
+	 * Checks if the email parameter provided to the annotated method is one that
+	 * belongs to a guest that requested to register.
+	 * <p>
+	 * NOTE: The guest's verification status is not cared for
+	 *
+	 * @param joinPoint a point in around the execution of the wrapped method
+	 * @return Object continue to execute the method wrapped by the aspect
+	 * @throws Throwable
+	 * @author moshesheena
+	 */
 	@Around("@annotation(com.sheena.playground.aop.IsExistUser)")
 	public Object isExistUser(ProceedingJoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -49,6 +60,15 @@ public class UserAspect {
 		}
 	}
 
+	/**
+	 * Checks if the email parameter provided to the annotated method is one that
+	 * belongs to a registered user that verified it's registration
+	 * 
+	 * @param joinPoint a point in around the execution of the wrapped method
+	 * @return Object continue to execute the method wrapped by the aspect
+	 * @throws Throwable
+	 * @author moshesheena
+	 */
 	@Around("@annotation(com.sheena.playground.aop.IsExistVerifiedUser)")
 	public Object isExistVerifiedUser(ProceedingJoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -78,6 +98,15 @@ public class UserAspect {
 		}
 	}
 
+	/**
+	 * Checks if the email parameter provided to the annotated method is one that
+	 * belongs to a registered user whos'e role is of a player
+	 * 
+	 * @param joinPoint a point in around the execution of the wrapped method
+	 * @return Object continue to execute the method wrapped by the aspect
+	 * @throws Throwable
+	 * @author moshesheena
+	 */
 	@Around("@annotation(com.sheena.playground.aop.IsUserPlayer)")
 	public Object isUserPlayer(ProceedingJoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -112,6 +141,15 @@ public class UserAspect {
 		}
 	}
 
+	/**
+	 * Checks if the email parameter provided to the annotated method is one that
+	 * belongs to a registered user whos'e role is of a manager
+	 * 
+	 * @param joinPoint a point in around the execution of the wrapped method
+	 * @return Object continue to execute the method wrapped by the aspect
+	 * @throws Throwable
+	 * @author moshesheena
+	 */
 	@Around("@annotation(com.sheena.playground.aop.IsUserManager)")
 	public Object isUserManager(ProceedingJoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -152,6 +190,7 @@ public class UserAspect {
 	 * @param string a String of some sort
 	 * @return Boolean true for strings that match an email pattern, false otherwise
 	 * @see https://howtodoinjava.com/regex/java-regex-validate-email-address/
+	 * @author moshesheena
 	 */
 	private boolean isStringEmail(String string) {
 		String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
