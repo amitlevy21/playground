@@ -69,7 +69,7 @@ public class UserAspect {
 	 * @throws Throwable
 	 * @author moshesheena
 	 */
-	@Around("@annotation(com.sheena.playground.aop.IsExistVerifiedUser)")
+	@Around("@annotation(com.sheena.playground.aop.IsUserVerified)")
 	public Object isExistVerifiedUser(ProceedingJoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
