@@ -52,7 +52,6 @@ public class UserEntity {
 		this.combinedId = combinedId;
 	}
 
-	//	@Id
 	public String getEmail() {
 		return email;
 	}
