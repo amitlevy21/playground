@@ -118,7 +118,7 @@ public class UserTO {
 		ue.setPoints(this.points);
 		ue.setRole(this.role);
 		ue.setUsername(this.username);
-		ue.setCombinedId(this.email + this.playground);
+		ue.setId(this.email + this.playground);
 		
 		return ue;
 	}

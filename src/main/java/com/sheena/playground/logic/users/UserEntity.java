@@ -2,20 +2,16 @@ package com.sheena.playground.logic.users;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-@Entity
-@Table(name = "USERS")
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "users")
 public class UserEntity {
-	
-	@Id
-	//Currently email + playground concatenated String
-	private String combinedId;
-	
+
+	// Currently email + playground concatenated String
+	private String id;
+
 	private String email;
 	private String playground;
 	private String username;
@@ -24,7 +20,7 @@ public class UserEntity {
 	private Long points;
 	private boolean verifiedUser;
 	private Date lastLogin;
-	
+
 	public UserEntity() {
 		super();
 		this.points = 0L;
@@ -44,12 +40,13 @@ public class UserEntity {
 		this.setLastLogin(null);
 	}
 
-	public String getCombinedId() {
-		return combinedId;
+	@Id
+	public String getId() {
+		return id;
 	}
 
-	public void setCombinedId(String combinedId) {
-		this.combinedId = combinedId;
+	public void setId(String combinedId) {
+		this.id = combinedId;
 	}
 
 	public String getEmail() {
@@ -107,8 +104,7 @@ public class UserEntity {
 	public void setVerifiedUser(boolean verifiedUser) {
 		this.verifiedUser = verifiedUser;
 	}
-	
-	@Temporal(TemporalType.TIMESTAMP)
+
 	public Date getLastLogin() {
 		return lastLogin;
 	}

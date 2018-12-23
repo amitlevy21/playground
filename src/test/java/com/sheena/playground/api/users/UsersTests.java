@@ -36,7 +36,6 @@ import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyVerifiedException;
-import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 
 
