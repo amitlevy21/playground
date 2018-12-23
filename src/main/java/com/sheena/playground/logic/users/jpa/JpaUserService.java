@@ -2,6 +2,7 @@ package com.sheena.playground.logic.users.jpa;
 
 import java.util.Date;
 
+import org.hibernate.engine.jdbc.connections.internal.UserSuppliedConnectionProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public class JpaUserService implements UsersService{
 	@MyLog
 	public UserEntity createNewUser(UserEntity userEntity)
 			throws UserAlreadyExistsException, RoleDoesNotExistException {
-		if(!this.userDao.existsById(userEntity.getEmail())) {
+		if(!this.userDao.existsById(userEntity.getId())) {
 			if(isRoleExists(userEntity.getRole())) {
 				
 				//Generating a verification code and persisting it
@@ -75,7 +76,7 @@ public class JpaUserService implements UsersService{
 				mailService.sendMessage(verificationEmail);
         
 				//Set PK for this user to be persisted
-				userEntity.setCombinedId(userEntity.getEmail() + userEntity.getPlayground());
+				userEntity.setId(userEntity.getEmail() + userEntity.getPlayground());
 				return this.userDao.save(userEntity);
 			}
 			else {
@@ -159,6 +160,8 @@ public class JpaUserService implements UsersService{
 	
 	@Override
 	public void cleanup() {
+		userDao.deleteAll();
+		VerificationCodeDao.deleteAll();
 	}
 	
 	@Override

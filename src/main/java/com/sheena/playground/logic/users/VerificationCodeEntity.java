@@ -1,13 +1,15 @@
 package com.sheena.playground.logic.users;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 
-@Entity
-public class VerificationCodeEntity {
+import org.springframework.data.mongodb.core.mapping.Document;
 
-	private String code;
+@Document(collection="codes")
+public class VerificationCodeEntity {
+	
+	//this is the verification code
+	private String id;
 	
 	@Email
 	private String userEmail;
@@ -17,19 +19,17 @@ public class VerificationCodeEntity {
 
 	public VerificationCodeEntity(String code, @Email String userEmail) {
 		super();
-		this.code = code;
+		this.id = code;
 		this.userEmail = userEmail;
 	}
 
-
-
 	@Id
-	public String getCode() {
-		return code;
+	public String getId() {
+		return id;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setId(String code) {
+		this.id = code;
 	}
 
 	public String getUserEmail() {
@@ -39,5 +39,4 @@ public class VerificationCodeEntity {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-
 }
