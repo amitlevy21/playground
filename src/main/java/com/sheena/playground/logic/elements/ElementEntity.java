@@ -1,6 +1,7 @@
 package com.sheena.playground.logic.elements;
 
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +28,8 @@ public class ElementEntity {
     private Double x;
     private Double y;
     private String name;
-    private Date creationDate;
-    private Date expirationDate;
+    private Calendar creationDate;
+    private Calendar expirationDate;
     private String type;
     private Map<String, Object> attributes;
     private String creatorPlayground;
@@ -37,7 +38,8 @@ public class ElementEntity {
     public ElementEntity() {
         this.x = 0.0;
         this.y = 0.0;
-        this.creationDate = new Date();
+        this.creationDate = GregorianCalendar.getInstance();
+        this.creationDate.set(1970, 1, 1);
         this.attributes = new HashMap<>();
     }
 
@@ -88,19 +90,19 @@ public class ElementEntity {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    public Date getCreationDate() {
+    public Calendar getCreationDate() {
         return this.creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(Calendar creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getExpirationDate() {
+    public Calendar getExpirationDate() {
         return this.expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) throws InvalidExpirationDateException {
+    public void setExpirationDate(Calendar expirationDate) throws InvalidExpirationDateException {
         if (this.creationDate.after(expirationDate))
             throw new InvalidExpirationDateException();
         this.expirationDate = expirationDate;
@@ -165,8 +167,11 @@ public class ElementEntity {
         }
         ElementEntity elementEntity = (ElementEntity) o;
         return playground.equals(elementEntity.playground) && x.equals(elementEntity.x) && y.equals(elementEntity.y)
-                && name.equals(elementEntity.name) && creationDate.equals(elementEntity.creationDate)
-                && expirationDate.equals(elementEntity.expirationDate) && type.equals(elementEntity.type)
+                && name.equals(elementEntity.name) && creationDate.getTimeZone().equals(elementEntity.creationDate.getTimeZone())
+                && creationDate.get(Calendar.YEAR) == elementEntity.creationDate.get(Calendar.YEAR)
+				&& creationDate.get(Calendar.MONTH) == elementEntity.creationDate.get(Calendar.MONTH)
+				&& creationDate.get(Calendar.DAY_OF_MONTH) == elementEntity.creationDate.get(Calendar.DAY_OF_MONTH)
+                && type.equals(elementEntity.type)
                 && attributes.equals(elementEntity.attributes)
                 && creatorPlayground.equals(elementEntity.creatorPlayground)
                 && creatorEmail.equals(elementEntity.creatorEmail);

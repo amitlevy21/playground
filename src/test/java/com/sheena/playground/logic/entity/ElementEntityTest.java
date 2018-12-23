@@ -2,7 +2,8 @@ package com.sheena.playground.logic.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,12 +30,16 @@ public class ElementEntityTest {
     public void setup() {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
+        Calendar creationDate = GregorianCalendar.getInstance();
+        Calendar expirationDate = GregorianCalendar.getInstance();
+        creationDate.set(18, 11, 20);
+        expirationDate.set(19, 11, 19);
         this.et = new ElementTO(
             "sheena",
             new Location(13.0, 24.9),
             "Pen",
-            new Date("20/11/18"),
-            new Date("19/11/19"),
+            creationDate,
+            expirationDate,
             "tool",
             att,
             "sheena",
@@ -44,7 +49,9 @@ public class ElementEntityTest {
     @Test
     public void addNewElementWhenElementCreationDateOlderThanExpirationDateShouldThrowException() throws InvalidExpirationDateException{
         this.thrown.expect(InvalidExpirationDateException.class);
-        this.et.toEntity().setExpirationDate(new Date("12/1/11"));
+        Calendar invalid = GregorianCalendar.getInstance();
+        invalid.set(11, 1, 12);
+        this.et.toEntity().setExpirationDate(invalid);
 
     }
 
@@ -52,12 +59,16 @@ public class ElementEntityTest {
     public void compareElementEntityShouldEqual() throws InvalidExpirationDateException {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
+        Calendar creationDate = GregorianCalendar.getInstance();
+        Calendar expirationDate = GregorianCalendar.getInstance();
+        creationDate.set(18, 11, 20);
+        expirationDate.set(19, 11, 19);
         ElementTO et2 = new ElementTO(
             "sheena",
             new Location(13.0, 24.9),
             "Pen",
-            new Date("20/11/18"),
-            new Date("19/11/19"),
+            creationDate,
+            expirationDate,
             "tool",
             att,
             "sheena",
@@ -70,12 +81,16 @@ public class ElementEntityTest {
     public void compareElementEntityShouldNotEqual() throws InvalidExpirationDateException {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
+        Calendar creationDate = GregorianCalendar.getInstance();
+        Calendar expirationDate = GregorianCalendar.getInstance();
+        creationDate.set(18, 11, 20);
+        expirationDate.set(19, 11, 19);
         ElementTO et2 = new ElementTO(
             "sheena",
             new Location(12.0, 24.9),
             "Pen",
-            new Date("20/11/18"),
-            new Date("19/11/19"),
+            creationDate,
+            expirationDate,
             "tool",
             att,
             "sheena",

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.stereotype.Service;
+//import org.springframework.stereotype.Service;
 
 import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activities.ActivityEntity;
