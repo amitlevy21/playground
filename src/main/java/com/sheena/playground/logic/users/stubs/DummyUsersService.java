@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 
 //import org.springframework.stereotype.Service;
 
-import com.sheena.playground.logic.elements.AttributeUpdateException;
+import com.sheena.playground.logic.elements.exceptions.AttributeUpdateException;
 import com.sheena.playground.logic.users.Roles;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;

@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sheena.playground.logic.elements.exceptions.InvalidExpirationDateException;
 
 /**
  * ElementEntity

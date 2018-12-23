@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.sheena.playground.logic.elements.ElementEntity;
-import com.sheena.playground.logic.elements.InvalidExpirationDateException;
+import com.sheena.playground.logic.elements.exceptions.InvalidExpirationDateException;
 
 public class ElementTO {
 	

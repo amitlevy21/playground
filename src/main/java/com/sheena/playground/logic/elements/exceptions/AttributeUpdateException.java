@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.elements;
+package com.sheena.playground.logic.elements.exceptions;
 
 import com.sheena.playground.logic.users.exceptions.UsersException;
 

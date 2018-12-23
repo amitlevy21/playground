@@ -3,6 +3,9 @@ package com.sheena.playground.logic.elements;
 
 import java.util.List;
 
+import com.sheena.playground.logic.elements.exceptions.ElementAlreadyExistsException;
+import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
+
 /**
  * ElementService
  */

@@ -2,10 +2,10 @@ package com.sheena.playground.api;
 
 import java.util.stream.Collectors;
 
-import com.sheena.playground.logic.elements.ElementAlreadyExistsException;
-import com.sheena.playground.logic.elements.ElementNotExistException;
+import com.sheena.playground.logic.elements.exceptions.ElementAlreadyExistsException;
+import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.logic.elements.InvalidExpirationDateException;
+import com.sheena.playground.logic.elements.exceptions.InvalidExpirationDateException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

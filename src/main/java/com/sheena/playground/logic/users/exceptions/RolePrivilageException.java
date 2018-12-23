@@ -2,6 +2,8 @@ package com.sheena.playground.logic.users.exceptions;
 
 public class RolePrivilageException extends UsersException {
 
+	private static final long serialVersionUID = -4366909143655160081L;
+
 	public RolePrivilageException() {
 	}
 

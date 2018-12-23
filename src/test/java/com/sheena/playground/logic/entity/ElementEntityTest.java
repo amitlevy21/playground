@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.sheena.playground.api.ElementTO;
 import com.sheena.playground.api.Location;
-import com.sheena.playground.logic.elements.InvalidExpirationDateException;
+import com.sheena.playground.logic.elements.exceptions.InvalidExpirationDateException;
 
 import org.junit.Before;
 import org.junit.Rule;
