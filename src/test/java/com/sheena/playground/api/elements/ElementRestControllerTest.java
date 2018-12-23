@@ -2,7 +2,8 @@ package com.sheena.playground.api.elements;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +68,12 @@ public class ElementRestControllerTest {
     public void setup() {
         Map<String, Object> att = new HashMap<>();
         att.put("attribute1", new HashMap<>());
-        this.dummyElement = new ElementTO("playground", new Location(13.0, 25.0), "Pen dummy1", new Date("20/11/18"),
-                new Date("19/11/19"), "dummyElement", att, "sheena", "123@gmail.com");
+        Calendar creationDate = GregorianCalendar.getInstance();
+        Calendar expirationDate = GregorianCalendar.getInstance();
+        creationDate.set(18, 11, 20);
+        expirationDate.set(19, 11, 19);
+        this.dummyElement = new ElementTO("playground", new Location(13.0, 25.0), "Pen dummy1", creationDate,
+                expirationDate, "dummyElement", att, "sheena", "123@gmail.com");
 
         this.dummy2 = new ElementTO("playground", this.dummyElement.getLocation(), "Pen dummy2",
                 this.dummyElement.getCreationDate(), this.dummyElement.getExpirationDate(), "dummy2",
