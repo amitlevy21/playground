@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sheena.playground.logic.users.Roles;
+import com.sheena.playground.logic.users.UserEntity;
+import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RolePrivilageException;
 import com.sheena.playground.logic.users.exceptions.UnverifiedUserActionException;
 import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
-import com.sheena.playground.logic.users.UserEntity;
-import com.sheena.playground.logic.users.UsersService;
 
 @Component
 @Aspect
