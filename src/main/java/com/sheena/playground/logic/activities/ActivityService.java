@@ -7,11 +7,10 @@ public interface ActivityService {
 		
 	public void cleanup();
 	
-	public ActivityEntity getActivityByType(String type) throws ActivityTypeNotAllowedException;
+	public ActivityEntity getActivityByType(String type) throws ActivityNotFoundException;
 	
 	public List<ActivityEntity> getAllActivities (int size, int page);
 
-	ActivityEntity addNewActivity(ActivityEntity activityEntity)
-			throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException;
+	ActivityEntity addNewActivity(ActivityEntity activityEntity) throws ActivityTypeNotSupportedException;
 	
 }

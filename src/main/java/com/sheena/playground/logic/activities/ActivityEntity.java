@@ -25,7 +25,6 @@ public class ActivityEntity {
 	private Map<String, Object> attributes;
 
 	public ActivityEntity() {
-		this.type = "Echo";
 	}
 
 	public ActivityEntity(String playground, String id, String elementPlayground, String elementId, String type,

@@ -15,7 +15,7 @@ import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
-import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityTypeNotSupportedException;
 
 //@Service
 public class DummyActivityService implements ActivityService {
@@ -44,25 +44,16 @@ public class DummyActivityService implements ActivityService {
 	}
 
 	@Override
-	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
-			throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
-		if (!activityEntity.getType().equals(ALLOWED_TYPE)) {
-			throw new ActivityTypeNotAllowedException("Activity type is not: " + ALLOWED_TYPE);
-		}
-
-		if (this.activities.containsKey(activityEntity.getType())) {
-			throw new ActivityAlreadyExistsException("Activity already exists with type: " + activityEntity.getType());
-		}
-
+	public ActivityEntity addNewActivity(ActivityEntity activityEntity) throws ActivityTypeNotSupportedException{
 		this.activities.put(activityEntity.getType(), activityEntity);
 		return activityEntity;
 	}
 
 	@Override
-	public ActivityEntity getActivityByType(String type) throws ActivityTypeNotAllowedException {
+	public ActivityEntity getActivityByType(String type) throws ActivityNotFoundException {
 		ActivityEntity rv = this.activities.get(type);
 		if (rv == null) {
-			throw new ActivityTypeNotAllowedException("Activity not found for type: " + type);
+			throw new ActivityNotFoundException("Activity not found for type: " + type);
 		}
 		return rv;
 	}
