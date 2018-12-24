@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sheena.playground.aop.IsUserPlayer;
+import com.sheena.playground.aop.IsUserVerified;
 import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
-import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityTypeNotSupportedException;
 
 @RestController
 public class ActivityRestController {
@@ -28,10 +30,11 @@ public class ActivityRestController {
         path="/playground/activities/{userPlayground}/{email}",
         produces=MediaType.APPLICATION_JSON_VALUE,
         consumes=MediaType.APPLICATION_JSON_VALUE)
+    @IsUserPlayer
     public Object addNewActivity(
         @PathVariable("userPlayground") String userPlayground,
         @PathVariable("email") String email,
-        @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityAlreadyExistsException, ActivityTypeNotAllowedException {
+        @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException {
     	  	    	
     	return new ActivityTO(
     				this.activityService.addNewActivity(

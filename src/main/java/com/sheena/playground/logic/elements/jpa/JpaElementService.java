@@ -3,12 +3,12 @@ package com.sheena.playground.logic.elements.jpa;
 import java.util.List;
 
 import com.sheena.playground.dal.ElementDao;
+import com.sheena.playground.dal.IdGeneratorDao;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
 import com.sheena.playground.logic.elements.exceptions.NoSuceElementAttributeException;
 import com.sheena.playground.logic.jpa.IdGenerator;
-import com.sheena.playground.logic.jpa.IdGeneratorDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
