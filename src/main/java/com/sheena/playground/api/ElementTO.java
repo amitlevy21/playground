@@ -1,6 +1,6 @@
 package com.sheena.playground.api;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Map;
 
 import com.sheena.playground.logic.elements.ElementEntity;
@@ -11,22 +11,22 @@ public class ElementTO {
 	private String playground;
 	private Location location;
 	private String name;
-	private Date creationDate;
-	private Date expirationDate;
+	private Calendar creationDate;
+	private Calendar expirationDate;
 	private String type;
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
 	
 	
-	public ElementTO(String playground, Location location, String name, Date creationDate,
-			Date expirationDate, String type, Map<String, Object> attributes, String creatorPlayground,
+	public ElementTO(String playground, Location location, String name, Calendar creationDate,
+			Calendar expireationDate, String type, Map<String, Object> attributes, String creatorPlayground,
 			String creatorEmail) {
 		this.playground = playground;
 		this.location = location;
 		this.name = name;
 		setCreationDate(creationDate);
-		setExpirationDate(expirationDate);
+		setExpirationDate(expireationDate);
 		this.type = type;
 		this.attributes = attributes;
 		this.creatorPlayground = creatorPlayground;
@@ -65,19 +65,19 @@ public class ElementTO {
 		this.name = name;
 	}
 
-	public Date getCreationDate() {
+	public Calendar getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(Calendar creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	public Date getExpirationDate() {
+	public Calendar getExpirationDate() {
 		return expirationDate;
 	}
 
-	public void setExpirationDate(Date expirationDate) {
+	public void setExpirationDate(Calendar expirationDate) {
 		this.expirationDate = expirationDate;
 	}
 
@@ -138,8 +138,10 @@ public class ElementTO {
         ElementTO elementTO = (ElementTO) o;
         return playground.equals(elementTO.playground)
                 && location.equals(elementTO.location) && name.equals(elementTO.name)
-                && creationDate.equals(elementTO.creationDate)
-                && expirationDate.equals(elementTO.expirationDate) && type.equals(elementTO.type)
+				&& creationDate.get(Calendar.YEAR) == elementTO.creationDate.get(Calendar.YEAR)
+				&& creationDate.get(Calendar.MONTH) == elementTO.creationDate.get(Calendar.MONTH)
+				&& creationDate.get(Calendar.DAY_OF_MONTH) == elementTO.creationDate.get(Calendar.DAY_OF_MONTH)
+                && type.equals(elementTO.type)
                 && attributes.equals(elementTO.attributes)
                 && creatorPlayground.equals(elementTO.creatorPlayground)
                 && creatorEmail.equals(elementTO.creatorEmail);
