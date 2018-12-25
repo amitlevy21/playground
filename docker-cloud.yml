@@ -1,1 +1,7 @@
-image: dockerwhisper/playground-integration
+lb:
+  image: dockerwhisper/playground-integration
+  links:
+    - mongo
+
+mongo:
+  image: mongo
