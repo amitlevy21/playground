@@ -20,14 +20,12 @@ public class ActivityTO {
 	private Map<String, Object> attributes;
 	
 	public ActivityTO() {
-		this.id = String.valueOf(orderIdGenerator.incrementAndGet());
 	}
 	
 	public ActivityTO(String playground, String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
 		super();
 		this.playground = playground;
-		this.id = String.valueOf(orderIdGenerator.incrementAndGet());
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
@@ -44,6 +42,7 @@ public class ActivityTO {
 				entity.getPlayerPlayground(),
 				entity.getPlayerEmail(),
 				entity.getAttributes());
+		setId(entity.getId());
 	}
 
 	public String getPlayground() {

@@ -40,7 +40,8 @@ public class ActivityEntity {
 	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
-
+	
+	@Id
 	public String getId() {
 		return id;
 	}
@@ -65,7 +66,6 @@ public class ActivityEntity {
 		this.elementId = elementId;
 	}
 
-	@Id
 	public String getType() {
 		return type;
 	}
