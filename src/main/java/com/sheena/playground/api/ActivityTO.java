@@ -22,10 +22,8 @@ public class ActivityTO {
 	public ActivityTO() {
 	}
 	
-	public ActivityTO(String playground, String elementPlayground, String elementId, String type,
+	public ActivityTO(String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
-		super();
-		this.playground = playground;
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
@@ -35,14 +33,14 @@ public class ActivityTO {
 	}
 
 	public ActivityTO(ActivityEntity entity) throws ActivityNotFoundException {
-		this(entity.getPlayground(), 
-				entity.getElementPlayground(),
+		this(	entity.getElementPlayground(),
 				entity.getElementId(),
 				entity.getType(),
 				entity.getPlayerPlayground(),
 				entity.getPlayerEmail(),
 				entity.getAttributes());
 		setId(entity.getId());
+		setPlayground(entity.getPlayground());
 	}
 
 	public String getPlayground() {

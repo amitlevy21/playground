@@ -109,25 +109,26 @@ public class ActivityRestControllerTests {
 		// The server is up and there is an verified user with "player" role
 		NewUserForm newUser = this.newUserForms.get(0); // player user form
 		UserTO expectedUserTO = new UserTO(this.usersService.createNewUser(new UserTO(newUser, this.playground).toEntity()));
-				
+
 		UserTO verifiedUser = new UserTO(this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.verificationCodeSuffix));
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
-		
+
 		// when
 		ActivityTO activity = this.dummyActivities.get(0);
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject( this.url + ACTIVITIES_URL,
-								activity,
-								ActivityTO.class,
-								verifiedUser.getPlayground(),
-								verifiedUser.getEmail());
-				
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
-				
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
 
 		assertThat(actual).isNotNull().isEqualTo(expectedOutcome);
@@ -158,6 +159,7 @@ public class ActivityRestControllerTests {
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
 
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
 
@@ -176,19 +178,20 @@ public class ActivityRestControllerTests {
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.verificationCodeSuffix));
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-				
+
 		// when
 		ActivityTO activity = this.dummyActivities.get(0);
 		activity.setType(unknownType);
 		ActivityTO actualActivity = this.restTemplate.postForObject(this.url + ACTIVITIES_URL, activity,
 				ActivityTO.class, verifiedUser.getPlayground(), verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
 
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
 
@@ -209,8 +212,11 @@ public class ActivityRestControllerTests {
 			else {
 				role = this.managerRole;
 			}
-			newUserForms.add(new NewUserForm(this.userName + "_" + i + "_" + this.emailDomain,
-					this.userName + "_" + i + "_", this.avatar, role));
+			newUserForms.add(new NewUserForm(
+								this.userName + "_" + i + "_" + this.emailDomain,
+								this.userName + "_" + i + "_",
+								this.avatar,
+								role));
 		}
 		return newUserForms;
 	}
@@ -218,8 +224,13 @@ public class ActivityRestControllerTests {
 	private List<ActivityTO> generateActivities() {
 		List<ActivityTO> activities = new ArrayList<>();
 		for (int i = 0; i < this.numCases; i++) {
-			activities.add(new ActivityTO(this.playground, this.elementPlayground, this.elementId, this.activityType,
-					this.userPlayground, this.userName + "_" + i + "_" + this.emailDomain, null));
+			activities.add(new ActivityTO(	
+								this.elementPlayground,
+								this.elementId,
+								this.activityType,
+								this.userPlayground,
+								this.userName + "_" + i + "_" + this.emailDomain,
+								null));
 
 		}
 		return activities;
