@@ -49,13 +49,25 @@ public class DummyActivityService implements ActivityService {
 		return activityEntity;
 	}
 
-	@Override
+	//@Override
 	public ActivityEntity getActivityByType(String type) throws ActivityNotFoundException {
 		ActivityEntity rv = this.activities.get(type);
 		if (rv == null) {
 			throw new ActivityNotFoundException("Activity not found for type: " + type);
 		}
 		return rv;
+	}
+
+	@Override
+	public List<ActivityEntity> getActivitiesByType(String type, int size, int page) throws ActivityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ActivityEntity getActivityById(String id) throws ActivityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
