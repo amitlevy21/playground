@@ -1,12 +1,13 @@
 package com.sheena.playground.logic.activities.jpa;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -27,6 +28,10 @@ import com.sheena.playground.logic.activities.ActivityTypeNotSupportedException;
 
 @Service
 public class JpaActivityService implements ActivityService {
+	// Get the name of the playground from application.properties
+	@Value("${name.of.playground}")
+	private String PLAYGROUND_NAME;
+	
 	private final String unknownType = "reallyWeirdType";
 	
 	private ActivityDao activities;
@@ -75,6 +80,8 @@ public class JpaActivityService implements ActivityService {
 		if (this.unknownType.equalsIgnoreCase(activityEntity.getType())) {
 			throw new ActivityTypeNotSupportedException("Activity's type is not supported: " + activityEntity.getType());
 		}
+		activityEntity.setPlayground(PLAYGROUND_NAME);
+		
 		IdGenerator tmp = this.idGenerator.save(new IdGenerator());
 		Long dummyId = tmp.getId();
 		this.idGenerator.delete(tmp);
@@ -103,7 +110,7 @@ public class JpaActivityService implements ActivityService {
 	public List<ActivityEntity> getActivitiesByType(String type, int size, int page) throws ActivityNotFoundException {
 		/*return this.activities.findById(type)
 				.orElseThrow(() -> new ActivityNotFoundException("Activity's type is not found: " + type));
-*/	
+		 */	
 		return this.activities
 				.findAllByTypeLike(
 						type, 
