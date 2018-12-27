@@ -12,7 +12,7 @@ import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 
 @Component
-public class CheckInPlugin implements Plugin {
+public class CheckOutPlugin implements Plugin {
 	private final int minInHour = 60;
 
 	private ObjectMapper jackson;
@@ -26,19 +26,19 @@ public class CheckInPlugin implements Plugin {
 	}
 
 	@Autowired
-	public void setActivities(ActivityDao actvities) {
-		this.activities = actvities;
+	public void setActivities(ActivityDao activities) {
+		this.activities = activities;
 	}
 
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
 		boolean isValidDate = false;
 		String rvMessage;
-		PlayerStartWorking playerStartDate = jackson.readValue(command.getJsonAttributes(), PlayerStartWorking.class);
+		PlayerEndWorking playerEndDate = jackson.readValue(command.getJsonAttributes(), PlayerEndWorking.class);
 
 		// getTime() returns the number of milliseconds since January 1, 1970, 00:00:00
 		// GMT represented by this Date object
-		long diff = this.currentTime.getTime() - playerStartDate.getStart().getTime();
+		long diff = this.currentTime.getTime() - playerEndDate.getStart().getTime();
 
 		// if diff < 0 --> playerStartDate is at the near future
 		// if diff = 0 --> playerStartDate is right now
@@ -47,18 +47,14 @@ public class CheckInPlugin implements Plugin {
 		int diffmin = (int) (diff / (60 * 1000));
 
 		if (diffmin < 0) {
-			rvMessage = "Your start date is in the future - NOT VALID!";
+			rvMessage = "Your end date is in the future - NOT VALID!";
 		} else if (diffmin > minInHour) {
-			rvMessage = "It's has been passed more than hour since your start date - NOT VALID!";
+			rvMessage = "It's has been passed more than hour since your end date - NOT VALID!";
 		} else {
-			rvMessage = "Welcome, have a nice day!";
+			rvMessage = "Thank you, GOODBYE!";
 			isValidDate = true;
 
 		}
-		
-		// we can add here if condtion on if we want to save a worng check-In request
-		// use isValidDate therefore.
-		
 		command.getAttributes().put("validDate", isValidDate);
 		this.activities.save(command);
 

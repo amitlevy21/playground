@@ -2,6 +2,7 @@ package com.sheena.playground.logic.activities.jpa;
 
 //import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 //import java.util.Map;
 import java.util.Optional;
 //import java.util.stream.Collectors;
@@ -77,9 +78,9 @@ public class JpaActivityService implements ActivityService {
 	@Transactional
 	@MyLog
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity) throws ActivityTypeNotSupportedException {
-		if (this.unknownType.equalsIgnoreCase(activityEntity.getType())) {
-			throw new ActivityTypeNotSupportedException("Activity's type is not supported: " + activityEntity.getType());
-		}
+//		if (this.unknownType.equalsIgnoreCase(activityEntity.getType())) {
+//			throw new ActivityTypeNotSupportedException("Activity's type is not supported: " + activityEntity.getType());
+//		}
 		activityEntity.setPlayground(PLAYGROUND_NAME);
 		
 		IdGenerator tmp = this.idGenerator.save(new IdGenerator());
@@ -88,18 +89,20 @@ public class JpaActivityService implements ActivityService {
 		activityEntity.setId("" + dummyId);
 		ActivityEntity rv = this.activities.save(activityEntity);
 		
-		/*try {
+		try {
 			if (rv.getType() != null) {
 				String type = rv.getType();
-				Plugin plugin = (Plugin) spring.getBean(Class.forName("playground.plugins." + type + "Plugin"));
+				Plugin plugin = (Plugin) spring.getBean(Class.forName("com.sheena.playground.plugins." + type + "Plugin"));
 				Object content = plugin.execute(rv);
 				rv.setAttributes(jackson.readValue(jackson.writeValueAsString(content), Map.class));
 			}
 		} catch (ClassNotFoundException e) {
-			throw new ActivityTypeNotSupportedException("Activity type is not supported: " + rv.getType());
+			throw new ActivityTypeNotSupportedException(
+					"Activity type is not supported: " + rv.getType());
 		}catch (Exception e) {
+			System.err.println(e.getMessage());
 			throw new RuntimeException(e);
-		}*/
+		}
 		
 		return rv;
 	}
