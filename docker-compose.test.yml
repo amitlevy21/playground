@@ -18,7 +18,7 @@ services:
       - ./data:/data/db
       - ./data_bkp:/data/bkp
     restart: always
-    
-sut:
-  build: .
-  command: bash run_test.sh
+
+  sut:
+    build: .
+    command: bash run_test.sh
