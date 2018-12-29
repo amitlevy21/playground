@@ -1,3 +1,24 @@
+services:
+  core:
+    build: .
+    restart: always
+    container_name: playground
+    ports:
+      - 8083:8083
+    working_dir: /opt/app
+    depends_on:
+      - mongo
+  
+  mongo:
+    image: mongo
+    container_name: springboot-mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+      - ./data_bkp:/data/bkp
+    restart: always
+    
 sut:
   build: .
   command: bash run_test.sh
