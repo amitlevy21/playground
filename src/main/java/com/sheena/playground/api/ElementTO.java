@@ -1,6 +1,6 @@
 package com.sheena.playground.api;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import com.sheena.playground.logic.elements.ElementEntity;
@@ -11,34 +11,42 @@ public class ElementTO {
 	private String playground;
 	private Location location;
 	private String name;
-	private Calendar creationDate;
-	private Calendar expirationDate;
-	private String type;
+	private String id;
+	private Date creationDate;
+    private Date expirationDate;
+    private String type;
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
-	
-	
-	public ElementTO(String playground, Location location, String name, Calendar creationDate,
-			Calendar expireationDate, String type, Map<String, Object> attributes, String creatorPlayground,
-			String creatorEmail) {
-		this.playground = playground;
-		this.location = location;
-		this.name = name;
-		setCreationDate(creationDate);
-		setExpirationDate(expireationDate);
-		this.type = type;
-		this.attributes = attributes;
-		this.creatorPlayground = creatorPlayground;
-		this.creatorEmail = creatorEmail;
-	}
-
-	public ElementTO(ElementEntity et) {
-		this(et.getPlayground(), new Location(et.getX(), et.getY()), et.getName(), et.getCreationDate(), et.getExpirationDate(),
-			et.getType(), et.getAttributes(), et.getCreatorPlayground(), et.getCreatorEmail());
-	}
 
 	public ElementTO() {
+	}
+
+	public ElementTO(String playground, Location location, String name, Date creationDate, Date expirationDate, String type,
+		Map<String, Object> attributes, String creatorPlayground, String creatorEmail) {
+	super();
+	this.playground = playground;
+	this.location = location;
+	this.name = name;
+	this.creationDate = creationDate;
+	this.expirationDate = expirationDate;
+	this.type = type;
+	this.attributes = attributes;
+	this.creatorPlayground = creatorPlayground;
+	this.creatorEmail = creatorEmail;
+	}
+	
+	public ElementTO(ElementEntity entity) {
+		this.attributes = entity.getAttributes();
+		this.creationDate = entity.getCreationDate();
+		this.creatorEmail = entity.getCreatorEmail();
+		this.creatorPlayground = entity.getCreatorPlayground();
+		this.expirationDate = entity.getExpirationDate();
+		this.location = new Location(entity.getX(), entity.getY());
+		this.name = entity.getName();
+		this.playground = entity.getPlayground();
+		this.type = entity.getType();
+		this.id = entity.getId();
 	}
 
 	public String getPlayground() {
@@ -65,24 +73,48 @@ public class ElementTO {
 		this.name = name;
 	}
 
-	public Calendar getCreationDate() {
-		return creationDate;
+//	public Calendar getCreationDate() {
+//		return creationDate;
+//	}
+//
+//	public void setCreationDate(Calendar creationDate) {
+//		this.creationDate = creationDate;
+//	}
+//
+//	public Calendar getExpirationDate() {
+//		return expirationDate;
+//	}
+//
+//	public void setExpirationDate(Calendar expirationDate) {
+//		this.expirationDate = expirationDate;
+//	}
+
+	public String getId() {
+		return id;
 	}
 
-	public void setCreationDate(Calendar creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public Calendar getExpirationDate() {
-		return expirationDate;
-	}
-
-	public void setExpirationDate(Calendar expirationDate) {
-		this.expirationDate = expirationDate;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getType() {
 		return type;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
 	public void setType(String type) {
@@ -115,6 +147,11 @@ public class ElementTO {
 
 	public ElementEntity toEntity() throws InvalidExpirationDateException {
 		ElementEntity rv = new ElementEntity();
+		
+		if(this.id != null) {
+			rv.setId(this.id);
+		}
+		
 		rv.setPlayground(this.playground);
 		rv.setX(this.location.getX());
 		rv.setY(this.location.getY());
@@ -127,24 +164,83 @@ public class ElementTO {
 		rv.setCreatorEmail(this.creatorEmail);
 		return rv;
 	}
-	
+
 	@Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof ElementTO)) {
-            return false;
-        }
-        ElementTO elementTO = (ElementTO) o;
-        return playground.equals(elementTO.playground)
-                && location.equals(elementTO.location) && name.equals(elementTO.name)
-				&& creationDate.get(Calendar.YEAR) == elementTO.creationDate.get(Calendar.YEAR)
-				&& creationDate.get(Calendar.MONTH) == elementTO.creationDate.get(Calendar.MONTH)
-				&& creationDate.get(Calendar.DAY_OF_MONTH) == elementTO.creationDate.get(Calendar.DAY_OF_MONTH)
-                && type.equals(elementTO.type)
-                && attributes.equals(elementTO.attributes)
-                && creatorPlayground.equals(elementTO.creatorPlayground)
-                && creatorEmail.equals(elementTO.creatorEmail);
-    }
-	
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
+		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((creatorEmail == null) ? 0 : creatorEmail.hashCode());
+		result = prime * result + ((creatorPlayground == null) ? 0 : creatorPlayground.hashCode());
+		result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((playground == null) ? 0 : playground.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ElementTO other = (ElementTO) obj;
+		if (attributes == null) {
+			if (other.attributes != null)
+				return false;
+		} else if (!attributes.equals(other.attributes))
+			return false;
+		if (creationDate == null) {
+			if (other.creationDate != null)
+				return false;
+		} else if (!creationDate.equals(other.creationDate))
+			return false;
+		if (creatorEmail == null) {
+			if (other.creatorEmail != null)
+				return false;
+		} else if (!creatorEmail.equals(other.creatorEmail))
+			return false;
+		if (creatorPlayground == null) {
+			if (other.creatorPlayground != null)
+				return false;
+		} else if (!creatorPlayground.equals(other.creatorPlayground))
+			return false;
+		if (expirationDate == null) {
+			if (other.expirationDate != null)
+				return false;
+		} else if (!expirationDate.equals(other.expirationDate))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (playground == null) {
+			if (other.playground != null)
+				return false;
+		} else if (!playground.equals(other.playground))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
 }

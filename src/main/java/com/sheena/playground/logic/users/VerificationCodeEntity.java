@@ -5,11 +5,11 @@ import javax.validation.constraints.Email;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="codes")
+@Document(collection="verification_codes")
 public class VerificationCodeEntity {
 	
 	//this is the verification code
-	private String id;
+	private String code;
 	
 	@Email
 	private String userEmail;
@@ -19,17 +19,17 @@ public class VerificationCodeEntity {
 
 	public VerificationCodeEntity(String code, @Email String userEmail) {
 		super();
-		this.id = code;
+		this.code = code;
 		this.userEmail = userEmail;
 	}
 
 	@Id
-	public String getId() {
-		return id;
+	public String getCode() {
+		return code;
 	}
 
-	public void setId(String code) {
-		this.id = code;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getUserEmail() {

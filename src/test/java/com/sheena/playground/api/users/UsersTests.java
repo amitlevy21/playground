@@ -134,7 +134,6 @@ public class UsersTests {
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
 				this.url + CONFIRM_URL, UserTO.class, 
-
 				this.playground, newUser.getEmail(), 
 				newUser.getEmail() + this.verificationCodeSuffix);
 		
