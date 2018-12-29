@@ -57,7 +57,6 @@ public class ActivityRestControllerTests {
 	private final String format = "MM/dd/yyyy hh:mm a";
 	private SimpleDateFormat sdf;
 	
-	
 	@Autowired
 	private ActivityService activityService;
 	@Autowired

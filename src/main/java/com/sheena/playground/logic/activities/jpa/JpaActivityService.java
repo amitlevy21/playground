@@ -32,9 +32,7 @@ public class JpaActivityService implements ActivityService {
 	// Get the name of the playground from application.properties
 	@Value("${name.of.playground}")
 	private String PLAYGROUND_NAME;
-	
-	private final String unknownType = "reallyWeirdType";
-	
+		
 	private ActivityDao activities;
 	private IdGeneratorDao idGenerator;
 	
