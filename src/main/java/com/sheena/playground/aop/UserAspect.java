@@ -1,5 +1,8 @@
 package com.sheena.playground.aop;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +14,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sheena.playground.api.ElementTO;
 import com.sheena.playground.logic.users.Roles;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
@@ -175,12 +179,47 @@ public class UserAspect {
 				throw new RolePrivilageException("user with email: " + emailArg + " is not a manager");
 			}
 			return joinPoint.proceed();
-		} catch (UnverifiedUserActionException e) {
-			throw e;
-		} catch (RolePrivilageException e) {
-			throw e;
 		} catch (Throwable e) {
-			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+			log.error(methodName + " - end with error" + e.getClass().getName());
+			throw e;
+		}
+	}
+	
+	@Around("@annotation(com.sheena.playground.aop.FilterElementsByRole)")
+	public Object filterElementsByRole(ProceedingJoinPoint joinPoint) throws Throwable {
+		String className = joinPoint.getTarget().getClass().getSimpleName();
+		String methodName = joinPoint.getSignature().getName();
+
+		String emailArg = getEmailArgForAdvice(joinPoint);
+		if (emailArg == null) {
+			throw new RuntimeException(className + "." + methodName + " is missing arg: email");
+		}
+		
+		log.info("check role of user with email: " + emailArg);
+		
+		boolean filterFlag = false;
+		
+		try {
+			UserEntity userEntity = this.usersService.getUserByEmail(emailArg);
+			String role = userEntity.getRole();
+			if(role.equalsIgnoreCase(Roles.PLAYER.toString()))
+				filterFlag = true;
+			
+			Object rv = joinPoint.proceed();
+			if(!filterFlag)
+				return rv;
+			else {
+				ElementTO[] elements = (ElementTO[]) rv;
+				List<ElementTO> elementsList = new ArrayList<>();
+				for (int i = 0; i < elements.length; i++) {
+					if(elements[i].getExpirationDate().after(new Date()))
+						elementsList.add(elements[i]);
+				}
+				return elementsList.toArray(new ElementTO[0]);
+			}
+		} catch (Throwable e) {
+			log.error(methodName + " - end with error" + e.getClass().getName());
+			throw e;
 		}
 	}
 

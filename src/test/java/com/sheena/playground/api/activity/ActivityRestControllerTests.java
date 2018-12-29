@@ -117,6 +117,4 @@ public class ActivityRestControllerTests {
 		// Then 
 		// an ActivityAlreadyExistsException occurs
 	}
-	
-	
 }

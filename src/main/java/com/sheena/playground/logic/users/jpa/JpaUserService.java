@@ -1,6 +1,7 @@
 package com.sheena.playground.logic.users.jpa;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -169,8 +170,11 @@ public class JpaUserService implements UsersService{
 	
 	@Override
 	@Transactional(readOnly=true)
-	public UserEntity getUserByEmail(String email) {
-		return (UserEntity) this.userDao.findUserByEmail(email).toArray()[0];
+	public UserEntity getUserByEmail(String email) throws UserDoesNotExistException {
+		List<UserEntity> users = this.userDao.findUserByEmail(email);
+		if(users.size() == 0)
+			throw new UserDoesNotExistException("no user with email: " + email + " exists");
+		return (UserEntity) users.toArray()[0];
 	}
 
 	private boolean isRoleExists(String givenRole) {

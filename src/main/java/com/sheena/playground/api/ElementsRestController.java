@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import com.sheena.playground.logic.elements.exceptions.ElementAlreadyExistsException;
 import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
+import com.sheena.playground.aop.FilterElementsByRole;
 import com.sheena.playground.aop.IsUserManager;
 import com.sheena.playground.aop.MyLog;
 import com.sheena.playground.logic.elements.ElementService;
@@ -65,6 +66,7 @@ public class ElementsRestController {
 	}
 
 	@MyLog
+	@FilterElementsByRole
 	@RequestMapping(method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/all", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,6 +81,7 @@ public class ElementsRestController {
 	}
 
 	@MyLog
+	@FilterElementsByRole
 	@RequestMapping(method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -94,6 +97,7 @@ public class ElementsRestController {
 	}
 
 	@MyLog
+	@FilterElementsByRole
 	@RequestMapping(method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
