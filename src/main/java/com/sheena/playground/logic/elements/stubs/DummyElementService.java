@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.sheena.playground.logic.elements.exceptions.ElementAlreadyExistsException;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
+import com.sheena.playground.logic.elements.exceptions.NoSuceElementAttributeException;
 import com.sheena.playground.logic.elements.ElementService;
 
 //import org.springframework.stereotype.Service;
@@ -25,9 +26,9 @@ public class DummyElementService implements ElementService{
 		idToElement = new HashMap<>();
 	}
 
-	public void addNewElement(ElementEntity et) throws ElementAlreadyExistsException{
+	public ElementEntity addNewElement(ElementEntity et) {
 		
-		idToElement.put(et.getDummyId(), et);
+		return idToElement.put(et.getId(), et);
 	}
 
 	public void updateElement(String id, ElementEntity et) throws ElementNotExistException{
@@ -75,6 +76,20 @@ public class DummyElementService implements ElementService{
 	@Override
 	public void cleanup() {
 		idToElement.clear();
+	}
+
+	@Override
+	public List<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance, int size, int page)
+			throws ElementNotExistException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ElementEntity> getElementsAttribute(String attributeName, Object value, int size, int page)
+			throws ElementNotExistException, NoSuceElementAttributeException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

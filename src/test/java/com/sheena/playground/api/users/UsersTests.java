@@ -36,7 +36,6 @@ import com.sheena.playground.logic.users.exceptions.CodeDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyVerifiedException;
-import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 
 
@@ -135,7 +134,6 @@ public class UsersTests {
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
 				this.url + CONFIRM_URL, UserTO.class, 
-
 				this.playground, newUser.getEmail(), 
 				newUser.getEmail() + this.verificationCodeSuffix);
 		

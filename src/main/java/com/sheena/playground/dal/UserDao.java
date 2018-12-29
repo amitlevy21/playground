@@ -10,4 +10,6 @@ import com.sheena.playground.logic.users.UserEntity;
 public interface UserDao extends CrudRepository<UserEntity, String>{
 	
 	public List<UserEntity> findUserByEmail(String email);
+	
+	public List<UserEntity> findUserByEmailAndPlayground(String email, String playground);
 }
