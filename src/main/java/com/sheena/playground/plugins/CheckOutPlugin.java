@@ -34,7 +34,7 @@ public class CheckOutPlugin implements Plugin {
 	public Object execute(ActivityEntity command) throws Exception {
 		boolean isValidDate = false;
 		String rvMessage;
-		PlayerEndWorking playerEndDate = jackson.readValue(command.getJsonAttributes(), PlayerEndWorking.class);
+		EndWorkingForm playerEndDate = jackson.readValue(command.getJsonAttributes(), EndWorkingForm.class);
 
 		// getTime() returns the number of milliseconds since January 1, 1970, 00:00:00
 		// GMT represented by this Date object

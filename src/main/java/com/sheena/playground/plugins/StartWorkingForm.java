@@ -2,17 +2,20 @@ package com.sheena.playground.plugins;
 
 import java.util.Date;
 
-public class PlayerEndWorking {
-	private Date end;
+public class StartWorkingForm {
+	private Date start;
 	
-	public PlayerEndWorking() {
+	public StartWorkingForm() {
 	}
 	
 	public Date getStart() {
-		return end;
+		return start;
 	}
 
 	public void setStart(Date start) {
-		this.end = start;
+		this.start = start;
 	}
+
+	
+
 }

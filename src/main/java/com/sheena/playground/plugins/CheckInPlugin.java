@@ -1,7 +1,5 @@
 package com.sheena.playground.plugins;
 
-import java.util.Date;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +14,13 @@ public class CheckInPlugin implements Plugin {
 	private final int minInHour = 60;
 
 	private ObjectMapper jackson;
-	private Date currentTime;
+	private AttendanceClock attendanceClock;
 	private ActivityDao activities;
 
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
-		this.currentTime = new Date();
+		this.attendanceClock = new AttendanceClock();
 	}
 
 	@Autowired
@@ -34,16 +32,16 @@ public class CheckInPlugin implements Plugin {
 	public Object execute(ActivityEntity command) throws Exception {
 		boolean isValidDate = false;
 		String rvMessage;
-		PlayerStartWorking playerStartDate = jackson.readValue(command.getJsonAttributes(), PlayerStartWorking.class);
+		StartWorkingForm playerStartDate 
+			= jackson.readValue(command.getJsonAttributes(), StartWorkingForm.class);
 
 		// getTime() returns the number of milliseconds since January 1, 1970, 00:00:00
 		// GMT represented by this Date object
-		long diff = this.currentTime.getTime() - playerStartDate.getStart().getTime();
+		long diff = this.attendanceClock.getCurrentTime().getTime() - playerStartDate.getStart().getTime();
 
 		// if diff < 0 --> playerStartDate is at the near future
 		// if diff = 0 --> playerStartDate is right now
-		// if diff > 0 --> playerStartDate is in the past, so we limit the diff
-		// to 1 hour == 60 min.
+		// if diff > 0 --> playerStartDate is in the past so we limit it to 1 hour (60 min.)
 		int diffmin = (int) (diff / (60 * 1000));
 
 		if (diffmin < 0) {
@@ -53,12 +51,11 @@ public class CheckInPlugin implements Plugin {
 		} else {
 			rvMessage = "Welcome, have a nice day!";
 			isValidDate = true;
-
 		}
-		
+
 		// we can add here if condtion on if we want to save a worng check-In request
 		// use isValidDate therefore.
-		
+
 		command.getAttributes().put("validDate", isValidDate);
 		this.activities.save(command);
 
