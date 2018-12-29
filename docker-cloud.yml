@@ -1,7 +1,15 @@
 lb:
   image: dockerwhisper/playground-integration
+  ports:
+    - 8083:8083
+  restart: always
   links:
     - mongo
+  roles:
+    - global
 
-mongo:
+springboot-mongo:
   image: mongo
+  restart: always
+  ports:
+    - 27017:27017
