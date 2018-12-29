@@ -1,10 +1,13 @@
-FROM maven:3-jdk-8
+FROM openjdk:8-alpine
 
-COPY . /app
+# Required for starting application up.
+RUN apk update && apk add bash
 
-WORKDIR /app
+RUN mkdir -p /opt/app
+ENV PROJECT_HOME /opt/app
 
-RUN mvn clean install
+COPY target/playground-0.0.1-SNAPSHOT.jar $PROJECT_HOME/playground-0.0.1-SNAPSHOT.jar
 
-# keep container alive
-#ENTRYPOINT [ "tail", "-f", "/etc/hosts" ] 
+WORKDIR $PROJECT_HOME
+
+CMD ["java", "-Dspring.data.mongodb.uri=mongodb://springboot-mongo:27017/springmongo-demo","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
