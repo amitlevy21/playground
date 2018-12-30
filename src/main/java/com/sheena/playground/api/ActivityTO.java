@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sheena.playground.logic.activities.ActivityEntity;
-import com.sheena.playground.logic.activities.ActivityNotFoundException;
 
 public class ActivityTO {
 	
@@ -36,7 +35,7 @@ public class ActivityTO {
 		this.attributes = attributes;
 	}
 
-	public ActivityTO(ActivityEntity entity) throws ActivityNotFoundException {
+	public ActivityTO(ActivityEntity entity) {
 		this(entity.getPlayground(), 
 				entity.getElementPlayground(),
 				entity.getElementId(),
