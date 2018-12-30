@@ -35,6 +35,9 @@ public class JpaUserService implements UsersService{
 	@Value("${user.verification.host}")
 	private String verificationUrlHost;
 	
+	@Value("${playground.name:defaultPlayground}")
+	private String playgroundName;
+	
 	//Constants
 	private final String VERIFICATION_URL = "/playground/users/confirm/%s/%s/%s";
 
@@ -53,7 +56,11 @@ public class JpaUserService implements UsersService{
 	@MyLog
 	public UserEntity createNewUser(UserEntity userEntity)
 			throws UserAlreadyExistsException, RoleDoesNotExistException {
-		if(!this.userDao.existsById(userEntity.getEmail())) {
+		//First  check if a user with such email exists in the playground
+		if(this.userDao.findUserByEmailAndPlayground(
+				userEntity.getEmail(), this.playgroundName)
+				.size() == 0) {
+			
 			if(isRoleExists(userEntity.getRole())) {
 				
 				//Generating a verification code and persisting it
@@ -72,10 +79,10 @@ public class JpaUserService implements UsersService{
 						verificationCode));
 				verificationEmail.setTo(userEntity.getEmail());
 				
-				mailService.sendMessage(verificationEmail);
+//				mailService.sendMessage(verificationEmail);
         
 				//Set PK for this user to be persisted
-				userEntity.setCombinedId(userEntity.getEmail() + userEntity.getPlayground());
+				userEntity.setId(userEntity.getEmail() + userEntity.getPlayground());
 				return this.userDao.save(userEntity);
 			}
 			else {
@@ -103,15 +110,12 @@ public class JpaUserService implements UsersService{
 		UserEntity user = getUserByEmail(email);
 		
 		if(isUserVerified(user)) {
-			throw new UserAlreadyVerifiedException(
-					"User with email: " + user.getEmail() 
-					+ " is already verified");
+			throw new UserAlreadyVerifiedException("User with email: " + user.getEmail() + " is already verified");
 		}
 		
-		VerificationCodeEntity codeEntity = this.VerificationCodeDao.findById(verificationCode)
-				.orElseThrow(() ->
-				new CodeDoesNotExistException(
-						"Code: " + verificationCode + " does not exist"));
+		VerificationCodeEntity codeEntity = (VerificationCodeEntity) this.VerificationCodeDao.findByCode(verificationCode).toArray()[0];
+		if(codeEntity == null)	 
+			throw new CodeDoesNotExistException("Code: " + verificationCode + " does not exist");
 		
 		if(!codeEntity.getUserEmail().equals(email)) {
 			throw new VerificationCodeMismatchException(
@@ -159,6 +163,8 @@ public class JpaUserService implements UsersService{
 	
 	@Override
 	public void cleanup() {
+		userDao.deleteAll();
+		VerificationCodeDao.deleteAll();
 	}
 	
 	@Override

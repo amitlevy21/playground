@@ -100,30 +100,6 @@ public class ActivityRestControllerTests {
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
 
-	@Test
-	public void testCreateActivitySuccessfully() throws Exception {
-		// Given
-		// The server is up and an activity is provided (in the setup() function)
-		
-		// When 
-		ActivityTO actualActivity = this.restTemplate.postForObject(
-				this.url,
-				this.dummy1,
-				ActivityTO.class,
-				this.playground, 
-				this.dummyEmail);
-		
-		// Then
-		assertThat(actualActivity.getType()).isEqualTo(allowedType);
-
-		ActivityEntity expectedOutcome = this.dummy1.toActivityEntity();
-
-		ActivityEntity actual = this.activityService.getActivityByType(allowedType);
-		actual.setId(expectedOutcome.getId());
-
-		assertThat(actual).isNotNull().isEqualTo(expectedOutcome);
-	}
-
 	@Test(expected = Exception.class)
 	public void testCreateActivityWithExistingActivity() throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
 		// Given

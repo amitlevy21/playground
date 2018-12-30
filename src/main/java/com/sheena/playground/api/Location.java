@@ -1,6 +1,6 @@
 package com.sheena.playground.api;
 
-public class Location {
+public class Location implements Comparable<Location>{
 	
 	private Double x;
 	private Double y;
@@ -34,18 +34,48 @@ public class Location {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof Location)) {
-			return false;
-		}
-		Location location = (Location) o;
-		return x.equals(location.x) && y.equals(location.y);
+	public String toString() {
+		return "Location [x=" + x + ", y=" + y + "]";
 	}
 
 	@Override
-	public String toString() {
-		return "Location [x=" + x + ", y=" + y + "]";
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((x == null) ? 0 : x.hashCode());
+		result = prime * result + ((y == null) ? 0 : y.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Location other = (Location) obj;
+		if (x == null) {
+			if (other.x != null)
+				return false;
+		} else if (!x.equals(other.x))
+			return false;
+		if (y == null) {
+			if (other.y != null)
+				return false;
+		} else if (!y.equals(other.y))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int compareTo(Location o) {
+		if(x.equals(o.getX()) && y.equals(o.getY()))
+			return 0;
+		else if(x > o.getX() || y > o.getY())
+			return 1;
+		else
+			return -1;
 	}
 }

@@ -128,7 +128,7 @@ public class UserAspect {
 			if (!userEntity.isVerifiedUser()) {
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
 			}
-			if (!userEntity.getRole().equals(Roles.PLAYER.toString())) {
+			if (!userEntity.getRole().equalsIgnoreCase(Roles.PLAYER.toString())) {
 				throw new RolePrivilageException("user with email: " + emailArg + " is not a player");
 			}
 			return joinPoint.proceed();
@@ -171,7 +171,7 @@ public class UserAspect {
 			if (!userEntity.isVerifiedUser()) {
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
 			}
-			if (!userEntity.getRole().equals(Roles.MANAGER.toString())) {
+			if (!userEntity.getRole().equalsIgnoreCase(Roles.MANAGER.toString())) {
 				throw new RolePrivilageException("user with email: " + emailArg + " is not a manager");
 			}
 			return joinPoint.proceed();

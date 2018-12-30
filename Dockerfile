@@ -1,10 +1,14 @@
-FROM maven:3-jdk-8
+FROM openjdk:8-alpine
 
-COPY . /app
+# Required for starting application up.
+RUN apk update && apk add bash
 
-WORKDIR /app
+RUN mkdir -p /opt/app
+ENV PROJECT_HOME /opt/app
 
-RUN mvn clean install
+COPY . $PROJECT_HOME
+WORKDIR $PROJECT_HOME
 
-# keep container alive
-#ENTRYPOINT [ "tail", "-f", "/etc/hosts" ] 
+RUN ./mvnw install -DskipTests
+
+CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/test","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
