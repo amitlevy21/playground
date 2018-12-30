@@ -34,6 +34,8 @@ public class CheckInPlugin implements Plugin {
 	public Object execute(ActivityEntity command) throws Exception {
 		boolean isValidDate = false;
 		String rvMessage = "";
+		StartWorkingForm startForm = jackson
+				.readValue(this.jackson.writeValueAsString(command.getAttributes()),StartWorkingForm.class);
 //		Map playerStartDate 
 //			= jackson.readValue(command.getAttributes(), Map.class);
 
