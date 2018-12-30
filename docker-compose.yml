@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  core:
+  sut:
     build: .
     restart: always
     container_name: playground
