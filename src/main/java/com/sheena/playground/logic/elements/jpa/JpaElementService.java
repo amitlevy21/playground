@@ -86,14 +86,8 @@ public class JpaElementService implements ElementService {
 		return elementsPage.getContent();
 	}
 
-	/**
-	 * Return 
-	 */
 	@Override
 	public List<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance, int size, int page) {
-//		int xOffest = (int) Math.abs(x - distance);
-//		int yOffest = (int) Math.abs(y - distance);
-	
 		return elementDao.findByXBetweenAndYBetween(
 				x - distance, x + distance, 
 				y - distance, y + distance,

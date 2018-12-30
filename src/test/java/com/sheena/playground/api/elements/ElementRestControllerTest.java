@@ -2,6 +2,9 @@ package com.sheena.playground.api.elements;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -311,6 +314,66 @@ public class ElementRestControllerTest {
 			thrown.expectMessage("500");
 	    	
 	    	this.restTemplate.put(targetUrl, e);
+	}
+	
+	@Test
+	public void testUserWithPlayerRoleDoesNotGetExpiredElementsWhenGettingAllElements() throws InvalidExpirationDateException, ParseException {
+		ElementTO e1 = this.elementTOs.get(18);
+    	ElementTO e2 = this.elementTOs.get(19);
+    	ElementTO e3 = this.elementTOs.get(20);
+    	
+    	e1.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("2070-01-01"));
+    	e2.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("2090-11-18"));
+    	e3.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("1990-10-09"));
+    	
+    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
+    	ElementEntity entity3 = elementService.addNewElement(e3.toEntity());
+    	
+    	int numExpected = 2;
+    	
+		ElementTO[] expected = new ElementTO[numExpected];
+    	expected[0] = new ElementTO(entity1);
+    	expected[1] = new ElementTO(entity2);
+    	
+    	String targetUrl = String.format(BASE_URL, host, playgroundName, playerUser.getEmail()) + "/all";
+    	ElementTO[] allElementsReturned = restTemplate.getForObject(targetUrl, ElementTO[].class);
+    	
+    	assertThat(allElementsReturned).isNotNull().hasSize(numExpected).isEqualTo(expected);
+	}
+	
+	@Test
+	public void testUserWithPlayerRoleDoesNotGetExpiredElementsWhenGettingElementsNearCoordinates() throws InvalidExpirationDateException, ParseException {
+		ElementTO e1 = this.elementTOs.get(21);
+    	ElementTO e2 = this.elementTOs.get(22);
+    	ElementTO e3 = this.elementTOs.get(23);
+    	
+    	e1.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("2070-01-01"));
+    	e2.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("2090-11-18"));
+    	e3.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("1990-10-09"));
+    	
+    	e1.setLocation(new Location(10., 20.));
+    	e2.setLocation(new Location(15., 25.));
+    	e3.setLocation(new Location(100., 200.));
+    	
+    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
+    	ElementEntity entity3 = elementService.addNewElement(e3.toEntity());
+    	
+    	int numExpected = 2;
+    	
+    	double xGiven = 5;
+    	double yGiven = 5;
+    	double distance = 30;
+    	
+		ElementTO[] expected = new ElementTO[numExpected];
+    	expected[0] = new ElementTO(entity1);
+    	expected[1] = new ElementTO(entity2);
+    	
+    	String targetUrl = String.format(BASE_URL, host, playgroundName, playerUser.getEmail()) + "/near/{x}/{y}/{distance}";;
+    	ElementTO[] allElementsReturned = restTemplate.getForObject(targetUrl, ElementTO[].class, xGiven, yGiven, distance);
+    	
+    	assertThat(allElementsReturned).isNotNull().hasSize(numExpected).isEqualTo(expected);
 	}
 
 	private List<ElementTO> generateElementTOs(int numCases) {
