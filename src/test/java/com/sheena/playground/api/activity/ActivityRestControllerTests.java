@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.ActivityTO;
 import com.sheena.playground.api.ElementTO;
 import com.sheena.playground.api.Location;
+
 import com.sheena.playground.api.NewUserForm;
 import com.sheena.playground.api.UserTO;
 import com.sheena.playground.api.users.UserTOComparator;
@@ -66,6 +67,7 @@ public class ActivityRestControllerTests {
 	private UsersService usersService;
 	@Autowired
 	private ElementService elementsService;
+
 
 	// Data attributes for users
 	private final String userName = "user";
@@ -154,6 +156,7 @@ public class ActivityRestControllerTests {
 		.isNotNull()
 		.usingComparator(this.userTOComparator)
 		.isEqualTo(expectedUserTO);
+
 		
 		// when
 		ActivityTO activity = generateSpecificCheckInOut(
@@ -359,6 +362,7 @@ public class ActivityRestControllerTests {
 		UserTO verifiedUser = new UserTO(this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.verificationCodeSuffix));
 
+
 		assertThat(verifiedUser)
 		.isNotNull()
 		.usingComparator(this.userTOComparator)
@@ -472,6 +476,7 @@ public class ActivityRestControllerTests {
 			.usingComparator(this.userTOComparator)
 			.isEqualTo(expectedUserTO);
 		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
 		
@@ -620,7 +625,7 @@ public class ActivityRestControllerTests {
 
 	}
 	
-	
+
 	@Test
 	public void testVerifiedPlayerCheckInSuccessfully() throws Exception {
 		// Given
@@ -684,6 +689,13 @@ public class ActivityRestControllerTests {
 		.isEqualTo(expectedOutcome);
 	}
 	
+
+	private ActivityTO generateSpecificCheckInOut(String checkInType2, String checkInAttributesKey2, int testId,
+			String present2, UserTO verifiedUser, ElementEntity rvElement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private ActivityTO generateSpecificCheckInOut(String type, String attributesPattern, int testCaseNum, String when) {
 		Map<String, Object> attributes = new HashMap<>();
 		Date theDate;
@@ -715,6 +727,7 @@ public class ActivityRestControllerTests {
 
 	}		
 	
+
 	private NewUserForm generateSpecificNewUserForms(String role, int testCaseNum) {
 		return new NewUserForm(
 				this.userName + "_" + testCaseNum + "_" + this.emailDomain,
@@ -722,6 +735,7 @@ public class ActivityRestControllerTests {
 				this.avatar,
 				role);
 	}
+
 	
 	private ElementTO generateSpecificElment(String name, String type, String username, String email, int testCaseNum) throws ParseException {
 		Location dummyLocation = new Location();
@@ -735,4 +749,5 @@ public class ActivityRestControllerTests {
 		
 		return new ElementTO(playground, dummyLocation, name, new Date(), expireationDate, type, attributes, username, email);
 	}
+
 }

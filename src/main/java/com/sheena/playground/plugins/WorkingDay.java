@@ -46,5 +46,4 @@ public class WorkingDay {
 		return maxWorkers;
 	}
 	
-	
 }

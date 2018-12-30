@@ -32,10 +32,10 @@ public class JpaActivityService implements ActivityService {
 	// Get the name of the playground from application.properties
 	@Value("${name.of.playground}")
 	private String PLAYGROUND_NAME;
-
+		
 	private ActivityDao activities;
 	private IdGeneratorDao idGenerator;
-
+	
 	private ConfigurableApplicationContext spring;
 	private ObjectMapper jackson;
 
@@ -79,7 +79,6 @@ public class JpaActivityService implements ActivityService {
 //			throw new ActivityTypeNotSupportedException("Activity's type is not supported: " + activityEntity.getType());
 //		}
 		activityEntity.setPlayground(PLAYGROUND_NAME);
-
 		IdGenerator tmp = this.idGenerator.save(new IdGenerator());
 		Long dummyId = tmp.getId();
 		this.idGenerator.delete(tmp);
@@ -109,12 +108,14 @@ public class JpaActivityService implements ActivityService {
 	@Transactional(readOnly = true)
 	@MyLog
 	public List<ActivityEntity> getActivitiesByType(String type, int size, int page) throws ActivityNotFoundException {
-		/*
-		 * return this.activities.findById(type) .orElseThrow(() -> new
-		 * ActivityNotFoundException("Activity's type is not found: " + type));
-		 */
-		return this.activities.findAllByTypeLike(type, PageRequest.of(page, size, Direction.ASC, "id"));
-
+		/*return this.activities.findById(type)
+				.orElseThrow(() -> new ActivityNotFoundException("Activity's type is not found: " + type));
+		 */	
+		return this.activities
+				.findAllByTypeLike(
+						type, 
+						PageRequest.of(page, size, Direction.ASC, "id"));
+	
 	}
 
 	@Override

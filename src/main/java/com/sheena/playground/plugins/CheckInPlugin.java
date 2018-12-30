@@ -1,5 +1,7 @@
 package com.sheena.playground.plugins;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,29 +33,29 @@ public class CheckInPlugin implements Plugin {
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
 		boolean isValidDate = false;
-		String rvMessage;
-		StartWorkingForm playerStartDate 
-			= jackson.readValue(command.getJsonAttributes(), StartWorkingForm.class);
+		String rvMessage = "";
+//		Map playerStartDate 
+//			= jackson.readValue(command.getAttributes(), Map.class);
 
 		// getTime() returns the number of milliseconds since January 1, 1970, 00:00:00
 		// GMT represented by this Date object
-		long diff = this.attendanceClock.getCurrentTime().getTime() - playerStartDate.getStart().getTime();
-
-		// if diff < 0 --> playerStartDate is at the near future
-		// if diff = 0 --> playerStartDate is right now
-		// if diff > 0 --> playerStartDate is in the past so we limit it to 1 hour (60 min.)
-		int diffmin = (int) (diff / (60 * 1000));
-
-		if (diffmin < 0) {
-			rvMessage = "Your start date is in the future - NOT VALID!";
-		} else if (diffmin > minInHour) {
-			rvMessage = "It's has been passed more than hour since your start date - NOT VALID!";
-		} else {
-			rvMessage = "Welcome, have a nice day!";
-			isValidDate = true;
-		}
-
-		command.getAttributes().put("validDate", isValidDate);
+//		long diff = this.attendanceClock.getCurrentTime().getTime() - command.getStart().getTime();
+//
+//		// if diff < 0 --> playerStartDate is at the near future
+//		// if diff = 0 --> playerStartDate is right now
+//		// if diff > 0 --> playerStartDate is in the past so we limit it to 1 hour (60 min.)
+//		int diffmin = (int) (diff / (60 * 1000));
+//
+//		if (diffmin < 0) {
+//			rvMessage = "Your start date is in the future - NOT VALID!";
+//		} else if (diffmin > minInHour) {
+//			rvMessage = "It's has been passed more than hour since your start date - NOT VALID!";
+//		} else {
+//			rvMessage = "Welcome, have a nice day!";
+//			isValidDate = true;
+//		}
+//
+//		command.getAttributes().put("validDate", isValidDate);
 
 		return new PlayerActivityResponse(rvMessage);
 	}
