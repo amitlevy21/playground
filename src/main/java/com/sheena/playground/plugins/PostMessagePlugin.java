@@ -35,7 +35,7 @@ public class PostMessagePlugin implements PlaygroundPlugin {
 		try {
 			ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
 			if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-				throw new ElementDoesNotMatchActivity("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+				throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
 			
 			BoardMessage message = this.jackson.readValue(
 					this.jackson.writeValueAsString(
