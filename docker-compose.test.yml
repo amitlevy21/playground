@@ -1,12 +1,9 @@
 
 sut:
   build: .
-  restart: always
-  container_name: playground
   command: bash run_test.sh
   ports:
     - 8083:8083
-  working_dir: /opt/app
   links:
     - mongo
 
