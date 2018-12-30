@@ -2,6 +2,7 @@ package com.sheena.playground.logic.activities.jpa;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,8 +19,10 @@ import com.sheena.playground.logic.jpa.IdGeneratorDao;
 import com.sheena.playground.plugins.PlaygroundPlugin;
 
 import com.sheena.playground.logic.activities.ActivityEntity;
+import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
 import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 
 @Service
 public class JpaActivityService implements ActivityService {
@@ -96,5 +99,15 @@ public class JpaActivityService implements ActivityService {
 					new ActivityTypeNotAllowedException(
 						"Activity's type is not allowed: " + type));
 	}
+	
+	@Override
+	public ActivityEntity getActivityById(String id) throws ActivityNotFoundException {
+		Optional<ActivityEntity> op = this.activities.findById(id);
+		if (op.isPresent()) {
+			return op.get();
+		} else {
+			throw new ActivityNotFoundException("No activity with id: " + id);
+		}
+}
 
 }

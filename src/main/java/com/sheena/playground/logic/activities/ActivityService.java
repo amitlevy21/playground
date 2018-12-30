@@ -2,8 +2,6 @@ package com.sheena.playground.logic.activities;
 
 import java.util.List;
 
-import com.sheena.playground.logic.activities.jpa.ActivityWithNoTypeException;
-
 
 public interface ActivityService {
 		
@@ -15,5 +13,7 @@ public interface ActivityService {
 
 	ActivityEntity addNewActivity(ActivityEntity activityEntity)
 			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException;
+
+	ActivityEntity getActivityById(String id) throws ActivityNotFoundException;
 	
 }

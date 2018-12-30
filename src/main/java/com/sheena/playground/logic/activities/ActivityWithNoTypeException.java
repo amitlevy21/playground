@@ -1,4 +1,4 @@
-package com.sheena.playground.logic.activities.jpa;
+package com.sheena.playground.logic.activities;
 
 public class ActivityWithNoTypeException extends Exception {
 

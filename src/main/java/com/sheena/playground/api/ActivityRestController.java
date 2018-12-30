@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
 import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
-import com.sheena.playground.logic.activities.jpa.ActivityWithNoTypeException;
+import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 
 @RestController
 public class ActivityRestController {
