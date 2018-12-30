@@ -22,7 +22,6 @@ public class WorkingDay {
 		this.workingDate = workingDate;
 	}
 
-
 	public int getNumOfWorkers() {
 		return numOfWorkers;
 	}

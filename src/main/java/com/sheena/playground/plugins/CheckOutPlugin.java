@@ -56,7 +56,6 @@ public class CheckOutPlugin implements Plugin {
 
 		}
 		command.getAttributes().put("validDate", isValidDate);
-		this.activities.save(command);
 
 		return new PlayerActivityResponse(rvMessage);
 	}

@@ -93,21 +93,20 @@ public class ElementEntity {
 
     public Date getCreationDate() {
 		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
+    }
+    public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
+    }
 
-	public Date getExpirationDate() {
+    public Date getExpirationDate() {
 		return expirationDate;
-	}
+    }
 
-	public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
-	}
+    }
 
-	public void setType(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 

@@ -30,12 +30,16 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sheena.playground.api.ActivityTO;
+import com.sheena.playground.api.ElementTO;
+import com.sheena.playground.api.Location;
 import com.sheena.playground.api.NewUserForm;
 import com.sheena.playground.api.UserTO;
 import com.sheena.playground.api.users.UserTOComparator;
 
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityService;
+import com.sheena.playground.logic.elements.ElementEntity;
+import com.sheena.playground.logic.elements.ElementService;
 import com.sheena.playground.logic.users.UsersService;
 
 @RunWith(SpringRunner.class)
@@ -43,7 +47,6 @@ import com.sheena.playground.logic.users.UsersService;
 public class ActivityRestControllerTests {
 	private static final String ACTIVITIES_URL = "/playground/activities/{userPlayground}/{email}";
 
-	private final int numCases = 3;
 	private final int numOfRoles = 2;
 
 	@LocalServerPort
@@ -61,6 +64,8 @@ public class ActivityRestControllerTests {
 	private ActivityService activityService;
 	@Autowired
 	private UsersService usersService;
+	@Autowired
+	private ElementService elementsService;
 
 	// Data attributes for users
 	private final String userName = "user";
@@ -149,7 +154,6 @@ public class ActivityRestControllerTests {
 		.isNotNull()
 		.usingComparator(this.userTOComparator)
 		.isEqualTo(expectedUserTO);
-		
 		
 		// when
 		ActivityTO activity = generateSpecificCheckInOut(
@@ -617,6 +621,69 @@ public class ActivityRestControllerTests {
 	}
 	
 	
+	@Test
+	public void testVerifiedPlayerCheckInSuccessfully() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 0;
+
+		NewUserForm newUser = generateSpecificNewUserForms(this.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(this.usersService.createNewUser(new UserTO(newUser, this.playground).toEntity()));
+
+		UserTO verifiedUser = new UserTO(this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
+				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.verificationCodeSuffix));
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+		
+		ElementEntity rvElement = this.elementsService.addNewElement(
+				generateSpecificElment(
+						this.CheckInType, 
+						this.CheckInType,
+						verifiedUser.getUsername(),
+						verifiedUser.getEmail(),
+						testId)
+				.toEntity());
+		
+		
+		// when
+		ActivityTO activity = generateSpecificCheckInOut(
+				this.CheckInType,
+				this.CheckInAttributesKey,
+				testId,
+				this.PRESENT,
+				verifiedUser,
+				rvElement);
+
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject( this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
+		ActivityEntity actual = 
+				this.activityService.getActivityById(actualActivity.getId());
+
+		assertThat(actual)
+		.isNotNull()
+		.extracting("attributes")
+		.extracting("response")
+		.containsExactly(successCheckInMessage);
+
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+	}
+	
 	private ActivityTO generateSpecificCheckInOut(String type, String attributesPattern, int testCaseNum, String when) {
 		Map<String, Object> attributes = new HashMap<>();
 		Date theDate;
@@ -648,12 +715,24 @@ public class ActivityRestControllerTests {
 
 	}		
 	
-	
 	private NewUserForm generateSpecificNewUserForms(String role, int testCaseNum) {
 		return new NewUserForm(
 				this.userName + "_" + testCaseNum + "_" + this.emailDomain,
 				this.userName + "_" + testCaseNum + "_",
 				this.avatar,
 				role);
+	}
+	
+	private ElementTO generateSpecificElment(String name, String type, String username, String email, int testCaseNum) throws ParseException {
+		Location dummyLocation = new Location();
+		String date1 = "12/26/2019";
+		String time1 = "08:58 PM";
+		Date expireationDate = sdf.parse(date1 + " " + time1);
+		Map<String, Object> attributes = new HashMap<>();
+		if (type.equalsIgnoreCase(this.CheckInType)) {
+			attributes = null;
+		}
+		
+		return new ElementTO(playground, dummyLocation, name, new Date(), expireationDate, type, attributes, username, email);
 	}
 }

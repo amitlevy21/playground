@@ -53,11 +53,7 @@ public class CheckInPlugin implements Plugin {
 			isValidDate = true;
 		}
 
-		// we can add here if condtion on if we want to save a worng check-In request
-		// use isValidDate therefore.
-
 		command.getAttributes().put("validDate", isValidDate);
-		this.activities.save(command);
 
 		return new PlayerActivityResponse(rvMessage);
 	}

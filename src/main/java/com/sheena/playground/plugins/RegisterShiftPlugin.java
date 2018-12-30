@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.dal.ActivityDao;
+import com.sheena.playground.dal.ElementDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityService;
+import com.sheena.playground.logic.elements.ElementService;
 
 
 public class RegisterShiftPlugin implements Plugin {
@@ -20,32 +22,35 @@ public class RegisterShiftPlugin implements Plugin {
 	private ObjectMapper jackson;
 	private WorkingDay workingDay;
 	private ActivityDao activities;
+	private ElementService elememts;
 	
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
 		this.workingDay = new WorkingDay();
 	}
-
+	
 	@Autowired
-	public void setActivities(ActivityDao actvities) {
+	public RegisterShiftPlugin(ActivityDao actvities, ElementService elememts) {
 		this.activities = actvities;
+		this.elememts = elememts;
 	}
 
+	
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
 		boolean isSuccesRegister = false;
 		String rvMessage = "";
 
-		/*RegisterShiftForm shiftReq =
+		RegisterShiftForm shiftReq =
 				jackson.readValue(command.getJsonAttributes(), RegisterShiftForm.class);
 		
 		// setting the date of working day
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//		Date dateWithoutTime = sdf.parse(sdf.format(shiftReq.getShiftDate()));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date dateWithoutTime = sdf.parse(sdf.format(shiftReq.getShiftDate()));
 //		this.workingDay.setWorkingDate(dateWithoutTime);
 		
-		this.activities.getActivitiesByType(rvMessage, size, page)
+		this.workingDay = (WorkingDay) this.elememts.getElementsAttribute("WorkingDay.workingDate", dateWithoutTime);
 		
 		if (shiftReq.getHours() > this.workingDay.getMaxWorkingHours()) {
 			rvMessage = "Max. hours for working day is: " 
@@ -62,8 +67,8 @@ public class RegisterShiftPlugin implements Plugin {
 		// we can add here if condtion on if we want to save a worng check-In request
 		// use isValidDate therefore.
 
-		command.getAttributes().put("register", isSuccesRegister);
-		this.activities.save(command);*/
+		command.getAttributes().put("registered", isSuccesRegister);
+		this.activities.save(command);
 
 		return new PlayerActivityResponse(rvMessage);
 	}

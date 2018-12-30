@@ -32,15 +32,16 @@ public class JpaActivityService implements ActivityService {
 	// Get the name of the playground from application.properties
 	@Value("${name.of.playground}")
 	private String PLAYGROUND_NAME;
-		
+
 	private ActivityDao activities;
 	private IdGeneratorDao idGenerator;
-	
+
 	private ConfigurableApplicationContext spring;
 	private ObjectMapper jackson;
 
 	@Autowired
-	public JpaActivityService(ActivityDao activities, IdGeneratorDao idGenerator, ConfigurableApplicationContext spring) {
+	public JpaActivityService(ActivityDao activities, IdGeneratorDao idGenerator,
+			ConfigurableApplicationContext spring) {
 		this.activities = activities;
 		this.idGenerator = idGenerator;
 		this.spring = spring;
@@ -59,17 +60,15 @@ public class JpaActivityService implements ActivityService {
 	@Transactional(readOnly = true)
 	@MyLog
 	public List<ActivityEntity> getAllActivities(int size, int page) {
-		/*List<ActivityEntity> allList = new ArrayList<>();
-		this.activities.findAll().forEach(o -> allList.add(o));
-
-		return allList.stream() // MessageEntity stream
-				.skip(size * page) // MessageEntity stream
-				.limit(size) // MessageEntity stream
-				.collect(Collectors.toList()); // List
-*/	
-		return this.activities
-				.findAll(PageRequest.of(page, size, Direction.ASC, "id"))
-				.getContent();
+		/*
+		 * List<ActivityEntity> allList = new ArrayList<>();
+		 * this.activities.findAll().forEach(o -> allList.add(o));
+		 * 
+		 * return allList.stream() // MessageEntity stream .skip(size * page) //
+		 * MessageEntity stream .limit(size) // MessageEntity stream
+		 * .collect(Collectors.toList()); // List
+		 */
+		return this.activities.findAll(PageRequest.of(page, size, Direction.ASC, "id")).getContent();
 	}
 
 	@Override
@@ -80,43 +79,42 @@ public class JpaActivityService implements ActivityService {
 //			throw new ActivityTypeNotSupportedException("Activity's type is not supported: " + activityEntity.getType());
 //		}
 		activityEntity.setPlayground(PLAYGROUND_NAME);
-		
+
 		IdGenerator tmp = this.idGenerator.save(new IdGenerator());
 		Long dummyId = tmp.getId();
 		this.idGenerator.delete(tmp);
 		activityEntity.setId("" + dummyId);
 		ActivityEntity rv = this.activities.save(activityEntity);
-		
+
 		try {
 			if (rv.getType() != null) {
 				String type = rv.getType();
-				Plugin plugin = (Plugin) spring.getBean(Class.forName("com.sheena.playground.plugins." + type + "Plugin"));
+				Plugin plugin = (Plugin) spring
+						.getBean(Class.forName("com.sheena.playground.plugins." + type + "Plugin"));
 				Object content = plugin.execute(rv);
-				rv.setAttributes(jackson.readValue(jackson.writeValueAsString(content), Map.class));
+				Map<String, Object> rvMap = this.jackson.readValue(this.jackson.writeValueAsString(rv), Map.class);
+				activityEntity.getAttributes().putAll(rvMap);
 			}
 		} catch (ClassNotFoundException e) {
-			throw new ActivityTypeNotSupportedException(
-					"Activity type is not supported: " + rv.getType());
-		}catch (Exception e) {
+			throw new ActivityTypeNotSupportedException("Activity type is not supported: " + rv.getType());
+		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			throw new RuntimeException(e);
 		}
-		
-		return rv;
+
+		return this.activities.save(activityEntity);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	@MyLog
 	public List<ActivityEntity> getActivitiesByType(String type, int size, int page) throws ActivityNotFoundException {
-		/*return this.activities.findById(type)
-				.orElseThrow(() -> new ActivityNotFoundException("Activity's type is not found: " + type));
-		 */	
-		return this.activities
-				.findAllByTypeLike(
-						type, 
-						PageRequest.of(page, size, Direction.ASC, "id"));
-	
+		/*
+		 * return this.activities.findById(type) .orElseThrow(() -> new
+		 * ActivityNotFoundException("Activity's type is not found: " + type));
+		 */
+		return this.activities.findAllByTypeLike(type, PageRequest.of(page, size, Direction.ASC, "id"));
+
 	}
 
 	@Override

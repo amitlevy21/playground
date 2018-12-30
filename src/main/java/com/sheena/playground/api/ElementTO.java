@@ -13,12 +13,12 @@ public class ElementTO {
 	private String name;
 	private String id;
 	private Date creationDate;
-    private Date expirationDate;
-    private String type;
+        private Date expirationDate;
+        private String type;
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
-
+	
 	public ElementTO() {
 	}
 
@@ -72,22 +72,6 @@ public class ElementTO {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-//	public Calendar getCreationDate() {
-//		return creationDate;
-//	}
-//
-//	public void setCreationDate(Calendar creationDate) {
-//		this.creationDate = creationDate;
-//	}
-//
-//	public Calendar getExpirationDate() {
-//		return expirationDate;
-//	}
-//
-//	public void setExpirationDate(Calendar expirationDate) {
-//		this.expirationDate = expirationDate;
-//	}
 
 	public String getId() {
 		return id;
@@ -164,7 +148,7 @@ public class ElementTO {
 		rv.setCreatorEmail(this.creatorEmail);
 		return rv;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
