@@ -1,6 +1,7 @@
 services:
   core:
     build: .
+    command: bash run_test.sh
     restart: always
     container_name: playground
     ports:
@@ -19,6 +20,6 @@ services:
       - ./data_bkp:/data/bkp
     restart: always
 
-  sut:
-    build: .
-    command: bash run_test.sh
+  # sut:
+  #   build: .
+  #   command: bash run_test.sh
