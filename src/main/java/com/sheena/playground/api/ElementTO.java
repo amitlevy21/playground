@@ -73,22 +73,6 @@ public class ElementTO {
 		this.name = name;
 	}
 
-//	public Calendar getCreationDate() {
-//		return creationDate;
-//	}
-//
-//	public void setCreationDate(Calendar creationDate) {
-//		this.creationDate = creationDate;
-//	}
-//
-//	public Calendar getExpirationDate() {
-//		return expirationDate;
-//	}
-//
-//	public void setExpirationDate(Calendar expirationDate) {
-//		this.expirationDate = expirationDate;
-//	}
-
 	public String getId() {
 		return id;
 	}
@@ -99,6 +83,10 @@ public class ElementTO {
 
 	public String getType() {
 		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public Date getCreationDate() {
@@ -115,10 +103,6 @@ public class ElementTO {
 
 	public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public Map<String, Object> getAttributes() {

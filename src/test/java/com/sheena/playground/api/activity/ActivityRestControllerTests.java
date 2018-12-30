@@ -18,18 +18,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sheena.playground.api.ActivityTO;
-import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityService;
 import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.jpa.ActivityWithNoTypeException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ActivityRestControllerTests {
+	
 	@LocalServerPort
 	private int port;
 
@@ -38,85 +40,40 @@ public class ActivityRestControllerTests {
 	private RestTemplate restTemplate;
 
 	private ObjectMapper jsonMapper;
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
 	@Autowired
 	private ActivityService activityService;
 	
-	//dummy1 and dummy2 are equals
-	private ActivityTO dummy1;
-	private ActivityTO dummy2;
-	
-	private String playground;
-	private String allowedType;
-	private String dummyEmail;
 
 	@PostConstruct
 	public void init() {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/activities/{userPlayground}/{email}";
-		this.playground = "Sheena.2019A";
-		this.allowedType  = "Echo";
-		this.dummyEmail = "MyDummyEmail";
-		// Jackson init
 		this.jsonMapper = new ObjectMapper();
 		
-		//System.err.println(this.url);
+		System.err.println(this.url);
 	}
 
 	@Before
 	public void setup() {
-		Map<String, Object> customAttributes = new HashMap<>();
-		customAttributes.put("language", "java");
-		customAttributes.put("numOfStudyYrs", 4);
 		
-		this.dummy1 = new ActivityTO(
-				"playground",
-				"elementPlayground",
-				"elementId",
-				this.allowedType,
-				this.playground,
-				this.dummyEmail,
-				customAttributes);
-		
-		this.dummy2 = new ActivityTO(
-				"playground",
-				"elementPlayground",
-				"elementId",
-				this.allowedType,
-				this.playground,
-				this.dummyEmail,
-				customAttributes);
 	}
 
 	@After
 	public void teardown() {
 		this.activityService.cleanup();
 	}
-
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
 	
 	@Test
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
-
-	@Test(expected = Exception.class)
-	public void testCreateActivityWithExistingActivity() throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
-		// Given
-		// The server is up and a specific activity already exists (in the setup() function)
-		this.activityService.addNewActivity(this.dummy1.toActivityEntity());
-		
-		// When
-		this.restTemplate.patchForObject(
-				this.url,
-				this.dummy2,
-				ActivityTO.class,
-				this.playground, 
-				this.dummyEmail);
-		
-		// Then 
-		// an ActivityAlreadyExistsException occurs
-	}
 	
+	@Test
+	public void testCreateActivityWithoutType() {
+		
+	}
 	
 }
