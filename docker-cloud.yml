@@ -8,7 +8,7 @@ lb:
   roles:
     - global
 
-springboot-mongo:
+playground-mongo:
   image: mongo
   restart: always
   ports:
