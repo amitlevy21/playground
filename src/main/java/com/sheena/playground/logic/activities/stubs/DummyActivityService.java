@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 
 //import org.springframework.stereotype.Service;
 
-import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
@@ -45,13 +44,9 @@ public class DummyActivityService implements ActivityService {
 
 	@Override
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
-			throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
+			throws ActivityTypeNotAllowedException {
 		if (!activityEntity.getType().equals(ALLOWED_TYPE)) {
 			throw new ActivityTypeNotAllowedException("Activity type is not: " + ALLOWED_TYPE);
-		}
-
-		if (this.activities.containsKey(activityEntity.getType())) {
-			throw new ActivityAlreadyExistsException("Activity already exists with type: " + activityEntity.getType());
 		}
 
 		this.activities.put(activityEntity.getType(), activityEntity);

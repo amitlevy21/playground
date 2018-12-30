@@ -1,34 +1,40 @@
 package com.sheena.playground.logic.activities.jpa;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.jpa.IdGenerator;
 import com.sheena.playground.logic.jpa.IdGeneratorDao;
-import com.sheena.playground.logic.activities.ActivityAlreadyExistsException;
+
+import com.sheena.playground.plugins.PlaygroundPlugin;
+
 import com.sheena.playground.logic.activities.ActivityEntity;
-import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
 import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
 
-
 @Service
 public class JpaActivityService implements ActivityService {
-	private final String ALLOWED_TYPE = "Echo";
 	private ActivityDao activities;
 	private IdGeneratorDao idGenerator;
+	private ApplicationContext spring;
+	private ObjectMapper jackson;
 	
 	@Autowired
-	public JpaActivityService(ActivityDao activities, IdGeneratorDao idGenerator) {
+	public JpaActivityService(ActivityDao activities, IdGeneratorDao idGenerator, ApplicationContext spring) {
 		super();
 		this.activities = activities;
 		this.idGenerator = idGenerator;
+		this.spring = spring;
+		this.jackson = new ObjectMapper();
 	}
 
 	@Override
@@ -41,38 +47,43 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional(readOnly=true)
 	public List<ActivityEntity> getAllActivities(int size, int page) {
-		List<ActivityEntity> allList = new ArrayList<>();
-		this.activities
-				.findAll()
-				.forEach(o->allList.add(o));
-		
-		return 
-			allList
-			.stream() // MessageEntity stream
-			.skip(size * page) // MessageEntity stream 
-			.limit(size) // MessageEntity stream
-			.collect(Collectors.toList()); // List
+		Page<ActivityEntity> activitiesPage = activities.findAll(PageRequest.of(page, size));
+		return activitiesPage.getContent();
 	}
 
 	@Override
 	@Transactional
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
-			throws ActivityTypeNotAllowedException, ActivityAlreadyExistsException {
-		if (!activityEntity.getType().equals(ALLOWED_TYPE)) {
-			throw new ActivityTypeNotAllowedException("Activity type is not: " + ALLOWED_TYPE);
-		}
-		if (this.activities.existsById(activityEntity.getType())) {
-			throw new ActivityAlreadyExistsException("Activity already exists with type: " + activityEntity.getType());
-		}
-		else {
-			IdGenerator tmp = this.idGenerator.save(new IdGenerator()); 
-			Long dummyId = tmp.getId();
-			this.idGenerator.delete(tmp);
+			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException {
+		if(activityEntity.getType() == null)
+			throw new ActivityWithNoTypeException("activity must have field: type");
+		
+		try {
+			String type = activityEntity.getType();
+			String className = "com.sheena.playground.plugins." + type + "Plugin";
+			Class<?> theClass = Class.forName(className);
 			
-			activityEntity.setId("" + dummyId);
+			PlaygroundPlugin plugin = (PlaygroundPlugin) this.spring.getBean(theClass);
+			Object rv = plugin.invokeOperation(activityEntity);
 			
-			return this.activities.save(activityEntity);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> rvMap = this.jackson.readValue(
+					this.jackson.writeValueAsString(rv),
+					Map.class);
+			
+			activityEntity.getAttributes().putAll(rvMap);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
+		
+		IdGenerator tmp = this.idGenerator.save(new IdGenerator()); 
+		Long dummyId = tmp.getId();
+		this.idGenerator.delete(tmp);
+		
+		activityEntity.setId("" + dummyId);
+		
+		return this.activities.save(activityEntity);
+		
 	}
 
 	@Override
