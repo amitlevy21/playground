@@ -1,9 +1,11 @@
+version: '3.1'
+
 services:
   core:
     build: .
-    command: bash run_test.sh
     restart: always
     container_name: playground
+    command: bash run_test.sh
     ports:
       - 8083:8083
     working_dir: /opt/app
@@ -19,7 +21,4 @@ services:
       - ./data:/data/db
       - ./data_bkp:/data/bkp
     restart: always
-
-  # sut:
-  #   build: .
-  #   command: bash run_test.sh
+  
