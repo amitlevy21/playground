@@ -31,8 +31,7 @@ public class ActivityRestController {
     public Object addNewActivity(
         @PathVariable("userPlayground") String userPlayground,
         @PathVariable("email") String email,
-        @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityTypeNotAllowedException, ActivityWithNoTypeException {
-    	  	    	
+        @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityTypeNotAllowedException, ActivityWithNoTypeException {	    	
     	return new ActivityTO(
     				this.activityService.addNewActivity(
     						newActivityTO.toActivityEntity(), userPlayground, email));

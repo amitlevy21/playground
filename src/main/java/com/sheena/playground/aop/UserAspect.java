@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.management.RuntimeErrorException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,7 +13,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ejb.access.EjbAccessException;
 import org.springframework.stereotype.Component;
 
 import com.sheena.playground.api.ElementTO;
@@ -143,8 +141,9 @@ public class UserAspect {
 			throw e;
 		} catch (RolePrivilageException e) {
 			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
 		}
 	}
 
