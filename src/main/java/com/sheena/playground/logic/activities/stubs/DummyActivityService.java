@@ -15,6 +15,7 @@ import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
 import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 
 //@Service
 public class DummyActivityService implements ActivityService {
@@ -42,7 +43,7 @@ public class DummyActivityService implements ActivityService {
 				.collect(Collectors.toList()); // List
 	}
 
-	@Override
+//	@Override
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
 			throws ActivityTypeNotAllowedException {
 		if (!activityEntity.getType().equals(ALLOWED_TYPE)) {
@@ -60,6 +61,19 @@ public class DummyActivityService implements ActivityService {
 			throw new ActivityTypeNotAllowedException("Activity not found for type: " + type);
 		}
 		return rv;
+	}
+
+	@Override
+	public ActivityEntity getActivityById(String id) throws ActivityNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ActivityEntity addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
+			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

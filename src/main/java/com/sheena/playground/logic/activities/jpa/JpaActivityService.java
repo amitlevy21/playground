@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sheena.playground.aop.IsUserPlayer;
 import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.jpa.IdGenerator;
 import com.sheena.playground.logic.jpa.IdGeneratorDao;
@@ -56,7 +57,8 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	@Transactional
-	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
+	@IsUserPlayer
+	public ActivityEntity addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
 			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException {
 		if(activityEntity.getType() == null)
 			throw new ActivityWithNoTypeException("activity must have field: type");
@@ -82,11 +84,8 @@ public class JpaActivityService implements ActivityService {
 		IdGenerator tmp = this.idGenerator.save(new IdGenerator()); 
 		Long dummyId = tmp.getId();
 		this.idGenerator.delete(tmp);
-		
 		activityEntity.setId("" + dummyId);
-		
 		return this.activities.save(activityEntity);
-		
 	}
 
 	@Override
@@ -106,7 +105,7 @@ public class JpaActivityService implements ActivityService {
 		if (op.isPresent()) {
 			return op.get();
 		} else {
-			throw new ActivityNotFoundException("No activity with id: " + id);
+			throw new ActivityNotFoundException("No activity found with id: " + id);
 		}
 }
 

@@ -35,6 +35,6 @@ public class ActivityRestController {
     	  	    	
     	return new ActivityTO(
     				this.activityService.addNewActivity(
-    						newActivityTO.toActivityEntity()));
+    						newActivityTO.toActivityEntity(), userPlayground, email));
     }
 }

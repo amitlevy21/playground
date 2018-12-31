@@ -14,16 +14,28 @@ import com.sheena.playground.api.NewUserForm;
 public class ActivityRestControllerTestsHelper {
 	private final String format = "MM/dd/yyyy hh:mm a";
 	private SimpleDateFormat sdf;
-	public static String FUTURE_DATE = "FUTURE";
-	public static String PAST_DATE = "PAST";
-	public static String PRESENT_DATE = "PAST";
+	public final String FUTURE_DATE = "FUTURE";
+	public final String PAST_DATE = "PAST";
+	public final String PRESENT_DATE = "PRESENT";
 	
 	// Data attributes for users
 	private final String userName = "user";
 	private final String emailDomain = "@afeka.edu";
 	private final String avatar = "lion";
-	private final String userPlayground = "userPlayground";
+	public final String playerRole = "player";
+	public final String managerRole = "manager";
+	public final String playground = "Sheena.2019A";
+	public final String verificationCodeSuffix = "code";
 	
+	// Data attributes for elements
+	public final String checkInOutElement = "AttendanceClock";
+
+	// Data attributes for check - IN&OUT plugin
+	public final String SUCCESS_CHECK_IN_MESSAGE = "Welcome, have a nice day!";
+	public final String CHECK_IN_TYPE = "CheckIn";
+	public final String SUCCESS_CHECK_OUT_MESSAGE = "Thank You, Goodbye!";
+	public final String CHECK_OUT_TYPE = "CheckOut";
+
 	// Data attributes for Check - IN&OUT
 	private String checkInOutForm = "currentDate";
 	
@@ -71,6 +83,7 @@ public class ActivityRestControllerTestsHelper {
 			} else {
 				theDate = new Date();
 			}
+//			System.err.println(theDate.toString());
 			attributes.put(checkInOutForm, theDate);
 		} catch (ParseException e) {
 			System.err.println(e.getMessage());

@@ -12,6 +12,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ejb.access.EjbAccessException;
 import org.springframework.stereotype.Component;
 
 import com.sheena.playground.api.ElementTO;
@@ -141,7 +142,9 @@ public class UserAspect {
 		} catch (RolePrivilageException e) {
 			throw e;
 		} catch (Throwable e) {
-			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+//			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+//			e.printStackTrace();
+			throw new Exception(e);
 		}
 	}
 
