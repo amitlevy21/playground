@@ -182,7 +182,70 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.FUTURE_DATE);
+		
+		this.exception.expect(HttpServerErrorException.class);
+		this.exception.expectMessage("500");
+		
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+		
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+		
+		
+		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
+		
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+		
+	}
+	
+	@Test
+	public void testVerifiedPlayerCheckInWithPastDate() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 1;
 
+		NewUserForm newUser = this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
+				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+		
+//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+		
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
+
+		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+				this.helper.CHECK_IN_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
+
+		// when
+		ActivityTO activity = this.helper.generateSpecificActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				elementEntity.getType(),
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.PAST_DATE);
+		
+		this.exception.expect(HttpServerErrorException.class);
+		this.exception.expectMessage("500");
+		
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,

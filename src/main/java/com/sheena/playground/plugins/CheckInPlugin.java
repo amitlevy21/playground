@@ -43,6 +43,7 @@ public class CheckInPlugin implements PlaygroundPlugin {
 
 	@Override
 	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
+		
 		ElementEntity elementEtity = this.elementService.getElementById(activityEntity.getElementId()); 
 		String elementType = elementEtity.getType();
 		if (!elementType.equalsIgnoreCase(CHECK_IN_TYPE)) {
