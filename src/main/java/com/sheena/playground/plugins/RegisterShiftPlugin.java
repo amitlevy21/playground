@@ -2,7 +2,10 @@ package com.sheena.playground.plugins;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.dal.ActivityDao;
@@ -10,10 +13,10 @@ import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 
+@Component
 public class RegisterShiftPlugin implements PlaygroundPlugin {
 	private String REGISTER_SHIFT_TYPE = "registerShift";
 	private String SUCCESS_REGISTER_MESSAGE = "You successfully registered to the shift";
-
 
 	private ObjectMapper jackson;
 	private ActivityDao activities;
@@ -21,7 +24,9 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 	private WorkingDay helper;
 	private WorkingDayResponse workingDayResponse;
 
-	public RegisterShiftPlugin() {
+	@PostConstruct
+	public void init() {
+		this.jackson = new ObjectMapper();
 		this.helper = new WorkingDay();
 		this.workingDayResponse = new WorkingDayResponse();
 	}
@@ -30,6 +35,7 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 	public void setActivities(ActivityDao activities) {
 		this.activities = activities;
 	}
+
 	@Autowired
 	public void setElementService(ElementService elementService) {
 		this.elementService = elementService;
@@ -37,46 +43,46 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 
 	@Override
 	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
-		ElementEntity elementEtity = this.elementService.getElementById(activityEntity.getElementId()); 
+//		System.err.println(activityEntity);
+
+		ElementEntity elementEtity = this.elementService.getElementById(activityEntity.getElementId());
 		String elementType = elementEtity.getType();
+//		System.err.println(elementEtity);
 		if (!elementType.equalsIgnoreCase(REGISTER_SHIFT_TYPE)) {
 			throw new ElementDoesNotMatchActivityException(
 					"activity register shift requires element of type: " + REGISTER_SHIFT_TYPE);
 		}
 
-		ShiftDetails shiftDetails = jackson.readValue(
-				this.jackson.writeValueAsString(
-						elementEtity.getAttributes()), ShiftDetails.class);
-
 		RegisterCancelShiftForm form = jackson.readValue(
-				this.jackson.writeValueAsString(
-						activityEntity.getAttributes()),
-				RegisterCancelShiftForm.class);
+				this.jackson.writeValueAsString(activityEntity.getAttributes()), RegisterCancelShiftForm.class);
 
-		boolean isSameDate = 
-				(this.helper.getDatePart(shiftDetails.getShiftDate()) - this.helper.getDatePart(form.getWantedShiftDate()) == 0);
+		ShiftDetails shiftDetails = jackson.readValue(this.jackson.writeValueAsString(elementEtity.getAttributes()),
+				ShiftDetails.class);
 
+		boolean isSameDate = (this.helper.getDatePart(shiftDetails.getShiftDate())
+				- this.helper.getDatePart(form.getWantedShiftDate()) == 0);
+
+		if (shiftDetails.getCurrentWorkersInShift() >= shiftDetails.getMaxWorkersInShift()) {
+			throw new RgisterCancelShiftException("Sorry, shift is full!");
+		}
+		
 		if (!isSameDate) {
 			throw new RgisterCancelShiftException("Sorry, there is no shift in this date!");
-		} else if (shiftDetails.getCurrentWorkersInShift() >= shiftDetails.getMaxWorkersInShift()) {
-			throw new RgisterCancelShiftException("Sorry, shift is full!");
-		}else {
-			shiftDetails.addWorker(activityEntity.getPlayerEmail());
-
-			Map updateAttributes = jackson.readValue(
-					this.jackson.writeValueAsString(
-							shiftDetails), Map.class);
-
-			elementEtity.setAttributes(updateAttributes);
-
-			this.elementService.updateElement(elementEtity.getId(), elementEtity);
-			
-			this.workingDayResponse.setMessage(SUCCESS_REGISTER_MESSAGE);
-			this.workingDayResponse.setTimeStamp(shiftDetails.getShiftDate());
-			this.workingDayResponse.setWorkerEmail(activityEntity.getPlayerEmail());
-			this.workingDayResponse.setWorkerPlayground(activityEntity.getPlayerPlayground());
-
 		}
+		
+		shiftDetails.addWorker(activityEntity.getPlayerEmail());
+
+		Map updateAttributes = jackson.readValue(this.jackson.writeValueAsString(shiftDetails), Map.class);
+
+		elementEtity.setAttributes(updateAttributes);
+
+		this.elementService.updateElement(elementEtity.getId(), elementEtity);
+
+		this.workingDayResponse.setMessage(SUCCESS_REGISTER_MESSAGE);
+		this.workingDayResponse.setTimeStamp(shiftDetails.getShiftDate());
+		this.workingDayResponse.setWorkerEmail(activityEntity.getPlayerEmail());
+		this.workingDayResponse.setWorkerPlayground(activityEntity.getPlayerPlayground());
+
 		return this.workingDayResponse;
 
 	}

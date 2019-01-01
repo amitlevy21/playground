@@ -29,6 +29,7 @@ public class ActivityRestControllerTestsHelper {
 	
 	// Data attributes for elements
 	public final String checkInOutElement = "AttendanceClock";
+	public final String RgisterCancelShiftElement = "WorkingDay";
 
 	// Data attributes for check - IN&OUT plugin
 	public final String SUCCESS_CHECK_IN_MESSAGE = "Welcome, have a nice day!";
@@ -36,7 +37,10 @@ public class ActivityRestControllerTestsHelper {
 	public final String SUCCESS_CHECK_OUT_MESSAGE = "Thank You, Goodbye!";
 	public final String CHECK_OUT_TYPE = "CheckOut";
 
-	// Data attributes for Check - IN&OUT
+	//  Data attributes for Register shift
+	public final String REGISTER_SHIFT_TYPE = "RegisterShift";
+
+	// Data attributes for Forms
 	private String checkInOutForm = "currentDate";
 	
 	public ActivityRestControllerTestsHelper() {
@@ -50,7 +54,13 @@ public class ActivityRestControllerTestsHelper {
 	}
 
 
-	public ElementTO generateSpecificCheckInOutElement(String playground, String name, String type, String username, String email, int testCaseNum) {
+	public ElementTO generateSpecificCheckInOutElement(
+			String playground,
+			String name,
+			String type,
+			String username,
+			String email,
+			int testCaseNum) {
 		Date expireationDate = null;
 		try {
 			String date1 = "12/26/2019";
@@ -67,7 +77,7 @@ public class ActivityRestControllerTestsHelper {
 }
 
 
-	public ActivityTO generateSpecificActivity(String playground, String elementPlayground, String elementId, String type,
+	public ActivityTO generateSpecificCheckInOutActivity(String playground, String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, String when) {
 		Map<String, Object> attributes = new HashMap<>();
 		Date theDate;
@@ -84,8 +94,66 @@ public class ActivityRestControllerTestsHelper {
 			} else {
 				theDate = new Date();
 			}
-//			System.err.println(theDate.toString());
+			
 			attributes.put(checkInOutForm, theDate);
+		} catch (ParseException e) {
+			System.err.println(e.getMessage());
+		}
+
+		return new ActivityTO(playground, elementPlayground, elementId, type,
+				playerPlayground, playerEmail, attributes);
+	}
+
+
+	public ElementTO generateSpecificShiftElement(
+			String playground,
+			String name,
+			String type,
+			String username,
+			String email,
+			int testCaseNum) {
+		Date expireationDate;
+		Map<String, Object> attributes = new HashMap<>();
+		try {
+			String date1 = "05/14/2019"; // May 14, 2019
+			String time1 = "08:58 PM";
+			expireationDate = this.sdf.parse(date1 + " " + time1);
+			attributes.put("shiftDate", expireationDate);
+			attributes.put("shiftHours", 8);
+			attributes.put("maxWorkersInShift", 1);
+			Map<String, Object> workersMap = new HashMap<>();
+			attributes.put("workers", workersMap);
+			
+			Location dummyLocation = new Location();
+			
+			return new ElementTO(
+					playground, dummyLocation, name,
+					new Date(), expireationDate,
+					type, attributes, username, email);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+	
+
+
+	public ActivityTO generateSpecificregisterCancelShiftActivity(String playground, String elementPlayground, String elementId, String type,
+			String playerPlayground, String playerEmail, boolean DateWithExistsShift) {
+		Map<String, Object> attributes = new HashMap<>();
+		Date theDate;
+		String date = "", time = "";
+		try {
+			if (DateWithExistsShift) {
+				date = "05/14/2019"; // May 14, 2019
+				time = "08:58 PM";   // Not really important
+				theDate = sdf.parse(date + " " + time);
+			} else {
+				theDate = new Date(); // No shift is plans from now to now
+			}
+			System.err.println("Seleted Date is: " + theDate + "\nand DateWithExistsShift: " + DateWithExistsShift);
+			attributes.put("wantedShiftDate", theDate);
 		} catch (ParseException e) {
 			System.err.println(e.getMessage());
 		}

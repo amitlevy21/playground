@@ -26,7 +26,6 @@ public class CheckInPlugin implements PlaygroundPlugin {
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
-//		this.attendanceClock = new AttendanceClock();
 		this.attendanceClockResponse = new AttendanceClockResponse();
 	}
 

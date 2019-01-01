@@ -67,10 +67,8 @@ public class JpaActivityService implements ActivityService {
 			String type = activityEntity.getType();
 			String className = "com.sheena.playground.plugins." + type + "Plugin";
 			Class<?> theClass = Class.forName(className);
-			
 			PlaygroundPlugin plugin = (PlaygroundPlugin) this.spring.getBean(theClass);
 			Object rv = plugin.invokeOperation(activityEntity);
-			
 			@SuppressWarnings("unchecked")
 			Map<String, Object> rvMap = this.jackson.readValue(
 					this.jackson.writeValueAsString(rv),
@@ -78,6 +76,7 @@ public class JpaActivityService implements ActivityService {
 			
 			activityEntity.getAttributes().putAll(rvMap);
 		} catch (Exception e) {
+			
 			throw new RuntimeException(e);
 		}
 		

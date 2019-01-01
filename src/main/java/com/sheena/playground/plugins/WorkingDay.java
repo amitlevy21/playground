@@ -6,7 +6,6 @@ import java.util.Date;
 public class WorkingDay {
 
 	public WorkingDay() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public long getDatePart(Date date) {
