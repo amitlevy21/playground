@@ -142,8 +142,7 @@ public class UserAspect {
 		} catch (RolePrivilageException e) {
 			throw e;
 		} catch (Throwable e) {
-			e.printStackTrace();
-			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+			throw new Exception(e);
 		}
 	}
 
