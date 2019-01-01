@@ -19,7 +19,6 @@ public class CheckOutPlugin implements PlaygroundPlugin {
 	private final String SUCCESS_CHECK_OUT_MESSAGE = "Thank You, Goodbye!";
 	
 	private ObjectMapper jackson;
-	private AttendanceClock attendanceClock;
 	private AttendanceClockResponse attendanceClockResponse;
 	private ActivityDao activities;
 	private ElementService elementService;
@@ -27,7 +26,6 @@ public class CheckOutPlugin implements PlaygroundPlugin {
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
-		this.attendanceClock = new AttendanceClock();
 		this.attendanceClockResponse = new AttendanceClockResponse();
 	}
 
@@ -49,15 +47,19 @@ public class CheckOutPlugin implements PlaygroundPlugin {
 			throw new ElementDoesNotMatchActivityException(
 					"activity CheckOut requires element of type: " + CHECK_OUT_TYPE);
 		}
+		AttendanceClock attendanceClock = jackson.readValue(
+				this.jackson.writeValueAsString(
+						elementEtity.getAttributes()), AttendanceClock.class);
 		
-		WorkingForm form = jackson
-				.readValue(this.jackson
-						.writeValueAsString(activityEntity.getAttributes()), WorkingForm.class);
+		CheckInOutForm form = jackson.readValue(
+				this.jackson.writeValueAsString(
+						activityEntity.getAttributes()),
+						CheckInOutForm.class);
 		
 		// getTime() returns the number of milliseconds since January 1, 1970, 00:00:00
 		// GMT represented by this Date object
 		long diff = 
-				this.attendanceClock.getServerCurrentDate().getTime() - form.getCurrentDate().getTime();
+				attendanceClock.getServerCurrentDate().getTime() - form.getCurrentDate().getTime();
 
 		int diffmin = (int) (diff / (60 * 1000));
 		
@@ -66,7 +68,7 @@ public class CheckOutPlugin implements PlaygroundPlugin {
 		}
 		
 		this.attendanceClockResponse.setMessage(SUCCESS_CHECK_OUT_MESSAGE);
-		this.attendanceClockResponse.setTimeStamp(this.attendanceClock.getServerCurrentDate());
+		this.attendanceClockResponse.setTimeStamp(attendanceClock.getServerCurrentDate());
 		this.attendanceClockResponse.setWorkerEmail(activityEntity.getPlayerEmail());
 		this.attendanceClockResponse.setWorkerPlayground(activityEntity.getPlayerPlayground());
 		

@@ -19,7 +19,6 @@ public class CheckInPlugin implements PlaygroundPlugin {
 	private final String SUCCESS_CHECK_IN_MESSAGE = "Welcome, have a nice day!";
 
 	private ObjectMapper jackson;
-	private AttendanceClock attendanceClock;
 	private AttendanceClockResponse attendanceClockResponse;
 	private ActivityDao activities;
 	private ElementService elementService;
@@ -27,7 +26,7 @@ public class CheckInPlugin implements PlaygroundPlugin {
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
-		this.attendanceClock = new AttendanceClock();
+//		this.attendanceClock = new AttendanceClock();
 		this.attendanceClockResponse = new AttendanceClockResponse();
 	}
 
@@ -43,7 +42,6 @@ public class CheckInPlugin implements PlaygroundPlugin {
 
 	@Override
 	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
-		
 		ElementEntity elementEtity = this.elementService.getElementById(activityEntity.getElementId()); 
 		String elementType = elementEtity.getType();
 		if (!elementType.equalsIgnoreCase(CHECK_IN_TYPE)) {
@@ -51,14 +49,19 @@ public class CheckInPlugin implements PlaygroundPlugin {
 					"activity CheckIn requires element of type: " + CHECK_IN_TYPE);
 		}
 		
-		WorkingForm form = jackson
-				.readValue(this.jackson
-						.writeValueAsString(activityEntity.getAttributes()), WorkingForm.class);
+		AttendanceClock attendanceClock = jackson.readValue(
+				this.jackson.writeValueAsString(
+						elementEtity.getAttributes()), AttendanceClock.class);
+		
+		CheckInOutForm form = jackson.readValue(
+				this.jackson.writeValueAsString(
+						activityEntity.getAttributes()),
+						CheckInOutForm.class);
 		
 		// getTime() returns the number of milliseconds since January 1, 1970, 00:00:00
 		// GMT represented by this Date object
 		long diff = 
-				this.attendanceClock.getServerCurrentDate().getTime() - form.getCurrentDate().getTime();
+				attendanceClock.getServerCurrentDate().getTime() - form.getCurrentDate().getTime();
 		int diffmin = (int) (diff / (60 * 1000));
 		
 		if (diffmin < 0 || diffmin > MINS_IN_HOUR) {
@@ -66,7 +69,7 @@ public class CheckInPlugin implements PlaygroundPlugin {
 		}
 		
 		this.attendanceClockResponse.setMessage(SUCCESS_CHECK_IN_MESSAGE);
-		this.attendanceClockResponse.setTimeStamp(this.attendanceClock.getServerCurrentDate());
+		this.attendanceClockResponse.setTimeStamp(attendanceClock.getServerCurrentDate());
 		this.attendanceClockResponse.setWorkerEmail(activityEntity.getPlayerEmail());
 		this.attendanceClockResponse.setWorkerPlayground(activityEntity.getPlayerPlayground());
 		

@@ -106,7 +106,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_IN_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -163,7 +163,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_IN_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -223,7 +223,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_IN_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -283,7 +283,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_IN_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -343,7 +343,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_OUT_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -399,7 +399,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_OUT_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -459,7 +459,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_OUT_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
@@ -519,7 +519,7 @@ public class ActivityRestControllerTests {
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
 
-		ElementTO elementTO = this.helper.generateSpecificElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
+		ElementTO elementTO = this.helper.generateSpecificCheckInOutElement(verifiedUser.getPlayground(), this.helper.checkInOutElement,
 				this.helper.CHECK_OUT_TYPE, verifiedUser.getUsername(), verifiedUser.getEmail(), testId);
 
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());

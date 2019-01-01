@@ -6,7 +6,6 @@ public class AttendanceClock {
 	private Date serverCurrentDate;
 	
 	public AttendanceClock() {
-		this.serverCurrentDate = new Date();
 	}
 
 	public Date getServerCurrentDate() {

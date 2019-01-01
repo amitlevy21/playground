@@ -2,10 +2,10 @@ package com.sheena.playground.plugins;
 
 import java.util.Date;
 
-public class WorkingForm {
+public class CheckInOutForm {
 	private Date currentDate;
-	
-	public WorkingForm() {
+
+	public CheckInOutForm() {
 	}
 
 	public Date getCurrentDate() {
@@ -16,7 +16,4 @@ public class WorkingForm {
 		this.currentDate = currentDate;
 	}
 
-	
-	
-	
 }

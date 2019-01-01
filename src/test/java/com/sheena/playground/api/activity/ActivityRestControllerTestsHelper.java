@@ -50,7 +50,7 @@ public class ActivityRestControllerTestsHelper {
 	}
 
 
-	public ElementTO generateSpecificElement(String playground, String name, String type, String username, String email, int testCaseNum) {
+	public ElementTO generateSpecificCheckInOutElement(String playground, String name, String type, String username, String email, int testCaseNum) {
 		Date expireationDate = null;
 		try {
 			String date1 = "12/26/2019";
@@ -61,6 +61,7 @@ public class ActivityRestControllerTestsHelper {
 		}
 		Location dummyLocation = new Location();
 		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("serverCurrentDate", new Date());
 		
 		return new ElementTO(playground, dummyLocation, name, new Date(), expireationDate, type, attributes, username, email);
 }
