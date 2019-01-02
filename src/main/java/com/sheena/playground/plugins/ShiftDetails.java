@@ -53,9 +53,14 @@ public class ShiftDetails {
 		this.workers = workers;
 	}
 	
-	public void addWorker(String email) {
+	public void addWorker(String playerEmail) {
 		this.setCurrentWorkersInShift(this.getCurrentWorkersInShift() + 1);
-		this.workers.put("worker #" + getCurrentWorkersInShift(), email);
+		this.workers.put("worker #" + getCurrentWorkersInShift(), playerEmail);
+	}
+
+	public void removeWorker(String playerEmail) {
+		this.workers.values().remove(playerEmail);
+		this.setCurrentWorkersInShift(this.getCurrentWorkersInShift() - 1);		
 	}
 	
 }

@@ -39,6 +39,7 @@ public class ActivityRestControllerTestsHelper {
 
 	//  Data attributes for Register shift
 	public final String REGISTER_SHIFT_TYPE = "RegisterShift";
+	public final boolean shiftIsExists = true;
 
 	// Data attributes for Forms
 	private String checkInOutForm = "currentDate";

@@ -84,248 +84,9 @@ public class ActivityRestControllerTests {
 	@Test
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
-	
-	///////////////////////////////// Rgister Shift Plugin Tests (8-X) /////////////////////////////////
 
-	@Test
-	public void testVerifiedPlayerRgisterShiftSuccessfully() throws Exception {
-		// Given
-		// The server is up and there is an verified user with "player" role
-		final int testId = 8;
-		final boolean shiftIsExists = true;
-
-		NewUserForm newUser =
-				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
-		UserTO expectedUserTO = new UserTO(
-				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
-
-		UserEntity userEntity = 
-				this.usersService.verifyUserRegistration(
-						expectedUserTO.getPlayground(),
-						expectedUserTO.getEmail(),
-						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-
-		UserTO verifiedUser = new UserTO(userEntity);
-
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-
-		ElementTO elementTO = 
-				this.helper.generateSpecificShiftElement(
-						verifiedUser.getPlayground(),
-						this.helper.RgisterCancelShiftElement,
-						this.helper.REGISTER_SHIFT_TYPE,
-						verifiedUser.getUsername(),
-						verifiedUser.getEmail(),
-						testId);
-
-		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
-
-		// when
-		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
-				this.helper.playground,
-				elementEntity.getPlayground(),
-				elementEntity.getId(),
-				elementEntity.getType(),
-				elementEntity.getCreatorPlayground(),
-				verifiedUser.getEmail(),
-				shiftIsExists);
-
-		ActivityTO actualActivity = this.restTemplate
-				.postForObject(
-						this.url + ACTIVITIES_URL,
-						activity,
-						ActivityTO.class,
-						verifiedUser.getPlayground(),
-						verifiedUser.getEmail());
-
-		// Then
-		ActivityEntity expectedOutcome = activity.toActivityEntity();
-		expectedOutcome.setId(actualActivity.getId());
-		expectedOutcome.setPlayground(actualActivity.getPlayground());
-
-		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-
-		assertThat(actual)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedOutcome);
-
-	}
-	
-	@Test
-	public void testVerifiedPlayerRgisterShiftWithShiftExists() throws Exception {
-		// Given
-		// The server is up and there is an verified user with "player" role
-		final int testId = 9;
-		final boolean shiftIsExists = false;
-
-		NewUserForm newUser =
-				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
-		UserTO expectedUserTO = new UserTO(
-				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
-
-		UserEntity userEntity = 
-				this.usersService.verifyUserRegistration(
-						expectedUserTO.getPlayground(),
-						expectedUserTO.getEmail(),
-						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-
-		UserTO verifiedUser = new UserTO(userEntity);
-
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-
-		ElementTO elementTO = 
-				this.helper.generateSpecificShiftElement(
-						verifiedUser.getPlayground(),
-						this.helper.RgisterCancelShiftElement,
-						this.helper.REGISTER_SHIFT_TYPE,
-						verifiedUser.getUsername(),
-						verifiedUser.getEmail(),
-						testId);
-
-		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
-
-		// when
-		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
-				this.helper.playground,
-				elementEntity.getPlayground(),
-				elementEntity.getId(),
-				elementEntity.getType(),
-				elementEntity.getCreatorPlayground(),
-				verifiedUser.getEmail(),
-				shiftIsExists);
-		
-		this.exception.expect(HttpServerErrorException.class);
-		this.exception.expectMessage("500");
-		
-		ActivityTO actualActivity = this.restTemplate
-				.postForObject(
-						this.url + ACTIVITIES_URL,
-						activity,
-						ActivityTO.class,
-						verifiedUser.getPlayground(),
-						verifiedUser.getEmail());
-
-		// Then
-		ActivityEntity expectedOutcome = activity.toActivityEntity();
-		expectedOutcome.setId(actualActivity.getId());
-		expectedOutcome.setPlayground(actualActivity.getPlayground());
-
-		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-
-		assertThat(actual)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedOutcome);
-
-	}
-	
-	@Test
-	public void testVerifiedPlayerRgisterFullShift() throws Exception {
-		// Given
-		// The server is up and there is an verified user with "player" role
-		final int testId = 10;
-		final boolean shiftIsExists = true;
-
-		NewUserForm newUser =
-				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
-		UserTO expectedUserTO = new UserTO(
-				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
-
-		UserEntity userEntity = 
-				this.usersService.verifyUserRegistration(
-						expectedUserTO.getPlayground(),
-						expectedUserTO.getEmail(),
-						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-
-		UserTO verifiedUser = new UserTO(userEntity);
-
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-		
-		NewUserForm newUser1 =
-				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId + 1);
-		UserTO expectedUserTO1 = new UserTO(
-				this.usersService.createNewUser(new UserTO(newUser1, this.helper.playground).toEntity()));
-
-		UserEntity userEntity1 = 
-				this.usersService.verifyUserRegistration(
-						expectedUserTO1.getPlayground(),
-						expectedUserTO1.getEmail(),
-						expectedUserTO1.getEmail() + this.helper.verificationCodeSuffix);
-
-		UserTO verifiedUser1 = new UserTO(userEntity1);
-
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-
-		ElementTO elementTO = 
-				this.helper.generateSpecificShiftElement(
-						verifiedUser.getPlayground(),
-						this.helper.RgisterCancelShiftElement,
-						this.helper.REGISTER_SHIFT_TYPE,
-						verifiedUser.getUsername(),
-						verifiedUser.getEmail(),
-						testId);
-
-		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
-
-		// when
-		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
-				this.helper.playground,
-				elementEntity.getPlayground(),
-				elementEntity.getId(),
-				elementEntity.getType(),
-				elementEntity.getCreatorPlayground(),
-				verifiedUser.getEmail(),
-				shiftIsExists);
-
-		ActivityTO actualActivity = this.restTemplate
-				.postForObject(
-						this.url + ACTIVITIES_URL,
-						activity,
-						ActivityTO.class,
-						verifiedUser.getPlayground(),
-						verifiedUser.getEmail());
-		
-		/*ActivityTO actualActivity1 = this.restTemplate
-				.postForObject(
-						this.url + ACTIVITIES_URL,
-						activity,
-						ActivityTO.class,
-						verifiedUser1.getPlayground(),
-						verifiedUser1.getEmail());
-		*/
-		// Then
-		ActivityEntity expectedOutcome = activity.toActivityEntity();
-		expectedOutcome.setId(actualActivity.getId());
-		expectedOutcome.setPlayground(actualActivity.getPlayground());
-
-		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-
-		assertThat(actual)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedOutcome);
-
-	}
-	
-	
-	
-	
-	
 	///////////////////////////////// Check-In Plugin Tests (0-3) /////////////////////////////////
-	/*
+
 	@Test
 	public void testVerifiedPlayerCheckInSuccessfully() throws Exception {
 		// Given
@@ -338,9 +99,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -367,22 +128,22 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
-	
+
 	@Test
 	public void testVerifiedPlayerCheckInWithFutureDate() throws Exception {
 		// Given
@@ -395,9 +156,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -408,7 +169,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -416,10 +177,10 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.FUTURE_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -427,22 +188,22 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
-	
+
 	@Test
 	public void testVerifiedPlayerCheckInWithPastDate() throws Exception {
 		// Given
@@ -455,9 +216,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -468,7 +229,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -476,10 +237,10 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PAST_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -487,20 +248,20 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
 
 	@Test
@@ -515,9 +276,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -528,7 +289,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -536,10 +297,10 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -547,24 +308,24 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
-	
+
 	///////////////////////////////// Check-Out Plugin Tests (4-7) /////////////////////////////////
-	
+
 	@Test
 	public void testVerifiedPlayerCheckOutSuccessfully() throws Exception {
 		// Given
@@ -577,7 +338,7 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-				
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -588,7 +349,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -604,15 +365,15 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
@@ -631,9 +392,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -644,7 +405,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -652,10 +413,10 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.FUTURE_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -663,20 +424,20 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
 
 	@Test
@@ -691,9 +452,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -704,7 +465,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -712,10 +473,10 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PAST_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -723,20 +484,20 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
 
 	@Test
@@ -751,9 +512,9 @@ public class ActivityRestControllerTests {
 
 		UserEntity userEntity = this.usersService.verifyUserRegistration(expectedUserTO.getPlayground(),
 				expectedUserTO.getEmail(), expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-		
-//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
-		
+
+		//		System.err.println("Verified: " + userEntity.isVerifiedUser() + "\nUserId: " + userEntity.getId());
+
 		UserTO verifiedUser = new UserTO(userEntity);
 
 		assertThat(verifiedUser).isNotNull().usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
@@ -764,7 +525,7 @@ public class ActivityRestControllerTests {
 		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
 
 		// when
-		ActivityTO activity = this.helper.generateSpecificActivity(
+		ActivityTO activity = this.helper.generateSpecificCheckInOutActivity(
 				this.helper.playground,
 				elementEntity.getPlayground(),
 				elementEntity.getId(),
@@ -772,6 +533,242 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
+
+		this.exception.expect(HttpServerErrorException.class);
+		this.exception.expectMessage("500");
+
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
+
+		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
+
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+
+	}
+
+	///////////////////////////////// Rgister Shift Plugin Tests (8-10) /////////////////////////////////
+
+	@Test
+	public void testVerifiedPlayerRgisterShiftSuccessfully() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 8;
+
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		ElementTO elementTO = 
+				this.helper.generateSpecificShiftElement(
+						verifiedUser.getPlayground(),
+						this.helper.RgisterCancelShiftElement,
+						this.helper.REGISTER_SHIFT_TYPE,
+						verifiedUser.getUsername(),
+						verifiedUser.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
+
+		// when
+		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				elementEntity.getType(),
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.shiftIsExists);
+
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
+		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
+
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+
+	}
+
+	@Test
+	public void testVerifiedPlayerRgisterFullShift() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 9;
+
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		NewUserForm newUser1 =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId + 1);
+		UserTO expectedUserTO1 = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser1, this.helper.playground).toEntity()));
+
+		UserEntity userEntity1 = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO1.getPlayground(),
+						expectedUserTO1.getEmail(),
+						expectedUserTO1.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser1 = new UserTO(userEntity1);
+
+		assertThat(verifiedUser1)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO1);
+
+		ElementTO elementTO = 
+				this.helper.generateSpecificShiftElement(
+						verifiedUser.getPlayground(),
+						this.helper.RgisterCancelShiftElement,
+						this.helper.REGISTER_SHIFT_TYPE,
+						verifiedUser.getUsername(),
+						verifiedUser.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
+
+		// when
+		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				elementEntity.getType(),
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.shiftIsExists);
+
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		this.exception.expect(HttpServerErrorException.class);
+		this.exception.expectMessage("500");
+
+		ActivityTO actualActivity1 = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser1.getPlayground(),
+						verifiedUser1.getEmail());
+
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
+		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
+
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+
+	}
+
+	@Test
+	public void testVerifiedPlayerRgistertoUnexistsShift() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 10;
+
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		ElementTO elementTO = 
+				this.helper.generateSpecificShiftElement(
+						verifiedUser.getPlayground(),
+						this.helper.RgisterCancelShiftElement,
+						this.helper.REGISTER_SHIFT_TYPE,
+						verifiedUser.getUsername(),
+						verifiedUser.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
+
+		// when
+		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				elementEntity.getType(),
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				!this.helper.shiftIsExists);
 		
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
@@ -783,23 +780,22 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-		
+
 		// Then
 		ActivityEntity expectedOutcome = activity.toActivityEntity();
 		expectedOutcome.setId(actualActivity.getId());
 		expectedOutcome.setPlayground(actualActivity.getPlayground());
-		
-		
+
 		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
-		
+
 		assertThat(actual)
 		.isNotNull()
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedOutcome);
-		
+
 	}
-*/	
-	
+
+
 
 
 

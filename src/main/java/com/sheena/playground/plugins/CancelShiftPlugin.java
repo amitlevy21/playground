@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.dal.ActivityDao;
@@ -13,17 +12,16 @@ import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 
-@Component
-public class RegisterShiftPlugin implements PlaygroundPlugin {
-	private String REGISTER_SHIFT_TYPE = "registerShift";
-	private String SUCCESS_REGISTER_MESSAGE = "You successfully registered to the shift";
+public class CancelShiftPlugin implements PlaygroundPlugin{
+	private String CANCEL_SHIFT_TYPE = "cancelShift";
+	private String SUCCESS_CANCEL_MESSAGE = "You successfully canceled the shift";
 
 	private ObjectMapper jackson;
 	private ActivityDao activities;
 	private ElementService elementService;
 	private WorkingDay helper;
 	private WorkingDayResponse workingDayResponse;
-
+	
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
@@ -46,41 +44,56 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 		ElementEntity elementEtity =
 				this.elementService.getElementById(activityEntity.getElementId());
 		String elementType = elementEtity.getType();
-		if (!elementType.equalsIgnoreCase(REGISTER_SHIFT_TYPE)) {
+		
+		if (!elementType.equalsIgnoreCase(CANCEL_SHIFT_TYPE)) {
 			throw new ElementDoesNotMatchActivityException(
-					"activity register shift requires element of type: " + REGISTER_SHIFT_TYPE);
+					"activity register shift requires element of type: " + CANCEL_SHIFT_TYPE);
 		}
 
 		RegisterCancelShiftForm form = jackson.readValue(
-				this.jackson.writeValueAsString(activityEntity.getAttributes()), RegisterCancelShiftForm.class);
+				this.jackson.writeValueAsString(activityEntity.getAttributes()),
+				RegisterCancelShiftForm.class);
 
-		ShiftDetails shiftDetails = jackson.readValue(this.jackson.writeValueAsString(elementEtity.getAttributes()),
+		ShiftDetails shiftDetails = jackson.readValue(
+				this.jackson.writeValueAsString(elementEtity.getAttributes()),
 				ShiftDetails.class);
 
 		boolean isSameDate = (this.helper.getDatePart(shiftDetails.getShiftDate())
 				- this.helper.getDatePart(form.getWantedShiftDate()) == 0);
-
+		
+		// Or using Java 8:
+		// shiftDetails.getWorkers()
+		//		.values().stream().anyMatch(v -> v.equals(activityEntity.getPlayerEmail()))
+		boolean isUserRegistered = 
+				shiftDetails.getWorkers().containsValue(activityEntity.getPlayerEmail());
+		
+		if (shiftDetails.getCurrentWorkersInShift() == 0) {
+			throw new RgisterCancelShiftException("Fatal Error: Number of workers is 0");
+		}
+		
 		if (!isSameDate) {
 			throw new RgisterCancelShiftException("Sorry, there is no shift in this date!");
 		}
-
-		if (shiftDetails.getCurrentWorkersInShift() >= shiftDetails.getMaxWorkersInShift()) {
-			throw new RgisterCancelShiftException("Sorry, shift is full!");
+		
+		if (!isUserRegistered) {
+			throw new RgisterCancelShiftException("Sorry, you are not registered to this shift!");
 		}
-		shiftDetails.addWorker(activityEntity.getPlayerEmail());
+		
+		shiftDetails.removeWorker(activityEntity.getPlayerEmail());
 
-		Map updateAttributes = jackson.readValue(this.jackson.writeValueAsString(shiftDetails), Map.class);
+		Map updateAttributes = 
+				jackson.readValue(this.jackson.writeValueAsString(shiftDetails), Map.class);
 
 		elementEtity.setAttributes(updateAttributes);
 
 		this.elementService.updateElement(elementEtity.getId(), elementEtity);
 
-		this.workingDayResponse.setMessage(SUCCESS_REGISTER_MESSAGE);
+		this.workingDayResponse.setMessage(SUCCESS_CANCEL_MESSAGE);
 		this.workingDayResponse.setTimeStamp(shiftDetails.getShiftDate());
 		this.workingDayResponse.setWorkerEmail(activityEntity.getPlayerEmail());
 		this.workingDayResponse.setWorkerPlayground(activityEntity.getPlayerPlayground());
 
 		return this.workingDayResponse;
-
 	}
+
 }
