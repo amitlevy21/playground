@@ -36,15 +36,17 @@ public class ActivityRestControllerTestsHelper {
 	public final String CHECK_IN_TYPE = "CheckIn";
 	public final String SUCCESS_CHECK_OUT_MESSAGE = "Thank You, Goodbye!";
 	public final String CHECK_OUT_TYPE = "CheckOut";
+	public final String CHECK_IN_OUT_TYPE = "CheckInOut";
 
 	//  Data attributes for Register shift
 	public final String REGISTER_CANCEL_SHIFT_TYPE = "Shift";
 	public final String REGISTER_SHIFT_TYPE = "RegisterShift";
-	public final String CANCEL_SHIFT_TYPE = "cancelShift";
+	public final String CANCEL_SHIFT_TYPE = "CancelShift";
+	public final String SHIFT_TYPE = "Shift";
 	public final boolean shiftIsExists = true;
 
 	// Data attributes for Forms
-	private String checkInOutForm = "currentDate";
+	private String checkInOutForm = "currentDate"; //serverCurrentDate
 	
 	public ActivityRestControllerTestsHelper() {
 		this.sdf = new SimpleDateFormat(this.format);
@@ -141,7 +143,8 @@ public class ActivityRestControllerTestsHelper {
 	}
 	
 
-	public ActivityTO generateSpecificregisterCancelShiftActivity(String playground, String elementPlayground, String elementId, String type,
+	public ActivityTO generateSpecificregisterCancelShiftActivity(
+			String playground, String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, boolean DateWithExistsShift) {
 		Map<String, Object> attributes = new HashMap<>();
 		Date theDate;

@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.dal.ActivityDao;
@@ -12,8 +13,9 @@ import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 
+@Component
 public class CancelShiftPlugin implements PlaygroundPlugin{
-	private String CANCEL_SHIFT_TYPE = "cancelShift";
+	private String SHIFT_TYPE = "Shift";
 	private String SUCCESS_CANCEL_MESSAGE = "You successfully canceled the shift";
 
 	private ObjectMapper jackson;
@@ -45,9 +47,9 @@ public class CancelShiftPlugin implements PlaygroundPlugin{
 				this.elementService.getElementById(activityEntity.getElementId());
 		String elementType = elementEtity.getType();
 		
-		if (!elementType.equalsIgnoreCase(CANCEL_SHIFT_TYPE)) {
+		if (!elementType.equalsIgnoreCase(SHIFT_TYPE)) {
 			throw new ElementDoesNotMatchActivityException(
-					"activity register shift requires element of type: " + CANCEL_SHIFT_TYPE);
+					"activity register shift requires element of type: " + SHIFT_TYPE);
 		}
 
 		RegisterCancelShiftForm form = jackson.readValue(
@@ -71,12 +73,12 @@ public class CancelShiftPlugin implements PlaygroundPlugin{
 			throw new RgisterCancelShiftException("Fatal Error: Number of workers is 0");
 		}
 		
-		if (!isSameDate) {
-			throw new RgisterCancelShiftException("Sorry, there is no shift in this date!");
-		}
-		
 		if (!isUserRegistered) {
 			throw new RgisterCancelShiftException("Sorry, you are not registered to this shift!");
+		}
+
+		if (!isSameDate) {
+			throw new RgisterCancelShiftException("Sorry, you don't have a shift in this date!");
 		}
 		
 		shiftDetails.removeWorker(activityEntity.getPlayerEmail());

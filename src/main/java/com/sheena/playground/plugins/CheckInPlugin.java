@@ -14,7 +14,7 @@ import com.sheena.playground.logic.elements.ElementService;
 @Component
 public class CheckInPlugin implements PlaygroundPlugin {
 	private final int MINS_IN_HOUR = 60;
-	private final String CHECK_IN_TYPE = "checkIn";
+	private final String CHECK_IN_TYPE = "checkInOut";
 	private final String FAIL_CHECK_IN_MESSAGE = "Your check-in date is invalid!";
 	private final String SUCCESS_CHECK_IN_MESSAGE = "Welcome, have a nice day!";
 

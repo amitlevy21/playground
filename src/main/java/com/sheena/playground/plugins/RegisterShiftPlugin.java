@@ -15,7 +15,7 @@ import com.sheena.playground.logic.elements.ElementService;
 
 @Component
 public class RegisterShiftPlugin implements PlaygroundPlugin {
-	private String REGISTER_SHIFT_TYPE = "registerShift";
+	private String SHIFT_TYPE = "Shift";
 	private String SUCCESS_REGISTER_MESSAGE = "You successfully registered to the shift";
 
 	private ObjectMapper jackson;
@@ -46,9 +46,9 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 		ElementEntity elementEtity =
 				this.elementService.getElementById(activityEntity.getElementId());
 		String elementType = elementEtity.getType();
-		if (!elementType.equalsIgnoreCase(REGISTER_SHIFT_TYPE)) {
+		if (!elementType.equalsIgnoreCase(SHIFT_TYPE)) {
 			throw new ElementDoesNotMatchActivityException(
-					"activity register shift requires element of type: " + REGISTER_SHIFT_TYPE);
+					"activity register shift requires element of type: " + SHIFT_TYPE);
 		}
 
 		RegisterCancelShiftForm form = jackson.readValue(
