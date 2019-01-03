@@ -110,11 +110,132 @@ public class ActivityRestControllerTests {
 		this.activityService.cleanup();
 	}
 
+
+	///////////////////////////////// Post&View Messages Plugin Tests (9-X) /////////////////////////////////
+
+	@Test
+	public void testVerifiedPlayerPostAndViewMessagesSuccessfully() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 9;
+
+		//////////////////////////////// Users ////////////////////////////////
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		//////////////////////////////// Elements ////////////////////////////////
+		// Only manager can create Elements
+		ElementTO expectedElement = 
+				this.helper.generateSpecificMessageBoardElement(
+						this.managerVerifiedUserTO.getPlayground(),
+						this.helper.MESSAGE_BOARD_ELEMENT_TYPE,
+						this.helper.MESSAGE_BOARD_ELEMENT_TYPE,
+						this.managerVerifiedUserTO.getUsername(),
+						this.managerVerifiedUserTO.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+
+		ElementTO actualElement = new ElementTO(elementEntity);
+
+		assertThat(actualElement)
+		.isNotNull()
+		.usingComparator(this.elementTOComparator)
+		.isEqualTo(expectedElement);
+
+		//////////////////////////////// Activities ////////////////////////////////
+		// when
+		// Check-In
+		ActivityTO postMessageActivity = this.helper.generateSpecificPostViewMessageActivity(
+				this.helper.playground,
+				actualElement.getPlayground(),
+				actualElement.getId(),
+				this.helper.POST_MESSAGE_ACTIVITY_TYPE,
+				verifiedUser.getPlayground(),
+				verifiedUser.getEmail());
+
+		ActivityTO actualPostActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						postMessageActivity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		// Check-Out
+		ActivityTO viewMessageActivity = this.helper.generateSpecificPostViewMessageActivity(
+				this.helper.playground,
+				actualElement.getPlayground(),
+				actualElement.getId(),
+				this.helper.VIEW_MESSAGE_ACTIVITY_TYPE,
+				verifiedUser.getPlayground(),
+				verifiedUser.getEmail());
+
+		ActivityTO actualViewActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						viewMessageActivity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+
+		// Then
+		ActivityEntity expectedCheckInOutcome = postMessageActivity.toActivityEntity();
+		expectedCheckInOutcome.setId(actualPostActivity.getId());
+		expectedCheckInOutcome.setPlayground(actualPostActivity.getPlayground());
+
+		ActivityEntity actualCheckIn =
+				this.activityService.getActivityById(actualPostActivity.getId());
+
+		assertThat(actualCheckIn)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedCheckInOutcome);
+
+		ActivityEntity expectedCheckOutOutcome = viewMessageActivity.toActivityEntity();
+		expectedCheckOutOutcome.setId(actualViewActivity.getId());
+		expectedCheckOutOutcome.setPlayground(actualViewActivity.getPlayground());
+
+		ActivityEntity actualCheckOut =
+				this.activityService.getActivityById(actualViewActivity.getId());
+
+		assertThat(actualCheckOut)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedCheckOutOutcome);
+		
+		
+		System.err.println(actualViewActivity.getAttributes());
+
+	}
+
+
+
+
+
+
+	/*
 	@Test
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
 
-		///////////////////////////////// Check-In&Out Plugin Tests (0-4) /////////////////////////////////
+	///////////////////////////////// Check-In&Out Plugin Tests (0-4) /////////////////////////////////
 
 	@Test
 	public void testVerifiedPlayerCheckInAndOutSuccessfully() throws Exception {
@@ -172,7 +293,7 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-		
+
 		ActivityTO actualCheckInActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -190,7 +311,7 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-		
+
 		ActivityTO actualCheckOutActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -198,7 +319,7 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-	
+
 
 		// Then
 		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
@@ -284,10 +405,10 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PAST_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualCheckInActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -305,7 +426,7 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-		
+
 		ActivityTO actualCheckOutActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -313,12 +434,12 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-	
+
 
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		
+
 		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
 		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
 		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
@@ -402,7 +523,7 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-			
+
 		ActivityTO actualCheckInActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -423,7 +544,7 @@ public class ActivityRestControllerTests {
 
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualCheckOutActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -431,11 +552,11 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-	
+
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		
+
 		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
 		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
 		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
@@ -517,10 +638,10 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.FUTURE_DATE);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualCheckInActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -538,7 +659,7 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-		
+
 		ActivityTO actualCheckOutActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -546,12 +667,12 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-	
+
 
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		
+
 		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
 		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
 		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
@@ -635,7 +756,7 @@ public class ActivityRestControllerTests {
 				verifiedUser.getPlayground(),
 				verifiedUser.getEmail(),
 				this.helper.PRESENT_DATE);
-			
+
 		ActivityTO actualCheckInActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -656,7 +777,7 @@ public class ActivityRestControllerTests {
 
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualCheckOutActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -664,11 +785,11 @@ public class ActivityRestControllerTests {
 						ActivityTO.class,
 						verifiedUser.getPlayground(),
 						verifiedUser.getEmail());
-	
+
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		
+
 		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
 		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
 		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
@@ -695,7 +816,7 @@ public class ActivityRestControllerTests {
 	}
 
 
- ///////////////////////////////// Register&Cancel Shift Plugin Tests (5-8) /////////////////////////////////
+	///////////////////////////////// Register&Cancel Shift Plugin Tests (5-8) /////////////////////////////////
 
 	@Test
 	public void testVerifiedPlayerRgisterAndCancelShiftSuccessfully() throws Exception {
@@ -1135,6 +1256,6 @@ public class ActivityRestControllerTests {
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedCancelOutcome);
 	}
-
+	 */
 
 }

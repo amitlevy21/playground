@@ -44,6 +44,13 @@ public class ActivityRestControllerTestsHelper {
 	public final String CANCEL_SHIFT_TYPE = "CancelShift";
 	public final String SHIFT_TYPE = "Shift";
 	public final boolean shiftIsExists = true;
+	
+	//  Data attributes for Post & View Messages
+	public final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
+	public final String POST_MESSAGE_ACTIVITY_TYPE = "PostMessage";
+	public final String VIEW_MESSAGE_ACTIVITY_TYPE = "ViewMessages";
+	public final String MESSAGE_TO_POST = "Hello everyone it's the first message!";
+	
 
 	// Data attributes for Forms
 	private String checkInOutForm = "currentDate"; //serverCurrentDate
@@ -165,6 +172,46 @@ public class ActivityRestControllerTestsHelper {
 
 		return new ActivityTO(playground, elementPlayground, elementId, type,
 				playerPlayground, playerEmail, attributes);
+	}
+
+
+	public ElementTO generateSpecificMessageBoardElement(
+			String playground,
+			String name,
+			String type,
+			String username,
+			String email,
+			int testCaseNum) {
+		Date expireationDate = null;
+		try {
+			String date1 = "12/26/2019";
+			String time1 = "08:58 PM";
+			expireationDate = this.sdf.parse(date1 + " " + time1);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		Location dummyLocation = new Location();
+		Map<String, Object> attributes = new HashMap<>();
+		
+		return new ElementTO(playground, dummyLocation, name, new Date(), expireationDate, type, attributes, username, email);
+
+	}
+
+
+	public ActivityTO generateSpecificPostViewMessageActivity(String playground, String elementPlayground, String elementId,
+			String type, String playerPlayground, String playerEmail) {
+		Map<String, Object> attributes = new HashMap<>();
+		if (type.equalsIgnoreCase(POST_MESSAGE_ACTIVITY_TYPE)) {
+			attributes.put("text", MESSAGE_TO_POST);
+			attributes.put("publisherEmail", playerEmail);
+			attributes.put("publisherPlayground", playerPlayground);
+		}
+		else {
+			attributes.put("size", 10);
+			attributes.put("page", 0);
+		}
+		return new ActivityTO(playground, elementPlayground, elementId, type, playerPlayground, playerEmail,
+				attributes);
 	}
 
 }
