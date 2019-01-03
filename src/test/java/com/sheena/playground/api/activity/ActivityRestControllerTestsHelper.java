@@ -38,7 +38,9 @@ public class ActivityRestControllerTestsHelper {
 	public final String CHECK_OUT_TYPE = "CheckOut";
 
 	//  Data attributes for Register shift
+	public final String REGISTER_CANCEL_SHIFT_TYPE = "Shift";
 	public final String REGISTER_SHIFT_TYPE = "RegisterShift";
+	public final String CANCEL_SHIFT_TYPE = "cancelShift";
 	public final boolean shiftIsExists = true;
 
 	// Data attributes for Forms
@@ -138,7 +140,6 @@ public class ActivityRestControllerTestsHelper {
 
 	}
 	
-
 
 	public ActivityTO generateSpecificregisterCancelShiftActivity(String playground, String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, boolean DateWithExistsShift) {

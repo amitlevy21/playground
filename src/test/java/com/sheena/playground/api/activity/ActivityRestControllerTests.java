@@ -17,8 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sheena.playground.api.ActivityTO;
@@ -32,6 +32,7 @@ import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -85,6 +86,185 @@ public class ActivityRestControllerTests {
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
 
+	///////////////////////////////// Rgister Shift Plugin Tests (11-X) /////////////////////////////////
+
+	@Test
+	public void testVerifiedPlayerRgisterShiftAndCancelSuccessfully() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 11;
+
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		ElementTO elementTO = 
+				this.helper.generateSpecificShiftElement(
+						verifiedUser.getPlayground(),
+						this.helper.RgisterCancelShiftElement,
+						this.helper.REGISTER_CANCEL_SHIFT_TYPE,
+						verifiedUser.getUsername(),
+						verifiedUser.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
+
+		// when
+		// Register to a shift
+		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				this.helper.REGISTER_SHIFT_TYPE,
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.shiftIsExists);
+
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		// Register to a shift
+		ActivityTO activity1 = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				this.helper.CANCEL_SHIFT_TYPE,
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.shiftIsExists);
+
+		ActivityTO actualActivity1 = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
+		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
+
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+
+	}
+
+
+	@Test
+	public void testVerifiedPlayerRgisterShiftAndCancelUnregisteredShift() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 12;
+
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		ElementTO elementTO = 
+				this.helper.generateSpecificShiftElement(
+						verifiedUser.getPlayground(),
+						this.helper.RgisterCancelShiftElement,
+						this.helper.REGISTER_CANCEL_SHIFT_TYPE,
+						verifiedUser.getUsername(),
+						verifiedUser.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(elementTO.toEntity());
+
+		// when
+		// Register to a shift
+		ActivityTO activity = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				this.helper.REGISTER_SHIFT_TYPE,
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.shiftIsExists);
+
+		ActivityTO actualActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		// Register to a shift
+		ActivityTO activity1 = this.helper.generateSpecificregisterCancelShiftActivity(
+				this.helper.playground,
+				elementEntity.getPlayground(),
+				elementEntity.getId(),
+				this.helper.CANCEL_SHIFT_TYPE,
+				elementEntity.getCreatorPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.shiftIsExists);
+
+		ActivityTO actualActivity1 = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						activity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+
+		// Then
+		ActivityEntity expectedOutcome = activity.toActivityEntity();
+		expectedOutcome.setId(actualActivity.getId());
+		expectedOutcome.setPlayground(actualActivity.getPlayground());
+
+		ActivityEntity actual = this.activityService.getActivityById(actualActivity.getId());
+
+		assertThat(actual)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedOutcome);
+
+	}
+
+
+	/*
 	///////////////////////////////// Check-In Plugin Tests (0-3) /////////////////////////////////
 
 	@Test
@@ -769,10 +949,10 @@ public class ActivityRestControllerTests {
 				elementEntity.getCreatorPlayground(),
 				verifiedUser.getEmail(),
 				!this.helper.shiftIsExists);
-		
+
 		this.exception.expect(HttpServerErrorException.class);
 		this.exception.expectMessage("500");
-		
+
 		ActivityTO actualActivity = this.restTemplate
 				.postForObject(
 						this.url + ACTIVITIES_URL,
@@ -794,6 +974,7 @@ public class ActivityRestControllerTests {
 		.isEqualTo(expectedOutcome);
 
 	}
+	 */
 
 
 
