@@ -49,9 +49,9 @@ public class ActivityRestControllerTestsHelper {
 	public final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
 	public final String POST_MESSAGE_ACTIVITY_TYPE = "PostMessage";
 	public final String VIEW_MESSAGE_ACTIVITY_TYPE = "ViewMessages";
-	public final String MESSAGE_TO_POST = "Hello everyone it's the first message!";
+	public final String MESSAGE_TO_POST1 = "Hello everyone it's the first message!";
+	public final String MESSAGE_TO_POST2 = "Hello everyone it's the second message!";
 	
-
 	// Data attributes for Forms
 	private String checkInOutForm = "currentDate"; //serverCurrentDate
 	
@@ -199,10 +199,10 @@ public class ActivityRestControllerTestsHelper {
 
 
 	public ActivityTO generateSpecificPostViewMessageActivity(String playground, String elementPlayground, String elementId,
-			String type, String playerPlayground, String playerEmail) {
+			String type, String playerPlayground, String playerEmail, String message) {
 		Map<String, Object> attributes = new HashMap<>();
 		if (type.equalsIgnoreCase(POST_MESSAGE_ACTIVITY_TYPE)) {
-			attributes.put("text", MESSAGE_TO_POST);
+			attributes.put("text", message);
 			attributes.put("publisherEmail", playerEmail);
 			attributes.put("publisherPlayground", playerPlayground);
 		}

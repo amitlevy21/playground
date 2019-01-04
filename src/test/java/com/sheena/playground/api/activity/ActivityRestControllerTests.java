@@ -3,6 +3,8 @@ package com.sheena.playground.api.activity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -110,127 +112,6 @@ public class ActivityRestControllerTests {
 		this.activityService.cleanup();
 	}
 
-
-	///////////////////////////////// Post&View Messages Plugin Tests (9-X) /////////////////////////////////
-
-	@Test
-	public void testVerifiedPlayerPostAndViewMessagesSuccessfully() throws Exception {
-		// Given
-		// The server is up and there is an verified user with "player" role
-		final int testId = 9;
-
-		//////////////////////////////// Users ////////////////////////////////
-		NewUserForm newUser =
-				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
-		UserTO expectedUserTO = new UserTO(
-				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
-
-		UserEntity userEntity = 
-				this.usersService.verifyUserRegistration(
-						expectedUserTO.getPlayground(),
-						expectedUserTO.getEmail(),
-						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
-
-		UserTO verifiedUser = new UserTO(userEntity);
-
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-
-		//////////////////////////////// Elements ////////////////////////////////
-		// Only manager can create Elements
-		ElementTO expectedElement = 
-				this.helper.generateSpecificMessageBoardElement(
-						this.managerVerifiedUserTO.getPlayground(),
-						this.helper.MESSAGE_BOARD_ELEMENT_TYPE,
-						this.helper.MESSAGE_BOARD_ELEMENT_TYPE,
-						this.managerVerifiedUserTO.getUsername(),
-						this.managerVerifiedUserTO.getEmail(),
-						testId);
-
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
-
-		ElementTO actualElement = new ElementTO(elementEntity);
-
-		assertThat(actualElement)
-		.isNotNull()
-		.usingComparator(this.elementTOComparator)
-		.isEqualTo(expectedElement);
-
-		//////////////////////////////// Activities ////////////////////////////////
-		// when
-		// Check-In
-		ActivityTO postMessageActivity = this.helper.generateSpecificPostViewMessageActivity(
-				this.helper.playground,
-				actualElement.getPlayground(),
-				actualElement.getId(),
-				this.helper.POST_MESSAGE_ACTIVITY_TYPE,
-				verifiedUser.getPlayground(),
-				verifiedUser.getEmail());
-
-		ActivityTO actualPostActivity = this.restTemplate
-				.postForObject(
-						this.url + ACTIVITIES_URL,
-						postMessageActivity,
-						ActivityTO.class,
-						verifiedUser.getPlayground(),
-						verifiedUser.getEmail());
-
-		// Check-Out
-		ActivityTO viewMessageActivity = this.helper.generateSpecificPostViewMessageActivity(
-				this.helper.playground,
-				actualElement.getPlayground(),
-				actualElement.getId(),
-				this.helper.VIEW_MESSAGE_ACTIVITY_TYPE,
-				verifiedUser.getPlayground(),
-				verifiedUser.getEmail());
-
-		ActivityTO actualViewActivity = this.restTemplate
-				.postForObject(
-						this.url + ACTIVITIES_URL,
-						viewMessageActivity,
-						ActivityTO.class,
-						verifiedUser.getPlayground(),
-						verifiedUser.getEmail());
-
-
-		// Then
-		ActivityEntity expectedCheckInOutcome = postMessageActivity.toActivityEntity();
-		expectedCheckInOutcome.setId(actualPostActivity.getId());
-		expectedCheckInOutcome.setPlayground(actualPostActivity.getPlayground());
-
-		ActivityEntity actualCheckIn =
-				this.activityService.getActivityById(actualPostActivity.getId());
-
-		assertThat(actualCheckIn)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckInOutcome);
-
-		ActivityEntity expectedCheckOutOutcome = viewMessageActivity.toActivityEntity();
-		expectedCheckOutOutcome.setId(actualViewActivity.getId());
-		expectedCheckOutOutcome.setPlayground(actualViewActivity.getPlayground());
-
-		ActivityEntity actualCheckOut =
-				this.activityService.getActivityById(actualViewActivity.getId());
-
-		assertThat(actualCheckOut)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckOutOutcome);
-		
-		
-		System.err.println(actualViewActivity.getAttributes());
-
-	}
-
-
-
-
-
-
-	/*
 	@Test
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
@@ -815,7 +696,6 @@ public class ActivityRestControllerTests {
 		.isEqualTo(expectedCheckOutOutcome);
 	}
 
-
 	///////////////////////////////// Register&Cancel Shift Plugin Tests (5-8) /////////////////////////////////
 
 	@Test
@@ -1256,6 +1136,152 @@ public class ActivityRestControllerTests {
 		.usingComparator(this.activityEntityComparator)
 		.isEqualTo(expectedCancelOutcome);
 	}
-	 */
+	
+	///////////////////////////////// Post&View Messages Plugin Tests (9) /////////////////////////////////
+
+	@Test
+	public void testVerifiedPlayerPostAndViewMessagesSuccessfully() throws Exception {
+		// Given
+		// The server is up and there is an verified user with "player" role
+		final int testId = 9;
+
+		//////////////////////////////// Users ////////////////////////////////
+		NewUserForm newUser =
+				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
+		UserTO expectedUserTO = new UserTO(
+				this.usersService.createNewUser(new UserTO(newUser, this.helper.playground).toEntity()));
+
+		UserEntity userEntity = 
+				this.usersService.verifyUserRegistration(
+						expectedUserTO.getPlayground(),
+						expectedUserTO.getEmail(),
+						expectedUserTO.getEmail() + this.helper.verificationCodeSuffix);
+
+		UserTO verifiedUser = new UserTO(userEntity);
+
+		assertThat(verifiedUser)
+		.isNotNull()
+		.usingComparator(this.userTOComparator)
+		.isEqualTo(expectedUserTO);
+
+		//////////////////////////////// Elements ////////////////////////////////
+		// Only manager can create Elements
+		ElementTO expectedElement = 
+				this.helper.generateSpecificMessageBoardElement(
+						this.managerVerifiedUserTO.getPlayground(),
+						this.helper.MESSAGE_BOARD_ELEMENT_TYPE,
+						this.helper.MESSAGE_BOARD_ELEMENT_TYPE,
+						this.managerVerifiedUserTO.getUsername(),
+						this.managerVerifiedUserTO.getEmail(),
+						testId);
+
+		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+
+		ElementTO actualElement = new ElementTO(elementEntity);
+
+		assertThat(actualElement)
+		.isNotNull()
+		.usingComparator(this.elementTOComparator)
+		.isEqualTo(expectedElement);
+
+		//////////////////////////////// Activities ////////////////////////////////
+		// when
+		// Post 1
+		ActivityTO postMessageActivity1 = this.helper.generateSpecificPostViewMessageActivity(
+				this.helper.playground,
+				actualElement.getPlayground(),
+				actualElement.getId(),
+				this.helper.POST_MESSAGE_ACTIVITY_TYPE,
+				verifiedUser.getPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.MESSAGE_TO_POST1);
+
+		ActivityTO actualPostActivity1 = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						postMessageActivity1,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+		ActivityTO postMessageActivity2 = this.helper.generateSpecificPostViewMessageActivity(
+				this.helper.playground,
+				actualElement.getPlayground(),
+				actualElement.getId(),
+				this.helper.POST_MESSAGE_ACTIVITY_TYPE,
+				verifiedUser.getPlayground(),
+				verifiedUser.getEmail(),
+				this.helper.MESSAGE_TO_POST2);
+
+		ActivityTO actualPostActivity2 = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						postMessageActivity2,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+
+		// view
+		ActivityTO viewMessageActivity = this.helper.generateSpecificPostViewMessageActivity(
+				this.helper.playground,
+				actualElement.getPlayground(),
+				actualElement.getId(),
+				this.helper.VIEW_MESSAGE_ACTIVITY_TYPE,
+				verifiedUser.getPlayground(),
+				verifiedUser.getEmail(),
+				"");
+
+		ActivityTO actualViewActivity = this.restTemplate
+				.postForObject(
+						this.url + ACTIVITIES_URL,
+						viewMessageActivity,
+						ActivityTO.class,
+						verifiedUser.getPlayground(),
+						verifiedUser.getEmail());
+
+
+		// Then
+		ActivityEntity expectedPostOutcome1 = postMessageActivity1.toActivityEntity();
+		expectedPostOutcome1.setId(actualPostActivity1.getId());
+		expectedPostOutcome1.setPlayground(actualPostActivity1.getPlayground());
+
+		ActivityEntity actualPost1 =
+				this.activityService.getActivityById(actualPostActivity1.getId());
+
+		assertThat(actualPost1)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedPostOutcome1);
+
+		ActivityEntity expectedPostOutcome2 = postMessageActivity2.toActivityEntity();
+		expectedPostOutcome2.setId(actualPostActivity2.getId());
+		expectedPostOutcome2.setPlayground(actualPostActivity2.getPlayground());
+
+		ActivityEntity actualPost2 =
+				this.activityService.getActivityById(actualPostActivity2.getId());
+
+		assertThat(actualPost2)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedPostOutcome2);
+
+		ActivityEntity expectedViewOutcome = viewMessageActivity.toActivityEntity();
+		expectedViewOutcome.setId(actualViewActivity.getId());
+		expectedViewOutcome.setPlayground(actualViewActivity.getPlayground());
+
+		ActivityEntity actualView =
+				this.activityService.getActivityById(actualViewActivity.getId());
+
+		assertThat(actualView)
+		.isNotNull()
+		.usingComparator(this.activityEntityComparator)
+		.isEqualTo(expectedViewOutcome);
+
+		System.err.println("************* MESSAGES *************");
+		System.err.println(actualViewActivity.getAttributes().values());
+		System.err.println("************* MESSAGES *************");
+
+	}
 
 }

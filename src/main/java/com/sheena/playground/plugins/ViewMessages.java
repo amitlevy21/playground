@@ -2,24 +2,28 @@ package com.sheena.playground.plugins;
 
 import java.util.List;
 
+import com.sheena.playground.api.ActivityTO;
+
 public class ViewMessages {
 	
-	private List<String> messages;
+	private List<ActivityTO> messages;
 	
 	public ViewMessages() {
 	}
 		
-	public ViewMessages(List<String> messages) {
+	public ViewMessages(List<ActivityTO> messages) {
 		super();
 		this.messages = messages;
 	}
 
-	public List<String> getMessages() {
+	public List<ActivityTO> getMessages() {
 		return messages;
 	}
 
-	public void setMessages(List<String> messages) {
+	public void setMessages(List<ActivityTO> messages) {
 		this.messages = messages;
 	}
+
+	
 
 }
