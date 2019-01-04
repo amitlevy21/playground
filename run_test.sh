@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./mvnw surefire:test
+./mvnw test

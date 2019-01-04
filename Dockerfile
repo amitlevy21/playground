@@ -1,6 +1,6 @@
 FROM maven:3.6-jdk-8-alpine as maven
 
-# copy the project files
+# copy pom xml
 COPY ./pom.xml ./pom.xml
 
 # build all dependencies
@@ -15,16 +15,20 @@ RUN mvn install -DskipTests
 # our final base image
 FROM openjdk:8u181-jre-alpine
 
-# Required for starting application up.
+# required for starting application up.
 RUN apk update && apk add bash
 
+# create project root folder
 RUN mkdir -p /playground
 
 # copy over the built artifact from the maven image
 COPY --from=maven target/playground-0.0.1-SNAPSHOT.jar /playground
 
+# copy entire project
 COPY . /playground
 
+# set working directory
 WORKDIR /playground
+
 # start the server
 CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/test","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
