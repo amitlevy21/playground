@@ -13,7 +13,7 @@ services:
   
   mongo:
     image: mongo
-    container_name: springboot-mongo
+    container_name: playground-mongo
     ports:
       - 27017:27017
     volumes:
