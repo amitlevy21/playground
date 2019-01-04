@@ -135,14 +135,22 @@ public class ElementEntity {
         this.creatorEmail = creatorEmail;
     }
     
+//    @Override
+//    public String toString() {
+//        return "{" + " dummyId='" + getId() + "'" + ", playground='" + getPlayground() + "'" + ", x='" + getX()
+//                + "'" + ", y='" + getY() + "'" + ", name='" + getName() + "'" + ", creationDate='" + getCreationDate()
+//                + "'" + ", expirationDate='" + getExpirationDate() + "'" + ", type='" + getType() + "'"
+//                + ", attributes='" + getAttributes() + "'" + ", creatorPlayground='" + getCreatorPlayground() + "'"
+//                + ", creatorEmail='" + getCreatorEmail() + "'" + "}";
+//    }
+    
     @Override
-    public String toString() {
-        return "{" + " dummyId='" + getId() + "'" + ", playground='" + getPlayground() + "'" + ", x='" + getX()
-                + "'" + ", y='" + getY() + "'" + ", name='" + getName() + "'" + ", creationDate='" + getCreationDate()
-                + "'" + ", expirationDate='" + getExpirationDate() + "'" + ", type='" + getType() + "'"
-                + ", attributes='" + getAttributes() + "'" + ", creatorPlayground='" + getCreatorPlayground() + "'"
-                + ", creatorEmail='" + getCreatorEmail() + "'" + "}";
-    }
+	public String toString() {
+		return "ElementEntity [id=" + id + ", playground=" + playground + ", x=" + x + ", y=" + y + ", name=" + name
+				+ ", creationDate=" + creationDate + ", expirationDate=" + expirationDate + ", type=" + type
+				+ ", attributes=" + attributes + ", creatorPlayground=" + creatorPlayground + ", creatorEmail="
+				+ creatorEmail + "]";
+	}
 
 	@Override
 	public int hashCode() {
@@ -161,6 +169,8 @@ public class ElementEntity {
 		result = prime * result + ((y == null) ? 0 : y.hashCode());
 		return result;
 	}
+
+	
 
 	@Override
 	public boolean equals(Object obj) {

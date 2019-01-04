@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
 import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
-import com.sheena.playground.logic.activities.jpa.ActivityWithNoTypeException;
+import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 
 @RestController
 public class ActivityRestController {
@@ -31,10 +31,9 @@ public class ActivityRestController {
     public Object addNewActivity(
         @PathVariable("userPlayground") String userPlayground,
         @PathVariable("email") String email,
-        @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityTypeNotAllowedException, ActivityWithNoTypeException {
-    	  	    	
+        @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityTypeNotAllowedException, ActivityWithNoTypeException {	    	
     	return new ActivityTO(
     				this.activityService.addNewActivity(
-    						newActivityTO.toActivityEntity()));
+    						newActivityTO.toActivityEntity(), userPlayground, email));
     }
 }

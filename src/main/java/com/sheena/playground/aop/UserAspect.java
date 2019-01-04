@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -141,7 +142,7 @@ public class UserAspect {
 		} catch (RolePrivilageException e) {
 			throw e;
 		} catch (Throwable e) {
-			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+			throw new Exception(e);
 		}
 	}
 
