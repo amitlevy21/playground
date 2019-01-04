@@ -1,13 +1,34 @@
-FROM openjdk:8-alpine
+FROM maven:3.6-jdk-8-alpine as maven
 
-# Required for starting application up.
+# copy pom xml
+COPY ./pom.xml ./pom.xml
+
+# build all dependencies
+RUN mvn dependency:go-offline -B
+
+# copy src files
+COPY ./src ./src
+
+# build for release
+RUN mvn install -DskipTests
+
+# our final base image
+FROM openjdk:8u181-jdk-alpine
+
+# required for starting application up.
 RUN apk update && apk add bash
 
-RUN mkdir -p /opt/app
-ENV PROJECT_HOME /opt/app
+# create project root folder
+RUN mkdir -p /playground
 
-COPY . $PROJECT_HOME
-WORKDIR $PROJECT_HOME
+# copy over the built artifact from the maven image
+COPY --from=maven target/playground-0.0.1-SNAPSHOT.jar /playground
 
-RUN ./mvnw install -DskipTests
-CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/test","-Djava.security.egd=file:/dev/./urandom","-jar","./target/playground-0.0.1-SNAPSHOT.jar"]
+# copy entire project
+COPY . /playground
+
+# set working directory
+WORKDIR /playground
+
+# start the server
+CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/test","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
