@@ -18,8 +18,13 @@ FROM openjdk:8u181-jre-alpine
 # Required for starting application up.
 RUN apk update && apk add bash
 
-# copy over the built artifact from the maven image
-COPY --from=maven target/playground-0.0.1-SNAPSHOT.jar ./
+RUN mkdir -p /playground
 
+# copy over the built artifact from the maven image
+COPY --from=maven target/playground-0.0.1-SNAPSHOT.jar /playground
+
+COPY . /playground
+
+WORKDIR /playground
 # start the server
 CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/test","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
