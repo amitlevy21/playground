@@ -13,7 +13,7 @@ COPY ./src ./src
 RUN mvn install -DskipTests
 
 # our final base image
-FROM openjdk:8u181-jre-alpine
+FROM openjdk:8u181-jdk-alpine
 
 # required for starting application up.
 RUN apk update && apk add bash
