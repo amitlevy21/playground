@@ -320,32 +320,6 @@ public class ActivityRestControllerTests {
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-
-		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
-		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
-		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
-
-		ActivityEntity actualCheckIn =
-				this.activityService.getActivityById(actualCheckInActivity.getId());
-
-		assertThat(actualCheckIn)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckInOutcome);
-
-		ActivityEntity expectedCheckOutOutcome = checkOutActivity.toActivityEntity();
-		expectedCheckOutOutcome.setId(actualCheckOutActivity.getId());
-		expectedCheckOutOutcome.setPlayground(actualCheckOutActivity.getPlayground());
-
-		ActivityEntity actualCheckOut =
-				this.activityService.getActivityById(actualCheckOutActivity.getId());
-
-		assertThat(actualCheckOut)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckOutOutcome);
-
-
 	}
 
 	@Test
@@ -437,30 +411,6 @@ public class ActivityRestControllerTests {
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-
-		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
-		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
-		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
-
-		ActivityEntity actualCheckIn =
-				this.activityService.getActivityById(actualCheckInActivity.getId());
-
-		assertThat(actualCheckIn)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckInOutcome);
-
-		ActivityEntity expectedCheckOutOutcome = checkOutActivity.toActivityEntity();
-		expectedCheckOutOutcome.setId(actualCheckOutActivity.getId());
-		expectedCheckOutOutcome.setPlayground(actualCheckOutActivity.getPlayground());
-
-		ActivityEntity actualCheckOut =
-				this.activityService.getActivityById(actualCheckOutActivity.getId());
-
-		assertThat(actualCheckOut)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckOutOutcome);
 	}
 
 	@Test
@@ -553,32 +503,6 @@ public class ActivityRestControllerTests {
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-
-		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
-		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
-		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
-
-		ActivityEntity actualCheckIn =
-				this.activityService.getActivityById(actualCheckInActivity.getId());
-
-		assertThat(actualCheckIn)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckInOutcome);
-
-		ActivityEntity expectedCheckOutOutcome = checkOutActivity.toActivityEntity();
-		expectedCheckOutOutcome.setId(actualCheckOutActivity.getId());
-		expectedCheckOutOutcome.setPlayground(actualCheckOutActivity.getPlayground());
-
-		ActivityEntity actualCheckOut =
-				this.activityService.getActivityById(actualCheckOutActivity.getId());
-
-		assertThat(actualCheckOut)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckOutOutcome);
-
-
 	}
 
 	@Test
@@ -670,30 +594,6 @@ public class ActivityRestControllerTests {
 		// Then
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-
-		ActivityEntity expectedCheckInOutcome = checkInActivity.toActivityEntity();
-		expectedCheckInOutcome.setId(actualCheckInActivity.getId());
-		expectedCheckInOutcome.setPlayground(actualCheckInActivity.getPlayground());
-
-		ActivityEntity actualCheckIn =
-				this.activityService.getActivityById(actualCheckInActivity.getId());
-
-		assertThat(actualCheckIn)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckInOutcome);
-
-		ActivityEntity expectedCheckOutOutcome = checkOutActivity.toActivityEntity();
-		expectedCheckOutOutcome.setId(actualCheckOutActivity.getId());
-		expectedCheckOutOutcome.setPlayground(actualCheckOutActivity.getPlayground());
-
-		ActivityEntity actualCheckOut =
-				this.activityService.getActivityById(actualCheckOutActivity.getId());
-
-		assertThat(actualCheckOut)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCheckOutOutcome);
 	}
 
 	///////////////////////////////// Register&Cancel Shift Plugin Tests (5-8) /////////////////////////////////
@@ -899,32 +799,6 @@ public class ActivityRestControllerTests {
 
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		// Then
-		ActivityEntity expectedRegisterOutcome = registerActivity.toActivityEntity();
-		expectedRegisterOutcome.setId(actualRegisterActivity.getId());
-		expectedRegisterOutcome.setPlayground(actualRegisterActivity.getPlayground());
-
-		ActivityEntity actualRegister =
-				this.activityService.getActivityById(actualRegisterActivity.getId());
-
-		assertThat(actualRegister)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedRegisterOutcome);
-
-
-		ActivityEntity expectedCancelOutcome = cancelActivity.toActivityEntity();
-		expectedCancelOutcome.setId(actualCancelActivity.getId());
-		expectedCancelOutcome.setPlayground(actualCancelActivity.getPlayground());
-
-		ActivityEntity actualCancel =
-				this.activityService.getActivityById(actualCancelActivity.getId());
-
-		assertThat(actualCancel)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCancelOutcome);
-
 	}
 
 	@Test
@@ -1037,18 +911,6 @@ public class ActivityRestControllerTests {
 
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		// Then
-		ActivityEntity expectedRegisterOutcome = registerActivityUser1.toActivityEntity();
-		expectedRegisterOutcome.setId(actualRegisterActivityUser1.getId());
-		expectedRegisterOutcome.setPlayground(actualRegisterActivityUser1.getPlayground());
-
-		ActivityEntity actualRegister =
-				this.activityService.getActivityById(actualRegisterActivityUser1.getId());
-
-		assertThat(actualRegister)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedRegisterOutcome);
 	}
 
 	@Test
@@ -1123,18 +985,6 @@ public class ActivityRestControllerTests {
 
 		// Not suppose to do the following checks
 		System.err.println("Failed to catch Exception!!! - check test#" + testId);
-		// Then
-		ActivityEntity expectedCancelOutcome = cancelActivity.toActivityEntity();
-		expectedCancelOutcome.setId(actualCancelActivity.getId());
-		expectedCancelOutcome.setPlayground(actualCancelActivity.getPlayground());
-
-		ActivityEntity actualCancel =
-				this.activityService.getActivityById(actualCancelActivity.getId());
-
-		assertThat(actualCancel)
-		.isNotNull()
-		.usingComparator(this.activityEntityComparator)
-		.isEqualTo(expectedCancelOutcome);
 	}
 	
 	///////////////////////////////// Post&View Messages Plugin Tests (9) /////////////////////////////////
