@@ -8,7 +8,7 @@ sut:
     - mongo
 
 mongo:
-  image: mongo
+  image: mongo:3.6
   container_name: playground-mongo
   ports:
     - 27017:27017
