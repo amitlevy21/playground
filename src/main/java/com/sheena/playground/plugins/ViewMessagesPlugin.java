@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.api.ActivityTO;
@@ -15,6 +16,7 @@ import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 
+@Component
 public class ViewMessagesPlugin implements PlaygroundPlugin {
 	
 	private ElementService elementService;
@@ -42,15 +44,26 @@ public class ViewMessagesPlugin implements PlaygroundPlugin {
 		try {
 			ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
 			if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-				throw new ElementDoesNotMatchActivity("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+				throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
 			
 			ViewMessagesParameters parameters = this.jackson.readValue(
 					this.jackson.writeValueAsString(
 							activityEntity.getAttributes()), ViewMessagesParameters.class);
+
+			activityEntity.getAttributes().remove("size");
+			activityEntity.getAttributes().remove("page");
+//			List<ActivityEntity> messages = activityDao.findActivityByType(
+//					POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()));
+//			
+			return new ViewMessages(
+					this.activityDao.findActivityByType(
+						POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()))
+						.stream()
+						.map(ActivityTO::new)
+						.collect(Collectors.toList())
+						);
 			
-			List<ActivityEntity> messages = activityDao.findActivityByType(
-					POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()));
-			return messages.stream().map(ActivityTO::new).collect(Collectors.toList()).toArray(new ActivityTO[0]);
+			//return messages.stream().map(ActivityTO::new).collect(Collectors.toList())/*.toArray(new ActivityTO[0])*/;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
