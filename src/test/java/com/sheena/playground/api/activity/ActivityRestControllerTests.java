@@ -23,7 +23,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.sheena.playground.api.ActivityTO;
 import com.sheena.playground.api.ElementTO;
 import com.sheena.playground.api.NewUserForm;
@@ -38,7 +37,6 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -116,15 +114,12 @@ public class ActivityRestControllerTests {
 	public void testServerIsBootingCorrectly() throws Exception {
 	}
 
-	///////////////////////////////// Check-In&Out Plugin Tests (0-4) /////////////////////////////////
-
 	@Test
 	public void testVerifiedPlayerCheckInAndOutSuccessfully() throws Exception {
 		// Given
 		// The server is up and there is an verified user with "player" role
 		final int testId = 0;
 
-		//////////////////////////////// Users ////////////////////////////////
 		NewUserForm newUser =
 				this.helper.generateSpecificNewUserForms(this.helper.playerRole, testId);
 		UserTO expectedUserTO = new UserTO(
@@ -138,13 +133,6 @@ public class ActivityRestControllerTests {
 
 		UserTO verifiedUser = new UserTO(userEntity);
 
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-
-		//////////////////////////////// Elements ////////////////////////////////
-		// Only manager can create Elements
 		ElementTO expectedElement = 
 				this.helper.generateSpecificCheckInOutElement(
 						this.managerVerifiedUserTO.getPlayground(),
@@ -154,7 +142,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(), expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -250,11 +238,6 @@ public class ActivityRestControllerTests {
 
 		UserTO verifiedUser = new UserTO(userEntity);
 
-		assertThat(verifiedUser)
-		.isNotNull()
-		.usingComparator(this.userTOComparator)
-		.isEqualTo(expectedUserTO);
-
 		//////////////////////////////// Elements ////////////////////////////////
 		// Only manager can create Elements
 		ElementTO expectedElement = 
@@ -266,7 +249,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(), expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -358,7 +341,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -449,7 +432,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -541,7 +524,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -634,7 +617,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -746,7 +729,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -857,7 +840,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser2.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -950,7 +933,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 
@@ -1025,7 +1008,7 @@ public class ActivityRestControllerTests {
 						this.managerVerifiedUserTO.getEmail(),
 						testId);
 
-		ElementEntity elementEntity = this.elementsService.addNewElement(expectedElement.toEntity());
+		ElementEntity elementEntity = this.elementsService.addNewElement(verifiedUser.getEmail(),expectedElement.toEntity());
 
 		ElementTO actualElement = new ElementTO(elementEntity);
 

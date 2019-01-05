@@ -63,22 +63,19 @@ public class CancelShiftPlugin implements PlaygroundPlugin{
 		boolean isSameDate = (this.helper.getDatePart(shiftDetails.getShiftDate())
 				- this.helper.getDatePart(form.getWantedShiftDate()) == 0);
 		
-		// Or using Java 8:
-		// shiftDetails.getWorkers()
-		//		.values().stream().anyMatch(v -> v.equals(activityEntity.getPlayerEmail()))
 		boolean isUserRegistered = 
 				shiftDetails.getWorkers().containsValue(activityEntity.getPlayerEmail());
 		
 		if (shiftDetails.getCurrentWorkersInShift() == 0) {
-			throw new RgisterCancelShiftException("Fatal Error: Number of workers is 0");
+			throw new RegisterCancelShiftException("Fatal Error: Number of workers is 0");
 		}
 		
 		if (!isUserRegistered) {
-			throw new RgisterCancelShiftException("Sorry, you are not registered to this shift!");
+			throw new RegisterCancelShiftException("Sorry, you are not registered to this shift!");
 		}
 
 		if (!isSameDate) {
-			throw new RgisterCancelShiftException("Sorry, you don't have a shift in this date!");
+			throw new RegisterCancelShiftException("Sorry, you don't have a shift in this date!");
 		}
 		
 		shiftDetails.removeWorker(activityEntity.getPlayerEmail());
@@ -88,7 +85,7 @@ public class CancelShiftPlugin implements PlaygroundPlugin{
 
 		elementEtity.setAttributes(updateAttributes);
 
-		this.elementService.updateElement(elementEtity.getId(), elementEtity);
+		this.elementService.updateElement(activityEntity.getPlayerEmail(), elementEtity.getId(), elementEtity);
 
 		this.workingDayResponse.setMessage(SUCCESS_CANCEL_MESSAGE);
 		this.workingDayResponse.setTimeStamp(shiftDetails.getShiftDate());

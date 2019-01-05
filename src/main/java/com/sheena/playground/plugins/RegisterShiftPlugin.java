@@ -61,11 +61,11 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 				- this.helper.getDatePart(form.getWantedShiftDate()) == 0);
 
 		if (!isSameDate) {
-			throw new RgisterCancelShiftException("Sorry, there is no shift in this date!");
+			throw new RegisterCancelShiftException("Sorry, there is no shift in this date!");
 		}
 
 		if (shiftDetails.getCurrentWorkersInShift() >= shiftDetails.getMaxWorkersInShift()) {
-			throw new RgisterCancelShiftException("Sorry, shift is full!");
+			throw new RegisterCancelShiftException("Sorry, shift is full!");
 		}
 		shiftDetails.addWorker(activityEntity.getPlayerEmail());
 
@@ -73,7 +73,7 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 
 		elementEtity.setAttributes(updateAttributes);
 
-		this.elementService.updateElement(elementEtity.getId(), elementEtity);
+		this.elementService.updateElement(activityEntity.getPlayerEmail(), elementEtity.getId(), elementEtity);
 
 		this.workingDayResponse.setMessage(SUCCESS_REGISTER_MESSAGE);
 		this.workingDayResponse.setTimeStamp(shiftDetails.getShiftDate());

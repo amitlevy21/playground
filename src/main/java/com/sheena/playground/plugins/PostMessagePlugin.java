@@ -31,21 +31,20 @@ public class PostMessagePlugin implements PlaygroundPlugin {
 	}
 	
 	@Override
-	public Object invokeOperation(ActivityEntity activityEntity) {
-		try {
-			ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
-			if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-				throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
-			
-			BoardMessage message = this.jackson.readValue(
-					this.jackson.writeValueAsString(
-							activityEntity.getAttributes()), BoardMessage.class);
-			message.setPublisherEmail(activityEntity.getPlayerEmail());
-			message.setPublisherPlayground(activityEntity.getPlayerPlayground());
-			
-			return message;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
+		
+		ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
+		
+		if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
+			throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+		
+		BoardMessage message = this.jackson.readValue(
+				this.jackson.writeValueAsString(
+						activityEntity.getAttributes()), BoardMessage.class);
+		
+		message.setPublisherEmail(activityEntity.getPlayerEmail());
+		message.setPublisherPlayground(activityEntity.getPlayerPlayground());
+		
+		return message;
 	}
 }

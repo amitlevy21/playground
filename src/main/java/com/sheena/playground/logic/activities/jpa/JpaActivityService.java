@@ -58,17 +58,19 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional
 	@IsUserPlayer
-	public ActivityEntity addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
+	public Object addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
 			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException {
 		if(activityEntity.getType() == null)
 			throw new ActivityWithNoTypeException("activity must have field: type");
+		
+		Object rv = null;
 		
 		try {
 			String type = activityEntity.getType();
 			String className = "com.sheena.playground.plugins." + type + "Plugin";
 			Class<?> theClass = Class.forName(className);
 			PlaygroundPlugin plugin = (PlaygroundPlugin) this.spring.getBean(theClass);
-			Object rv = plugin.invokeOperation(activityEntity);
+			rv = plugin.invokeOperation(activityEntity);
 			@SuppressWarnings("unchecked")
 			Map<String, Object> rvMap = this.jackson.readValue(
 					this.jackson.writeValueAsString(rv),
@@ -76,7 +78,6 @@ public class JpaActivityService implements ActivityService {
 			
 			activityEntity.getAttributes().putAll(rvMap);
 		} catch (Exception e) {
-			
 			throw new RuntimeException(e);
 		}
 		
@@ -84,7 +85,9 @@ public class JpaActivityService implements ActivityService {
 		Long dummyId = tmp.getId();
 		this.idGenerator.delete(tmp);
 		activityEntity.setId("" + dummyId);
-		return this.activities.save(activityEntity);
+		this.activities.save(activityEntity);
+		
+		return rv;
 	}
 
 	@Override

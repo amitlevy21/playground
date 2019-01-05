@@ -9,9 +9,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +23,6 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RolePrivilageException;
 import com.sheena.playground.logic.users.exceptions.UnverifiedUserActionException;
-import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 
 @Component
 @Aspect
@@ -43,10 +44,9 @@ public class UserAspect {
 	 * @param joinPoint a point in around the execution of the wrapped method
 	 * @return Object continue to execute the method wrapped by the aspect
 	 * @throws Throwable
-	 * @author moshesheena
 	 */
-	@Around("@annotation(com.sheena.playground.aop.IsExistUser)")
-	public Object isExistUser(ProceedingJoinPoint joinPoint) throws Throwable {
+	@Before("@annotation(com.sheena.playground.aop.IsExistUser)")
+	public void isExistUser(JoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
@@ -59,9 +59,9 @@ public class UserAspect {
 
 		try {
 			this.usersService.getUserByEmail(emailArg);
-			return joinPoint.proceed();
 		} catch (Throwable e) {
-			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+			log.error(className + "." + methodName + " throwed exception of type :" + e.getClass().getSimpleName());
+			throw e;
 		}
 	}
 
@@ -72,10 +72,9 @@ public class UserAspect {
 	 * @param joinPoint a point in around the execution of the wrapped method
 	 * @return Object continue to execute the method wrapped by the aspect
 	 * @throws Throwable
-	 * @author moshesheena
 	 */
-	@Around("@annotation(com.sheena.playground.aop.IsUserVerified)")
-	public Object isExistVerifiedUser(ProceedingJoinPoint joinPoint) throws Throwable {
+	@Before("@annotation(com.sheena.playground.aop.IsUserVerified)")
+	public void isExistVerifiedUser(JoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
@@ -95,11 +94,9 @@ public class UserAspect {
 			if (!userEntity.isVerifiedUser()) {
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
 			}
-			return joinPoint.proceed();
-		} catch (UnverifiedUserActionException e) {
-			throw e;
 		} catch (Throwable e) {
-			throw new UserDoesNotExistException("no user with email: " + emailArg + " exists");
+			log.error(className + "." + methodName + " throwed exception of type :" + e.getClass().getSimpleName());
+			throw e;
 		}
 	}
 
@@ -110,10 +107,9 @@ public class UserAspect {
 	 * @param joinPoint a point in around the execution of the wrapped method
 	 * @return Object continue to execute the method wrapped by the aspect
 	 * @throws Throwable
-	 * @author moshesheena
 	 */
-	@Around("@annotation(com.sheena.playground.aop.IsUserPlayer)")
-	public Object isUserPlayer(ProceedingJoinPoint joinPoint) throws Throwable {
+	@Before("@annotation(com.sheena.playground.aop.IsUserPlayer)")
+	public void isUserPlayer(JoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
@@ -130,19 +126,15 @@ public class UserAspect {
 			log.info("check if user with email=" + emailArg + " is verified");
 			log.debug("user=" + userEntity.toString());
 
-			if (!userEntity.isVerifiedUser()) {
+			if (!userEntity.isVerifiedUser())
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
-			}
-			if (!userEntity.getRole().equalsIgnoreCase(Roles.PLAYER.toString())) {
-				throw new RolePrivilageException("user with email: " + emailArg + " is not a player");
-			}
-			return joinPoint.proceed();
-		} catch (UnverifiedUserActionException e) {
-			throw e;
-		} catch (RolePrivilageException e) {
-			throw e;
+			
+			if (!userEntity.getRole().equalsIgnoreCase(Roles.PLAYER.toString()))
+				throw new RolePrivilageException("user with email: " + emailArg + " role is not a player");
+			
 		} catch (Throwable e) {
-			throw new Exception(e);
+			log.error(className + "." + methodName + " throwed exception of type :" + e.getClass().getSimpleName());
+			throw e;
 		}
 	}
 
@@ -153,10 +145,9 @@ public class UserAspect {
 	 * @param joinPoint a point in around the execution of the wrapped method
 	 * @return Object continue to execute the method wrapped by the aspect
 	 * @throws Throwable
-	 * @author moshesheena
 	 */
-	@Around("@annotation(com.sheena.playground.aop.IsUserManager)")
-	public Object isUserManager(ProceedingJoinPoint joinPoint) throws Throwable {
+	@Before("@annotation(com.sheena.playground.aop.IsUserManager)")
+	public void isUserManager(JoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 
@@ -173,19 +164,18 @@ public class UserAspect {
 			log.info("check if user with email=" + emailArg + " is verified");
 			log.debug("user=" + userEntity.toString());
 
-			if (!userEntity.isVerifiedUser()) {
+			if (!userEntity.isVerifiedUser())
 				throw new UnverifiedUserActionException("user with email: " + emailArg + " is not verified");
-			}
-			if (!userEntity.getRole().equalsIgnoreCase(Roles.MANAGER.toString())) {
+
+			if (!userEntity.getRole().equalsIgnoreCase(Roles.MANAGER.toString()))
 				throw new RolePrivilageException("user with email: " + emailArg + " is not a manager");
-			}
-			return joinPoint.proceed();
+
 		} catch (Throwable e) {
-			log.error(methodName + " - end with error" + e.getClass().getName());
+			log.error(className + "." + methodName + " throwed exception of type :" + e.getClass().getSimpleName());
 			throw e;
 		}
 	}
-	
+
 	@Around("@annotation(com.sheena.playground.aop.FilterElementsByRole)")
 	public Object filterElementsByRole(ProceedingJoinPoint joinPoint) throws Throwable {
 		String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -195,25 +185,25 @@ public class UserAspect {
 		if (emailArg == null) {
 			throw new RuntimeException(className + "." + methodName + " is missing arg: email");
 		}
-		
+
 		log.info("check role of user with email: " + emailArg);
-		
+
 		boolean filterFlag = false;
-		
+
 		try {
 			UserEntity userEntity = this.usersService.getUserByEmail(emailArg);
 			String role = userEntity.getRole();
-			if(role.equalsIgnoreCase(Roles.PLAYER.toString()))
+			if (role.equalsIgnoreCase(Roles.PLAYER.toString()))
 				filterFlag = true;
-			
+
 			Object rv = joinPoint.proceed();
-			if(!filterFlag)
+			if (!filterFlag)
 				return rv;
 			else {
 				ElementTO[] elements = (ElementTO[]) rv;
 				List<ElementTO> elementsList = new ArrayList<>();
 				for (int i = 0; i < elements.length; i++) {
-					if(elements[i].getExpirationDate().after(new Date()))
+					if (elements[i].getExpirationDate().after(new Date()))
 						elementsList.add(elements[i]);
 				}
 				return elementsList.toArray(new ElementTO[0]);
@@ -230,7 +220,6 @@ public class UserAspect {
 	 * @param string a String of some sort
 	 * @return Boolean true for strings that match an email pattern, false otherwise
 	 * @see https://howtodoinjava.com/regex/java-regex-validate-email-address/
-	 * @author moshesheena
 	 */
 	private boolean isStringEmail(String string) {
 		String emailRegex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
@@ -241,7 +230,7 @@ public class UserAspect {
 		return matcher.matches();
 	}
 
-	private String getEmailArgForAdvice(ProceedingJoinPoint joinPoint) {
+	private String getEmailArgForAdvice(JoinPoint joinPoint) {
 		for (Object arg : joinPoint.getArgs()) {
 			if (arg instanceof String) {
 				String s = (String) arg;
