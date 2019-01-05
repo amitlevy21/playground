@@ -11,17 +11,17 @@ An academic class project, building an infrastructure using JAVA and Spring fram
 
 
 ## How to deploy using Docker
-1. Clone this repo.
-2. Install docker, we recommend using Linux: https://docs.docker.com/install/#supported-platforms
-3. cd with terminal to project folder.
+1. Install docker, we recommend using Linux: https://docs.docker.com/install/#supported-platforms
+2. Install docker-compose https://docs.docker.com/compose/install/
+3. Download the [docker-compose.deploy.yml](https://github.com/amitlevy21/playground.2019A.Sheena/blob/docker_deployment/docker-compose.deploy.yml) file
 4. run:
 ```shell
-~/github/playground.2019A.Sheena$ docker build -t playground . && docker run --rm -it playground
+~$ docker-compose -f docker-compose.deploy.yml up
 ```
-5. (Optional) To connect to container you may use:
+5. (Optional) To connect to container you may use (useful for development):
 ```shell
-~/github/playground.2019A.Sheena$ docker ps # Show running containers and their names
-~/github/playground.2019A.Sheena$ docker exec -it loving_heisenberg /bin/bash # connect to container named loving_heisenberg
+~$ docker exec -it playground /bin/bash # connect to playground container
+~$ docker exec -it playground-mongo /bin/bash # connect to mongo container
 ```
 6. Done!
 

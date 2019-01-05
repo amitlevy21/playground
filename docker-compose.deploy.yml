@@ -1,0 +1,20 @@
+version: '3.1'
+
+services:
+  playground:
+    image: dockerwhisper/playground-intergration
+    container_name: playground
+    ports:
+      - 8083:8083
+    depends_on:
+      - mongo
+  
+  mongo:
+    image: mongo
+    container_name: playground-mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+      - ./data_bkp:/data/bkp
+    restart: always
