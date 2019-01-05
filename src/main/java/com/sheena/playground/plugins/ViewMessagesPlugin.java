@@ -38,21 +38,18 @@ public class ViewMessagesPlugin implements PlaygroundPlugin {
 	}
 	
 	@Override
-	public Object invokeOperation(ActivityEntity activityEntity) {
-		try {
-			ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
-			if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-				throw new ElementDoesNotMatchActivity("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
-			
-			ViewMessagesParameters parameters = this.jackson.readValue(
-					this.jackson.writeValueAsString(
-							activityEntity.getAttributes()), ViewMessagesParameters.class);
-			
-			List<ActivityEntity> messages = activityDao.findActivityByType(
-					POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()));
-			return messages.stream().map(ActivityTO::new).collect(Collectors.toList()).toArray(new ActivityTO[0]);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public Object invokeOperation(ActivityEntity activityEntity) throws Exception{
+		ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
+		if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
+			throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+		
+		ViewMessagesParameters parameters = this.jackson.readValue(
+				this.jackson.writeValueAsString(
+						activityEntity.getAttributes()), ViewMessagesParameters.class);
+		
+		List<ActivityEntity> messages = activityDao.findActivityByType(
+				POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()));
+		
+		return messages.stream().map(ActivityTO::new).collect(Collectors.toList()).toArray(new ActivityTO[0]);
 	}
 }

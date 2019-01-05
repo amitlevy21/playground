@@ -2,7 +2,6 @@ package com.sheena.playground.api.elements;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -132,7 +131,7 @@ public class ElementRestControllerTest {
     @Test
     public void testUpdateElementSuccessfully() throws InvalidExpirationDateException, ElementNotExistException {
         	ElementTO e = this.elementTOs.get(1);
-        	ElementEntity entity = elementService.addNewElement(e.toEntity());
+        	ElementEntity entity = elementService.addNewElement(managerUser.getEmail(), e.toEntity());
         	
         	e.setLocation(new Location(100.0, 100.0));
         	
@@ -148,7 +147,7 @@ public class ElementRestControllerTest {
 	@Test
     public void testGetElementByItsIDSuccessfully() throws InvalidExpirationDateException {
     	ElementTO e = this.elementTOs.get(2);
-    	ElementEntity entity = elementService.addNewElement(e.toEntity());
+    	ElementEntity entity = elementService.addNewElement(managerUser.getEmail(), e.toEntity());
     	
     	String actualElementId = entity.getId();
     	
@@ -175,9 +174,9 @@ public class ElementRestControllerTest {
     	ElementTO e1 = this.elementTOs.get(3);
     	ElementTO e2 = this.elementTOs.get(4);
     	ElementTO e3 = this.elementTOs.get(5);
-    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
-    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
-    	ElementEntity entity3 = elementService.addNewElement(e3.toEntity());
+    	ElementEntity entity1 = elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(managerUser.getEmail(), e2.toEntity());
+    	ElementEntity entity3 = elementService.addNewElement(managerUser.getEmail(), e3.toEntity());
     	
     	ElementTO[] expected = new ElementTO[3];
     	expected[0] = new ElementTO(entity1);
@@ -200,9 +199,9 @@ public class ElementRestControllerTest {
     	e2.setLocation(new Location(15., 25.));
     	e3.setLocation(new Location(100., 200.));
     	
-    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
-    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
-    	elementService.addNewElement(e3.toEntity());
+    	ElementEntity entity1 = elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(managerUser.getEmail(), e2.toEntity());
+    	elementService.addNewElement(managerUser.getEmail(), e3.toEntity());
     	
     	ElementTO[] expected = new ElementTO[2];
     	expected[0] = new ElementTO(entity1);
@@ -232,9 +231,9 @@ public class ElementRestControllerTest {
     	e2.setName(searchedValue);
     	e3.setName(wrongValue);
     	
-    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
-    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
-    	elementService.addNewElement(e3.toEntity());
+    	ElementEntity entity1 = elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(managerUser.getEmail(), e2.toEntity());
+    	elementService.addNewElement(managerUser.getEmail(), e3.toEntity());
     	
     	ElementTO[] expected = new ElementTO[2];
     	expected[0] = new ElementTO(entity1);
@@ -260,9 +259,9 @@ public class ElementRestControllerTest {
     	e2.setType(searchedValue);
     	e3.setType(wrongValue);
     	
-    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
-    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
-    	elementService.addNewElement(e3.toEntity());
+    	ElementEntity entity1 = elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(managerUser.getEmail(), e2.toEntity());
+    	elementService.addNewElement(managerUser.getEmail(), e3.toEntity());
     	
     	ElementTO[] expected = new ElementTO[2];
     	expected[0] = new ElementTO(entity1);
@@ -281,7 +280,7 @@ public class ElementRestControllerTest {
     	String searchedAttribute = "horse";
     	String searchedValue = "black";
     	
-    	elementService.addNewElement(e1.toEntity());
+    	elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
     	
     	thrown.expect(HttpServerErrorException.class);
     	thrown.expectMessage("500");
@@ -304,7 +303,7 @@ public class ElementRestControllerTest {
 	@Test
 	public void testUserWithPlayerRoleUpdateElement() throws InvalidExpirationDateException, ElementNotExistException {
 	    	ElementTO e = this.elementTOs.get(17);
-	    	ElementEntity entity = elementService.addNewElement(e.toEntity());
+	    	ElementEntity entity = elementService.addNewElement(managerUser.getEmail(), e.toEntity());
 	    	
 	    	e.setLocation(new Location(100.0, 100.0));
 	    	
@@ -326,9 +325,9 @@ public class ElementRestControllerTest {
     	e2.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("2090-11-18"));
     	e3.setExpirationDate(new SimpleDateFormat("yyyy-MM-dd").parse("1990-10-09"));
     	
-    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
-    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
-    	ElementEntity entity3 = elementService.addNewElement(e3.toEntity());
+    	ElementEntity entity1 = elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(managerUser.getEmail(), e2.toEntity());
+    	elementService.addNewElement(managerUser.getEmail(), e3.toEntity());
     	
     	int numExpected = 2;
     	
@@ -356,9 +355,9 @@ public class ElementRestControllerTest {
     	e2.setLocation(new Location(15., 25.));
     	e3.setLocation(new Location(100., 200.));
     	
-    	ElementEntity entity1 = elementService.addNewElement(e1.toEntity());
-    	ElementEntity entity2 = elementService.addNewElement(e2.toEntity());
-    	ElementEntity entity3 = elementService.addNewElement(e3.toEntity());
+    	ElementEntity entity1 = elementService.addNewElement(managerUser.getEmail(), e1.toEntity());
+    	ElementEntity entity2 = elementService.addNewElement(managerUser.getEmail(), e2.toEntity());
+    	elementService.addNewElement(managerUser.getEmail(), e3.toEntity());
     	
     	int numExpected = 2;
     	
@@ -381,10 +380,14 @@ public class ElementRestControllerTest {
 		
 		for (int i = 0; i < numCases; i++) {
 			tos.add(new ElementTO(
-					playgroundName, new Location(), ELEMENT_NAME + "_" + i, 
-					new Date(), new Date(), ELEMENT_TYPE + "_" + i, 
+					playgroundName, 
+					new Location(), 
+					ELEMENT_NAME + "_" + i, 
+					new Date(), 
+					new Date(), 
+					ELEMENT_TYPE + "_" + i, 
 					new HashMap<String, Object>(), 
-					playgroundName, "creatorEmail"));
+					playgroundName, "dummy@email.com"));
 		}
 		
 		return tos;

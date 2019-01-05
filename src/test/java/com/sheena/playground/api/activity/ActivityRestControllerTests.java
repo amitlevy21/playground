@@ -1,10 +1,5 @@
 package com.sheena.playground.api.activity;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.junit.After;
@@ -18,15 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.sheena.playground.api.ActivityTO;
-import com.sheena.playground.logic.activities.ActivityEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityService;
-import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
-import com.sheena.playground.logic.activities.jpa.ActivityWithNoTypeException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
