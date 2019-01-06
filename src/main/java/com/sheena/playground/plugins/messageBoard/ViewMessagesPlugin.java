@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins;
+package com.sheena.playground.plugins.messageBoard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,8 @@ import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
+import com.sheena.playground.plugins.PlaygroundPlugin;
 
 @Component
 public class ViewMessagesPlugin implements PlaygroundPlugin {
@@ -49,7 +51,7 @@ public class ViewMessagesPlugin implements PlaygroundPlugin {
 	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
 		ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
 		if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-			throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+			throw new ElementDoesNotMatchActivityException("activity requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
 		
 		ViewMessagesParameters parameters = this.jackson.readValue(
 				this.jackson.writeValueAsString(

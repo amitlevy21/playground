@@ -42,7 +42,7 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
-import com.sheena.playground.plugins.BoardMessage;
+import com.sheena.playground.plugins.messageBoard.BoardMessage;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)

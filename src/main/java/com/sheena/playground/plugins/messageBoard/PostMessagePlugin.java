@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins;
+package com.sheena.playground.plugins.messageBoard;
 
 import javax.annotation.PostConstruct;
 
@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
+import com.sheena.playground.plugins.PlaygroundPlugin;
 
 @Component
 public class PostMessagePlugin implements PlaygroundPlugin {
@@ -35,7 +37,7 @@ public class PostMessagePlugin implements PlaygroundPlugin {
 		ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
 
 		if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-			throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+			throw new ElementDoesNotMatchActivityException("activity requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
 		
 		BoardMessage message = this.jackson.readValue(
 				this.jackson.writeValueAsString(

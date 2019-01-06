@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins;
+package com.sheena.playground.plugins.messageBoard;
 
 import java.util.List;
 

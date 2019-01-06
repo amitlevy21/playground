@@ -2,10 +2,11 @@ package com.sheena.playground.plugins;
 
 import java.util.Date;
 
-public class RegisterCancelShiftForm {
+public class ShiftForm {
+	
 	private Date wantedShiftDate;
 	
-	public RegisterCancelShiftForm() {
+	public ShiftForm() {
 	}
 
 	public Date getWantedShiftDate() {

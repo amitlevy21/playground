@@ -1,14 +1,16 @@
 package com.sheena.playground.plugins;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class ShiftDetails {
+	
 	private Date shiftDate;
 	private int shiftHours;
 	private int maxWorkersInShift;
 	private int currentWorkersInShift;
-	private Map<String, Object> workers;
+	private List<String> workers;
 	
 	public ShiftDetails() {
 	}
@@ -45,22 +47,25 @@ public class ShiftDetails {
 		this.currentWorkersInShift = currentWorkersInShift;
 	}
 
-	public Map<String, Object> getWorkers() {
+	public List<String> getWorkers() {
 		return workers;
 	}
 
-	public void setWorkers(Map<String, Object> workers) {
+	public void setWorkers(List<String> workers) {
 		this.workers = workers;
 	}
 	
 	public void addWorker(String playerEmail) {
-		this.setCurrentWorkersInShift(this.getCurrentWorkersInShift() + 1);
-		this.workers.put("worker #" + getCurrentWorkersInShift(), playerEmail);
+		if(!this.workers.contains(playerEmail)) {
+			this.setCurrentWorkersInShift(this.getCurrentWorkersInShift() + 1);
+			this.workers.add(playerEmail);
+		}
 	}
 
 	public void removeWorker(String playerEmail) {
-		this.workers.values().remove(playerEmail);
-		this.setCurrentWorkersInShift(this.getCurrentWorkersInShift() - 1);		
+		if(this.workers.contains(playerEmail)) {
+			this.workers.remove(playerEmail);
+			this.setCurrentWorkersInShift(this.getCurrentWorkersInShift() - 1);	
+		}
 	}
-	
 }
