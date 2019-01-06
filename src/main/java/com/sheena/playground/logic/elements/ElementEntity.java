@@ -46,6 +46,21 @@ public class ElementEntity {
 		this.creatorEmail = creatorEmail;
 	}
 
+	public ElementEntity(ElementEntity other) {
+		super();
+		setPlayground(other.getPlayground());
+		setAttributes(other.getAttributes());
+		setCreationDate(other.getCreationDate());
+		setCreatorEmail(other.getCreatorEmail());
+		setCreatorPlayground(other.getCreatorPlayground());
+		setExpirationDate(other.getExpirationDate());
+		setId(other.getId());
+		setName(other.getName());
+		setType(other.getType());
+		setX(other.getX());
+		setY(other.getY());
+	}
+	
 	public String getPlayground() {
         return this.playground;
     }

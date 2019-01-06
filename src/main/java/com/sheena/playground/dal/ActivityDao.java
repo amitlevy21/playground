@@ -1,6 +1,7 @@
 package com.sheena.playground.dal;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -14,4 +15,7 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
 			@Param("type") String type,
 			Pageable pageable);
 	
+	public List<ActivityEntity> findActivityByElementId(
+			@Param("id") String id,
+			Pageable pageable);
 }

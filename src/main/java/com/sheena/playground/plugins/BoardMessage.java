@@ -7,6 +7,9 @@ public class BoardMessage {
 	private String publisherPlayground;
 	
 	public BoardMessage() {
+		this.text = "<empty message>";
+		this.publisherEmail = "unknown";
+		this.publisherPlayground = "unknown";
 	}
 	
 	public BoardMessage(String text) {

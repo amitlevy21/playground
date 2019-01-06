@@ -109,14 +109,14 @@ public class ActivityTO {
 	
 	public ActivityEntity toActivityEntity() {
 		ActivityEntity entity = new ActivityEntity(
-				this.playground,
-				this.id,
 				this.elementPlayground,
 				this.elementId,
 				this.type,
 				this.playerPlayground,
 				this.playerEmail,
 				this.attributes);
+		entity.setId(this.id);
+		entity.setPlayground(this.playground);
 		return entity;
 	}
 

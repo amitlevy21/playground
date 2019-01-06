@@ -64,6 +64,9 @@ public class JpaActivityService implements ActivityService {
 			throw new ActivityWithNoTypeException("activity must have field: type");
 		
 		Object rv = null;
+		Object[] rvArray = null;
+		Map<String, Object> rvMap = null;
+		boolean isArrayFlag = true;
 		
 		try {
 			String type = activityEntity.getType();
@@ -71,12 +74,27 @@ public class JpaActivityService implements ActivityService {
 			Class<?> theClass = Class.forName(className);
 			PlaygroundPlugin plugin = (PlaygroundPlugin) this.spring.getBean(theClass);
 			rv = plugin.invokeOperation(activityEntity);
-			@SuppressWarnings("unchecked")
-			Map<String, Object> rvMap = this.jackson.readValue(
-					this.jackson.writeValueAsString(rv),
-					Map.class);
 			
-			activityEntity.getAttributes().putAll(rvMap);
+			try {
+				rvArray = (Object[]) rv;
+			} catch (ClassCastException e) {
+				isArrayFlag = false;
+			}
+			if(isArrayFlag) {
+				for (Object object : rvArray) {
+					rvMap = this.jackson.readValue(
+							this.jackson.writeValueAsString(object), 
+							Map.class);
+					
+					activityEntity.getAttributes().putAll(rvMap);
+				}
+			}
+			else {
+				rvMap = this.jackson.readValue(
+						this.jackson.writeValueAsString(rv), 
+						Map.class);
+				activityEntity.getAttributes().putAll(rvMap);
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

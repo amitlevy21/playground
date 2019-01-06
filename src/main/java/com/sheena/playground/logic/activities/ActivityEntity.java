@@ -21,10 +21,8 @@ public class ActivityEntity {
 	public ActivityEntity() {
 	}
 
-	public ActivityEntity(String playground, String id, String elementPlayground, String elementId, String type,
+	public ActivityEntity(String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
-		this.playground = playground;
-//		this.id = id;
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
