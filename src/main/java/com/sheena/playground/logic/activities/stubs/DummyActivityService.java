@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityNotFoundException;
 import com.sheena.playground.logic.activities.ActivityService;
-import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityTypeNotSupportedException;
 import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 
 //@Service
@@ -45,9 +45,9 @@ public class DummyActivityService implements ActivityService {
 
 //	@Override
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity)
-			throws ActivityTypeNotAllowedException {
+			throws ActivityTypeNotSupportedException {
 		if (!activityEntity.getType().equals(ALLOWED_TYPE)) {
-			throw new ActivityTypeNotAllowedException("Activity type is not: " + ALLOWED_TYPE);
+			throw new ActivityTypeNotSupportedException("Activity type is not: " + ALLOWED_TYPE);
 		}
 
 		this.activities.put(activityEntity.getType(), activityEntity);
@@ -55,10 +55,10 @@ public class DummyActivityService implements ActivityService {
 	}
 
 	@Override
-	public ActivityEntity getActivityByType(String type) throws ActivityTypeNotAllowedException {
+	public ActivityEntity getActivityByType(String type) throws ActivityTypeNotSupportedException {
 		ActivityEntity rv = this.activities.get(type);
 		if (rv == null) {
-			throw new ActivityTypeNotAllowedException("Activity not found for type: " + type);
+			throw new ActivityTypeNotSupportedException("Activity not found for type: " + type);
 		}
 		return rv;
 	}
@@ -71,7 +71,7 @@ public class DummyActivityService implements ActivityService {
 
 	@Override
 	public ActivityEntity addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
-			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException {
+			throws ActivityTypeNotSupportedException, ActivityWithNoTypeException {
 		// TODO Auto-generated method stub
 		return null;
 	}

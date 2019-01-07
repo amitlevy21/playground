@@ -6,9 +6,11 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
@@ -21,7 +23,8 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 
 	private ObjectMapper jackson;
 	private ElementService elementService;
-
+	private ActivityDao activityDao;
+	
 	@PostConstruct
 	public void init() {
 		this.jackson = new ObjectMapper();
@@ -30,6 +33,11 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 	@Autowired
 	public void setElementService(ElementService elementService) {
 		this.elementService = elementService;
+	}
+	
+	@Autowired
+	public void setActivityDao(ActivityDao activityDao) {
+		this.activityDao = activityDao;
 	}
 
 	@Override
@@ -53,17 +61,14 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 		if(!dateFormat.format(shiftDetails.getShiftDate()).equals(dateFormat.format(form.getWantedShiftDate())))
 			throw new ShiftRegisteryDateMismatchException("cannot register to shift in date " + form.getWantedShiftDate() + ". no such shift");
 
-		if (shiftDetails.getCurrentWorkersInShift() == shiftDetails.getMaxWorkersInShift())
+		int numOfWorkers = this.activityDao
+							.findActivityByElementIdAndType(
+									activityEntity.getElementId(),
+									elementType,
+									PageRequest.of(0, shiftDetails.getMaxWorkersInShift()))
+							.size();
+		if (numOfWorkers == shiftDetails.getMaxWorkersInShift())
 			throw new fullShiftException("cannot register to shift in date: " + shiftDetails.getShiftDate() + " because shift is already full");
-		
-		shiftDetails.addWorker(activityEntity.getPlayerEmail());
-
-		Map<String, Object> updateAttributes = 
-				jackson.readValue(this.jackson.writeValueAsString(shiftDetails), Map.class);
-
-		elementEntity.setAttributes(updateAttributes);
-
-		this.elementService.updateElement(activityEntity.getPlayerEmail(), elementEntity.getId(), elementEntity);
 		
 		return new ShiftResponse(shiftDetails.getShiftDate(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}

@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.activities.ActivityService;
-import com.sheena.playground.logic.activities.ActivityTypeNotAllowedException;
+import com.sheena.playground.logic.activities.ActivityTypeNotSupportedException;
 import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
@@ -257,7 +257,7 @@ public class MessageBoardPluginTests {
 	}
 	
 	@Test
-	public void testViewMessagesSuccessfully() throws ActivityTypeNotAllowedException, ActivityWithNoTypeException, JsonParseException, JsonMappingException, JsonProcessingException, IOException {
+	public void testViewMessagesSuccessfully() throws ActivityTypeNotSupportedException, ActivityWithNoTypeException, JsonParseException, JsonMappingException, JsonProcessingException, IOException {
 		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
 		
 		Map<String, Object> activityAttributes1 = new HashMap<>();
