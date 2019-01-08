@@ -138,21 +138,9 @@ public class ShiftRegisteryPluginTests {
 				shiftRegisteryAttributes, 
 				this.playgroundName, 
 				this.managerUser.getEmail());
-		
-//		this.viewMessagesBoardElement = new ElementEntity(
-//				playgroundName, 
-//				0.0, 0.0, 
-//				"messageBoard03", 
-//				new Date(), 
-//				new SimpleDateFormat("yyyy-MM-dd").parse("2070-01-01"), 
-//				"messageBoard", 
-//				new HashMap<>(), 
-//				this.playgroundName, 
-//				this.managerUser.getEmail());
-		
+				
 		this.shiftRegisteryElement = this.elementService.addNewElement(this.managerUser.getEmail(), this.shiftRegisteryElement);
 		this.wrongTypeShiftRegisteryElement = this.elementService.addNewElement(this.managerUser.getEmail(), this.wrongTypeShiftRegisteryElement);
-//		this.viewMessagesBoardElement = this.elementService.addNewElement(this.managerUser.getEmail(), this.viewMessagesBoardElement);
 	}
 
 	@After
