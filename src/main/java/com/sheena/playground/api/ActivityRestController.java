@@ -33,6 +33,6 @@ public class ActivityRestController {
         @PathVariable("email") String email,
         @RequestBody ActivityTO newActivityTO) throws ActivityNotFoundException, ActivityTypeNotAllowedException, ActivityWithNoTypeException {	    	
     	return this.activityService.addNewActivity(
-    			newActivityTO.toActivityEntity(), userPlayground, email);
+    			newActivityTO.toEntity(), userPlayground, email);
     }
 }

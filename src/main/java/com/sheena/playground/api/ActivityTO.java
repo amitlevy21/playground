@@ -1,28 +1,26 @@
 package com.sheena.playground.api;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.sheena.playground.logic.activities.ActivityEntity;
 
 public class ActivityTO {
-		
-	private String playground;
+
 	private String id;
+	private String playground;
 	private String elementPlayground;
 	private String elementId;
 	private String type;
 	private String playerPlayground;
 	private String playerEmail;
 	private Map<String, Object> attributes;
-	
+
 	public ActivityTO() {
 	}
-	
-	public ActivityTO(String playground, String elementPlayground, String elementId, String type,
-			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
+
+	public ActivityTO(String elementPlayground, String elementId, String type, String playerPlayground,
+			String playerEmail, Map<String, Object> attributes) {
 		super();
-		this.playground = playground;
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
@@ -32,13 +30,8 @@ public class ActivityTO {
 	}
 
 	public ActivityTO(ActivityEntity entity) {
-		this(entity.getPlayground(), 
-				entity.getElementPlayground(),
-				entity.getElementId(),
-				entity.getType(),
-				entity.getPlayerPlayground(),
-				entity.getPlayerEmail(),
-				entity.getAttributes());
+		this(entity.getElementPlayground(), entity.getElementId(), entity.getType(), entity.getPlayerPlayground(),
+				entity.getPlayerEmail(), entity.getAttributes());
 		setId(entity.getId());
 		setPlayground(entity.getPlayground());
 	}
@@ -106,15 +99,10 @@ public class ActivityTO {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
-	public ActivityEntity toActivityEntity() {
-		ActivityEntity entity = new ActivityEntity(
-				this.elementPlayground,
-				this.elementId,
-				this.type,
-				this.playerPlayground,
-				this.playerEmail,
-				this.attributes);
+
+	public ActivityEntity toEntity() {
+		ActivityEntity entity = new ActivityEntity(this.elementPlayground, this.elementId, this.type,
+				this.playerPlayground, this.playerEmail, this.attributes);
 		entity.setId(this.id);
 		entity.setPlayground(this.playground);
 		return entity;
