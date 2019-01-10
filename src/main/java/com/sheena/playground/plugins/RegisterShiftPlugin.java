@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins.shiftRegistery;
+package com.sheena.playground.plugins;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -14,8 +14,11 @@ import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
-import com.sheena.playground.plugins.PlaygroundPlugin;
+import com.sheena.playground.plugins.shiftRegistery.ShiftDetails;
+import com.sheena.playground.plugins.shiftRegistery.ShiftForm;
+import com.sheena.playground.plugins.shiftRegistery.ShiftRegisteryDateMismatchException;
+import com.sheena.playground.plugins.shiftRegistery.ShiftResponse;
+import com.sheena.playground.plugins.shiftRegistery.fullShiftException;
 
 @Component
 public class RegisterShiftPlugin implements PlaygroundPlugin {

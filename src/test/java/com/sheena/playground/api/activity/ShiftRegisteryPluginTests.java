@@ -100,7 +100,7 @@ public class ShiftRegisteryPluginTests {
     
     @Before
     public void setup() throws UserAlreadyExistsException, RoleDoesNotExistException, ParseException {
-		this.managerUser = new UserEntity(userName1+emailDomain, playgroundName, userName1, avatar, managerRole);
+    	this.managerUser = new UserEntity(userName1+emailDomain, playgroundName, userName1, avatar, managerRole);
 		this.playerUser = new UserEntity(userName2+emailDomain, playgroundName, userName2, avatar, playerRole);
 		
 		this.managerUser.setVerifiedUser(true);
@@ -147,7 +147,7 @@ public class ShiftRegisteryPluginTests {
 	public void teardown() {
 		this.usersService.cleanup();
 		this.elementService.cleanup();
-		this.activityService.cleanup();
+//		this.activityService.cleanup();
 	}
 	
 	@Rule
@@ -177,11 +177,11 @@ public class ShiftRegisteryPluginTests {
 		
 		ShiftResponse rvShift = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(rv), ShiftResponse.class);
 		
-		ActivityEntity expectedEntity = this.activityDao.findActivityByElementId(this.shiftRegisteryElement.getId(), PageRequest.of(this.pageablePage, this.pageableSize)).toArray(new ActivityEntity[0])[0];
+		ActivityEntity expectedEntity = this.activityDao.findActivityByElementId(this.shiftRegisteryElement.getId(), PageRequest.of(this.pageablePage, this.pageableSize)).get(0);
 		
-		Date expectedShiftDate = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(expectedEntity.getAttributes().get("shiftDate")), Date.class);
+		ShiftResponse expectedShiftResponse = (ShiftResponse) expectedEntity.getResponse()[0]; 
 
-		assertThat(rvShift.getShiftDate()).isNotNull().isEqualTo(expectedShiftDate);
+		assertThat(rvShift).isNotNull().isEqualTo(expectedShiftResponse);
 	}
 	
 	@Test

@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins.attendanceClock;
+package com.sheena.playground.plugins;
 
 import java.text.SimpleDateFormat;
 
@@ -11,8 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
-import com.sheena.playground.plugins.PlaygroundPlugin;
+import com.sheena.playground.plugins.attendanceClock.AttendanceClock;
+import com.sheena.playground.plugins.attendanceClock.AttendanceClockResponse;
+import com.sheena.playground.plugins.attendanceClock.ClockingDateMismatchException;
+import com.sheena.playground.plugins.attendanceClock.ClockingForm;
 
 @Component
 public class ClockPlugin implements PlaygroundPlugin {

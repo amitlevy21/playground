@@ -1,5 +1,6 @@
 package com.sheena.playground.logic.activities;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Id;
@@ -17,6 +18,7 @@ public class ActivityEntity {
 	private String playerPlayground;
 	private String playerEmail;
 	private Map<String, Object> attributes;
+	private Object[] response;
 
 	public ActivityEntity() {
 	}
@@ -95,12 +97,20 @@ public class ActivityEntity {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
+	
+	public Object[] getResponse() {
+		return response;
+	}
+
+	public void setResponse(Object[] response) {
+		this.response = response;
+	}
 
 	@Override
 	public String toString() {
 		return "ActivityEntity [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
 				+ ", elementId=" + elementId + ", type=" + type + ", playerPlayground=" + playerPlayground
-				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
+				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + ", response=" + response + "]";
 	}
 
 	@Override
@@ -114,6 +124,7 @@ public class ActivityEntity {
 		result = prime * result + ((playerEmail == null) ? 0 : playerEmail.hashCode());
 		result = prime * result + ((playerPlayground == null) ? 0 : playerPlayground.hashCode());
 		result = prime * result + ((playground == null) ? 0 : playground.hashCode());
+		result = prime * result + ((response == null) ? 0 : response.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -162,6 +173,11 @@ public class ActivityEntity {
 				return false;
 		} else if (!playground.equals(other.playground))
 			return false;
+		if (response == null) {
+			if (other.response != null)
+				return false;
+		} else if (!response.equals(other.response))
+			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
@@ -169,5 +185,5 @@ public class ActivityEntity {
 			return false;
 		return true;
 	}
-
+	
 }

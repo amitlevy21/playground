@@ -30,7 +30,6 @@ public class JpaActivityService implements ActivityService {
 	private ActivityDao activities;
 	private IdGeneratorDao idGenerator;
 	private ApplicationContext spring;
-	private ObjectMapper jackson;
 
 	// REGISTERY SHIFT PLUGINS
 	private final String REGISTER_SHIFT = "RegisterShift";
@@ -52,7 +51,6 @@ public class JpaActivityService implements ActivityService {
 		this.activities = activities;
 		this.idGenerator = idGenerator;
 		this.spring = spring;
-		this.jackson = new ObjectMapper();
 	}
 
 	@Override
@@ -74,45 +72,32 @@ public class JpaActivityService implements ActivityService {
 	@IsUserPlayer
 	public Object addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
 			throws ActivityTypeNotSupportedException, ActivityWithNoTypeException {
-		String packageName;
 		String type = activityEntity.getType();
-		
+
 		if (type == null) {
 			throw new ActivityWithNoTypeException("activity must have field: type");
-		} else if (type.equals(REGISTER_SHIFT) || type.equals(CANCEL_SHIFT)) {
-			packageName = REGISTERY_SHIFT_PACKAGE;
-		} else if (type.equals(POST_MESSAGE) || type.equals(VIEW_MESSAGES)) {
-			packageName = MESSAGE_BOARD_PACKAGE;
-		} else if (type.equals(CLOCK)) {
-			packageName = ATTENDANCE_CLOCK_PACKAGE;
-		} else {
-			throw new ActivityTypeNotSupportedException("There is no support to activity type: " + type);
-		}
+		} 
+		
 		Object rv = null;
 		Object[] rvArray = null;
 		Map<String, Object> rvMap = null;
 		boolean isArrayFlag = true;
-		
+
 		try {
-			String className = "com.sheena.playground.plugins." + packageName + "." + type + "Plugin";
+			String className = "com.sheena.playground.plugins." + type + "Plugin";
 			Class<?> theClass = Class.forName(className);
 			PlaygroundPlugin plugin = (PlaygroundPlugin) this.spring.getBean(theClass);
 			rv = plugin.invokeOperation(activityEntity);
 
-			try {
-				rvArray = (Object[]) rv;
-			} catch (ClassCastException e) {
-				isArrayFlag = false;
-			}
-			if (isArrayFlag) {
-				for (Object object : rvArray) {
-					rvMap = this.jackson.readValue(this.jackson.writeValueAsString(object), Map.class);
+			isArrayFlag = (rv instanceof Object[]);
 
-					activityEntity.getAttributes().putAll(rvMap);
-				}
+			if (isArrayFlag) {
+				rvArray = (Object[]) rv;
+				activityEntity.setResponse(rvArray);
 			} else {
-				rvMap = this.jackson.readValue(this.jackson.writeValueAsString(rv), Map.class);
-				activityEntity.getAttributes().putAll(rvMap);
+				Object[] singleResponse = new Object[1];
+				singleResponse[0] = rv;
+				activityEntity.setResponse(singleResponse);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
