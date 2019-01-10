@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins.attendanceClock;
+package com.sheena.playground.plugins;
 
 import java.text.SimpleDateFormat;
 
@@ -11,13 +11,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
-import com.sheena.playground.plugins.PlaygroundPlugin;
+import com.sheena.playground.plugins.attendanceClock.AttendanceClock;
+import com.sheena.playground.plugins.attendanceClock.AttendanceClockResponse;
+import com.sheena.playground.plugins.attendanceClock.ClockingDateMismatchException;
+import com.sheena.playground.plugins.attendanceClock.ClockingForm;
 
 @Component
 public class ClockPlugin implements PlaygroundPlugin {
-	private final String ATTENDANCE_CLOCK_TYPE = "attendanceClock";
-
+	public static final String ATTENDANCE_CLOCK_ELEMENT_TYPE = "attendanceClock";
+	public static final String CLOCK_ACTIVITY_TYPE = "Clock";
+	
 	private ObjectMapper jackson;
 	private ElementService elementService;
 
@@ -37,9 +40,9 @@ public class ClockPlugin implements PlaygroundPlugin {
 		
 		String elementType = elementEntity.getType();
 		
-		if (!elementType.equalsIgnoreCase(ATTENDANCE_CLOCK_TYPE))
+		if (!elementType.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE))
 			throw new ElementDoesNotMatchActivityException(
-					"activity requires element of type: " + ATTENDANCE_CLOCK_TYPE);
+					"activity requires element of type: " + ATTENDANCE_CLOCK_ELEMENT_TYPE);
 		
 		AttendanceClock attendanceClock = jackson.readValue(
 				this.jackson.writeValueAsString(
@@ -51,10 +54,10 @@ public class ClockPlugin implements PlaygroundPlugin {
 						ClockingForm.class);
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		if(!dateFormat.format(attendanceClock.getWorkDate()).equals(dateFormat.format(form.getCurrentDate())))
-			throw new ClockingDateMismatchException("Cannot clock date: " + form.getCurrentDate() + " to another work date");
+		if(!dateFormat.format(attendanceClock.getWorkDate()).equals(dateFormat.format(form.getClockingDate())))
+			throw new ClockingDateMismatchException("Cannot clock date: " + form.getClockingDate() + " to another work date");
 		
-		return new AttendanceClockResponse(form.getCurrentDate(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
+		return new AttendanceClockResponse(form.getClockingDate(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}
 
 }

@@ -29,10 +29,13 @@ public class JpaElementService implements ElementService {
 	private ElementDao elementDao;
 	private IdGeneratorDao idGenerator;
 	private UsersService usersService;
-	
-	@Value("${playground.name:defaultPlayground}")
 	private String playgroundName;
 
+	@Value("${playground.name:defaultPlayground}")
+	public void setPlaygroundName(String playgroundName) {
+		this.playgroundName = playgroundName;
+	}
+	
 	@Autowired
 	public JpaElementService(ElementDao elementDao, IdGeneratorDao idGenerator, UsersService usersService) {
 		this.elementDao = elementDao;
@@ -49,7 +52,7 @@ public class JpaElementService implements ElementService {
 		this.idGenerator.delete(tmp);
 		
 		element.setId("" + id);
-		element.setPlayground(playgroundName);
+		element.setPlayground(this.playgroundName);
 		
 		return this.elementDao.save(element);
 	}

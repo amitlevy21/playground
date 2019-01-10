@@ -1,4 +1,4 @@
-package com.sheena.playground.plugins.messageBoard;
+package com.sheena.playground.plugins;
 
 import javax.annotation.PostConstruct;
 
@@ -9,8 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
-import com.sheena.playground.plugins.PlaygroundPlugin;
+import com.sheena.playground.plugins.messageBoard.BoardMessage;
 
 @Component
 public class PostMessagePlugin implements PlaygroundPlugin {

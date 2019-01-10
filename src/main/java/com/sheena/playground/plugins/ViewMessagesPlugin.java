@@ -1,8 +1,6 @@
-package com.sheena.playground.plugins.messageBoard;
+package com.sheena.playground.plugins;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -12,13 +10,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sheena.playground.api.ActivityTO;
 import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.plugins.ElementDoesNotMatchActivityException;
-import com.sheena.playground.plugins.PlaygroundPlugin;
+import com.sheena.playground.plugins.messageBoard.BoardMessage;
+import com.sheena.playground.plugins.messageBoard.ViewMessagesParameters;
 
 @Component
 public class ViewMessagesPlugin implements PlaygroundPlugin {

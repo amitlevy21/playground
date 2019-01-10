@@ -7,20 +7,19 @@ public class ClockingForm {
 
 	public ClockingForm() {
 		super();
-		this.clockingDate = new Date();
 	}
 
-	public ClockingForm(Date clockingDate) {
-		super();
-		this.clockingDate = clockingDate;
-	}
-
-	public Date getCurrentDate() {
+	public Date getClockingDate() {
 		return clockingDate;
 	}
 
-	public void setCurrentDate(Date currentDate) {
-		this.clockingDate = currentDate;
+	public void setClockingDate(Date clockingDate) {
+		this.clockingDate = clockingDate;
+	}
+
+	@Override
+	public String toString() {
+		return "ClockingForm [clockingDate=" + clockingDate + "]";
 	}
 
 	@Override
@@ -46,10 +45,5 @@ public class ClockingForm {
 		} else if (!clockingDate.equals(other.clockingDate))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "ClockingForm [clockingDate=" + clockingDate + "]";
 	}
 }
