@@ -1,5 +1,8 @@
 package com.sheena.playground.client;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -10,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.sheena.playground.api.ActivityTO;
 import com.sheena.playground.api.ElementTO;
+import com.sheena.playground.api.Location;
 import com.sheena.playground.api.NewUserForm;
 import com.sheena.playground.api.UserTO;
 import com.sheena.playground.logic.users.Roles;
@@ -23,6 +27,10 @@ public class PlaygroundDemoClient {
 	private Scanner s;
 
 	// Finals resources
+
+	// Playground
+	private final String PLAYGROUND = "Sheena.2019A";
+
 	// Users
 	private final String USERS_MAIN_URL = "/playground/users";
 	private final String LOGIN_URL = "/playground/users/login/{playground}/{email}";
@@ -65,14 +73,18 @@ public class PlaygroundDemoClient {
 
 		PlaygroundDemoClient client = new PlaygroundDemoClient(host, port);
 		System.out.println("Hello, welcome to shift management system");
-		client.firstScreen();
+		while (true) {
+			client.firstScreen();
+		}
 
 	}
 
 	private void firstScreen() {
-		System.out.println("Please choose an operation to do (1 / 2):");
+
+		System.out.println("Please choose an operation to do (1 / 2)");
 		System.out.println("1: Register to the system");
 		System.out.println("2: Login to the system");
+
 		String op = s.nextLine();
 
 		switch (op) {
@@ -83,7 +95,7 @@ public class PlaygroundDemoClient {
 			operationScreen(loginSystem());
 			break;
 		default:
-			firstScreen();
+			System.out.println("Invalid opeartion, please try again.");
 			break;
 		}
 	}
@@ -94,6 +106,7 @@ public class PlaygroundDemoClient {
 		String key;
 		System.out.println("Hello " + user.getUsername());
 		System.out.println("Opeartion menu:");
+		System.out.println("Logout: enter 'x'");
 		System.out.println((++count) + ": Get all elements");
 		System.out.println((++count) + ": Get elements by distance");
 		System.out.println((++count) + ": Get elements by attribute");
@@ -108,8 +121,8 @@ public class PlaygroundDemoClient {
 				key = op + "Player";
 			}
 		} else {
-			System.out.println((++count) + ": Update element");
 			System.out.println((++count) + ": Create element");
+			System.out.println((++count) + ": Update element");
 
 			op = s.nextLine();
 			key = op;
@@ -135,28 +148,94 @@ public class PlaygroundDemoClient {
 			playerAddNewActivity(user);
 			break;
 		case "5Manager":
-			managerUpdateElement(user);
+			managerCreateElement(user);
 			break;
 		case "6Manager":
-
+			managerUpdateElement(user);
 			break;
-
+		case "X":
+		case "x":
+			System.out.println("Logging out. Good bye " + user.getUsername());
+			break;
 		default:
+			System.out.println("Invalid opeartion, logging out.");
 			break;
 		}
 
 	}
 
 	private void managerUpdateElement(UserTO user) {
-		ElementTO mangerElement = getElementFromUser(user);
-		this.rest.put(this.url + ELEMENTS_UPDATE,
-				request);
-		
+		System.out.println("Please enter element's id: ");
+		String id = s.nextLine();
+		ElementTO elementFromUser = getElementFromUser(user);
+		this.rest.put(this.url + ELEMENTS_UPDATE, elementFromUser, ElementTO.class, user.getPlayground(),
+				user.getEmail(), PLAYGROUND, id);
+
+		System.out.println("Updated succesfully!");
+	}
+
+	private void managerCreateElement(UserTO user) {
+		ElementTO elementFromUser = getElementFromUser(user);
+		Object res = this.rest.postForObject(this.url + ELEMENTS_CREATE, elementFromUser, ElementTO.class,
+				user.getPlayground(), user.getEmail());
+
+		System.out.println(res);
 	}
 
 	private ElementTO getElementFromUser(UserTO user) {
-		// TODO Auto-generated method stub
-		return null;
+		Location location;
+		String name;
+		Date creationDate = new Date();
+		Date expirationDate = new Date();
+		String type;
+		Double x, y;
+		String creatorPlayground = user.getPlayground();
+		String creatorEmail = user.getEmail();
+		String format = "dd/MM/yyyy";
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		Map<String, Object> attributes = new HashMap<>();
+		boolean toContinue = true;
+		String loopRes;
+		String key, value;
+
+		System.out.println("Please enter element's name:");
+		name = s.nextLine();
+
+		System.out.println("Please enter element's type:");
+		type = s.nextLine();
+
+		System.out.println("Please enter an expiration date for the element: (" + format + "):");
+		String date = s.nextLine();
+		try {
+			expirationDate = sdf.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Please enter X coordinate:");
+		x = Double.parseDouble(s.nextLine());
+		System.out.println("Please enter Y coordinate:");
+		y = Double.parseDouble(s.nextLine());
+		location = new Location(x, y);
+
+		System.out.println("Please enter keys and values");
+		do {
+			System.out.println("Do you want adding to the map? (Y / N)");
+			loopRes = s.nextLine();
+			if (loopRes.equalsIgnoreCase("Y")) {
+				System.out.println("Enter key:");
+				key = s.nextLine();
+				System.out.println("Enter value:");
+				value = s.nextLine();
+				attributes.put(key, value);
+			} else {
+				toContinue = false;
+			}
+
+		} while (toContinue);
+
+		return new ElementTO(location, name, creationDate, expirationDate, type, attributes, creatorPlayground,
+				creatorEmail);
 	}
 
 	private void playerAddNewActivity(UserTO user) {
@@ -211,7 +290,7 @@ public class PlaygroundDemoClient {
 		String id = s.nextLine();
 
 		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ID, ElementTO[].class,
-				user.getPlayground(), user.getEmail(), id);
+				user.getPlayground(), user.getEmail(), PLAYGROUND, id);
 
 		Stream.of(allElementsReturned).forEach(System.out::println);
 
