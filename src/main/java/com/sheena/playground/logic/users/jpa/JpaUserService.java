@@ -34,11 +34,7 @@ public class JpaUserService implements UsersService{
 	private UserDao userDao;
 	private VerificationCodeDao VerificationCodeDao;
 	private MailService mailService;
-	
-	@Value("${user.verification.host}")
 	private String verificationUrlHost;
-	
-	@Value("${playground.name:defaultPlayground}")
 	private String playgroundName;
 	
 	//Constants
@@ -52,6 +48,16 @@ public class JpaUserService implements UsersService{
 		this.userDao = userDao;
 		this.VerificationCodeDao = verificationCodeDao;
 		this.mailService = mailService;
+	}
+
+	@Value("${user.verification.host}")
+	public void setVerificationUrlHost(String verificationUrlHost) {
+		this.verificationUrlHost = verificationUrlHost;
+	}
+
+	@Value("${playground.name:defaultPlayground}")
+	public void setPlaygroundName(String playgroundName) {
+		this.playgroundName = playgroundName;
 	}
 
 	@Override

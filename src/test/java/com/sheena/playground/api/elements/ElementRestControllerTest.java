@@ -125,7 +125,7 @@ public class ElementRestControllerTest {
     	String requestUrl = String.format(BASE_URL, host, playgroundName, managerUser.getEmail());
     	ElementTO returnValue = this.restTemplate.postForObject(requestUrl, e, ElementTO.class);
     	
-    	assertThat(returnValue).isNotNull().isEqualToIgnoringGivenFields(e, "id");
+    	assertThat(returnValue).isNotNull().isEqualToIgnoringGivenFields(e, "id", "playground");
     }
 
     @Test
