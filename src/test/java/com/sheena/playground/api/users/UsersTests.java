@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -60,7 +61,9 @@ public class UsersTests {
 	@Autowired
 	private UsersService usersService;
 	
-	private final String playground = "Sheena.2019A";
+	@Value("${playground.name:defaultPlayground}")
+	private String playground;
+	
 	private final String verificationCodeSuffix = "code";
 	
 	//Data attributes for test suite
