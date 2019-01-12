@@ -25,7 +25,6 @@ import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchExce
 
 @RestController
 public class UsersRestController {
-	private final String PLAYGROUND = "Sheena.2019A";
 	private UsersService usersService;
 	
 	@Autowired
@@ -40,7 +39,7 @@ public class UsersRestController {
 			consumes=MediaType.APPLICATION_JSON_VALUE)
 	public UserTO registerNewUser(@RequestBody NewUserForm newUserForm) throws UserAlreadyExistsException, RoleDoesNotExistException {
 		return new UserTO(this.usersService.createNewUser(
-				new UserTO(newUserForm, this.PLAYGROUND).toEntity()));
+				new UserTO(newUserForm).toEntity()));
 	}
 	
 	@RequestMapping(

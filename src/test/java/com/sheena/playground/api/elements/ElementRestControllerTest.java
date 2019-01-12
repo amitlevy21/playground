@@ -98,8 +98,8 @@ public class ElementRestControllerTest {
     @Before
     public void setup() throws UserAlreadyExistsException, RoleDoesNotExistException, UserDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException {
         //Manager role user and player role user for tests
-    	this.managerUser = new UserEntity(userName1 + emailDomain, playgroundName, userName1, avatar, managerRole);
-    	this.playerUser = new UserEntity(userName2 + emailDomain, playgroundName, userName2, avatar, playerRole);
+    	this.managerUser = new UserEntity(userName1 + emailDomain, userName1, avatar, managerRole);
+    	this.playerUser = new UserEntity(userName2 + emailDomain, userName2, avatar, playerRole);
     	
     	//Add the users to the server
     	UserEntity manager = usersService.createNewUser(this.managerUser);

@@ -92,6 +92,7 @@ public class JpaUserService implements UsersService{
         
 				//Set PK for this user to be persisted
 				userEntity.setId(userEntity.getEmail() + userEntity.getPlayground());
+				userEntity.setPlayground(this.playgroundName);
 				return this.userDao.save(userEntity);
 			}
 			else {
@@ -156,17 +157,17 @@ public class JpaUserService implements UsersService{
 			throws UserDoesNotExistException, AttributeUpdateException, RoleDoesNotExistException, UnverifiedUserActionException {
 		UserEntity user = getUserByEmail(email);
 		
-		if(!entityUpdates.getEmail().equals(email)) {
+		if(entityUpdates.getEmail() != null && !entityUpdates.getEmail().equals(email)) {
 			throw new AttributeUpdateException("Attribute: email cannot be updated");
 		}
-		else if(!entityUpdates.getPlayground().equals(playground)) {
+		else if(entityUpdates.getPlayground()!= null && !entityUpdates.getPlayground().equals(playground)) {
 			throw new AttributeUpdateException("Attribute: playground cannot be updated");
 		}
 		else if(!this.isRoleExists(entityUpdates.getRole())) {
 			throw new RoleDoesNotExistException(
 					"Requested role: " + entityUpdates.getRole() + " does not exist");
 		}
-		else if(!user.getPoints().equals(entityUpdates.getPoints())) {
+		else if(user.getPoints() != null && !user.getPoints().equals(entityUpdates.getPoints())) {
 			throw new AttributeUpdateException("Attribute: points cannot be updated");
 		}
 		else {
