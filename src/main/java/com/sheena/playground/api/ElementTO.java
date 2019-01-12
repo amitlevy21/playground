@@ -147,6 +147,16 @@ public class ElementTO {
 		rv.setCreatorEmail(this.creatorEmail);
 		return rv;
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		return "ElementTO [playground=" + playground + ", location=" + location + ", name=" + name + ", id=" + id
+				+ ", creationDate=" + creationDate + ", expirationDate=" + expirationDate + ", type=" + type
+				+ ", attributes=" + attributes + ", creatorPlayground=" + creatorPlayground + ", creatorEmail="
+				+ creatorEmail + "]";
+	}
 
 	@Override
 	public int hashCode() {
