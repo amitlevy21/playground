@@ -380,7 +380,6 @@ public class ElementRestControllerTest {
 		
 		for (int i = 0; i < numCases; i++) {
 			tos.add(new ElementTO(
-					playgroundName, 
 					new Location(), 
 					ELEMENT_NAME + "_" + i, 
 					new Date(), 
