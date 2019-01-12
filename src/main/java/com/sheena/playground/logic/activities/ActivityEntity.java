@@ -17,14 +17,14 @@ public class ActivityEntity {
 	private String playerPlayground;
 	private String playerEmail;
 	private Map<String, Object> attributes;
+	private Object[] response;
+	
 
 	public ActivityEntity() {
 	}
 
-	public ActivityEntity(String playground, String id, String elementPlayground, String elementId, String type,
+	public ActivityEntity(String elementPlayground, String elementId, String type,
 			String playerPlayground, String playerEmail, Map<String, Object> attributes) {
-		this.playground = playground;
-//		this.id = id;
 		this.elementPlayground = elementPlayground;
 		this.elementId = elementId;
 		this.type = type;
@@ -98,11 +98,19 @@ public class ActivityEntity {
 		this.attributes = attributes;
 	}
 
+	public Object[] getResponse() {
+		return response;
+	}
+
+	public void setResponse(Object[] response) {
+		this.response = response;
+	}
+
 	@Override
 	public String toString() {
 		return "ActivityEntity [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
 				+ ", elementId=" + elementId + ", type=" + type + ", playerPlayground=" + playerPlayground
-				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
+				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + ", response=" + response + "]";
 	}
 
 	@Override
@@ -116,6 +124,7 @@ public class ActivityEntity {
 		result = prime * result + ((playerEmail == null) ? 0 : playerEmail.hashCode());
 		result = prime * result + ((playerPlayground == null) ? 0 : playerPlayground.hashCode());
 		result = prime * result + ((playground == null) ? 0 : playground.hashCode());
+		result = prime * result + ((response == null) ? 0 : response.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -163,6 +172,11 @@ public class ActivityEntity {
 			if (other.playground != null)
 				return false;
 		} else if (!playground.equals(other.playground))
+			return false;
+		if (response == null) {
+			if (other.response != null)
+				return false;
+		} else if (!response.equals(other.response))
 			return false;
 		if (type == null) {
 			if (other.type != null)

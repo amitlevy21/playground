@@ -11,9 +11,9 @@ public interface ActivityService {
 	
 	public List<ActivityEntity> getAllActivities (int size, int page);
 
-	ActivityEntity addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
+	public Object addNewActivity(ActivityEntity activityEntity, String userPlayground, String email)
 			throws ActivityTypeNotAllowedException, ActivityWithNoTypeException;
 
-	ActivityEntity getActivityById(String id) throws ActivityNotFoundException;
+	public ActivityEntity getActivityById(String id) throws ActivityNotFoundException;
 	
 }

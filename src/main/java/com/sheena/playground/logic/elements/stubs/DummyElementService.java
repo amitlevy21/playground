@@ -10,6 +10,7 @@ import com.sheena.playground.logic.elements.exceptions.ElementAlreadyExistsExcep
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
 import com.sheena.playground.logic.elements.exceptions.NoSuceElementAttributeException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 import com.sheena.playground.logic.elements.ElementService;
 
 //import org.springframework.stereotype.Service;
@@ -79,18 +80,36 @@ public class DummyElementService implements ElementService{
 	}
 
 	@Override
-	public List<ElementEntity> getElementsNearCoordinates(Double x, Double y, Double distance, int size, int page)
-			throws ElementNotExistException {
+	public ElementEntity addNewElement(String creatorEmail, ElementEntity element) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<ElementEntity> getElementsAttribute(String attributeName, Object value, int size, int page)
-			throws ElementNotExistException, NoSuceElementAttributeException {
+	public void updateElement(String updaterEmail, String elementId, ElementEntity element)
+			throws ElementNotExistException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<ElementEntity> getAllElements(String requestorEmail, int size, int page)
+			throws UserDoesNotExistException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	public List<ElementEntity> getElementsNearCoordinates(String requestorEmail, Double x, Double y, Double distance,
+			int size, int page) throws ElementNotExistException, UserDoesNotExistException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public List<ElementEntity> getElementsAttribute(String requestorEmail, String attributeName, Object value, int size,
+			int page) throws ElementNotExistException, NoSuceElementAttributeException, UserDoesNotExistException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

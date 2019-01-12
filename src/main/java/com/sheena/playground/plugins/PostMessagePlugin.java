@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.plugins.messageBoard.BoardMessage;
+import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 
 @Component
 public class PostMessagePlugin implements PlaygroundPlugin {
@@ -31,21 +33,16 @@ public class PostMessagePlugin implements PlaygroundPlugin {
 	}
 	
 	@Override
-	public Object invokeOperation(ActivityEntity activityEntity) {
-		try {
-			ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
-			if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-				throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
-			
-			BoardMessage message = this.jackson.readValue(
-					this.jackson.writeValueAsString(
-							activityEntity.getAttributes()), BoardMessage.class);
-			message.setPublisherEmail(activityEntity.getPlayerEmail());
-			message.setPublisherPlayground(activityEntity.getPlayerPlayground());
-			
-			return message;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
+		ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
+
+		if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
+			throw new ElementDoesNotMatchActivityException("activity requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+		
+		BoardMessage message = this.jackson.readValue(
+				this.jackson.writeValueAsString(
+						activityEntity.getAttributes()), BoardMessage.class);
+		
+		return new BoardMessageResponse(message.getText(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}
 }

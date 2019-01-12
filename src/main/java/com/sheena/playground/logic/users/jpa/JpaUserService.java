@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sheena.playground.aop.IsExistUser;
+import com.sheena.playground.aop.IsUserVerified;
 import com.sheena.playground.aop.MyLog;
 import com.sheena.playground.dal.UserDao;
 import com.sheena.playground.dal.VerificationCodeDao;
@@ -80,7 +82,7 @@ public class JpaUserService implements UsersService{
 						verificationCode));
 				verificationEmail.setTo(userEntity.getEmail());
 				
-//				mailService.sendMessage(verificationEmail);
+				//mailService.sendMessage(verificationEmail);
         
 				//Set PK for this user to be persisted
 				userEntity.setId(userEntity.getEmail() + userEntity.getPlayground());
@@ -104,8 +106,9 @@ public class JpaUserService implements UsersService{
 		return userEntity.getEmail() + VerificationCodeDao.SUFFIX;
 	}
 
-	@Override
 	@MyLog
+	@Override
+	@IsExistUser
 	public UserEntity verifyUserRegistration(String playground, String email, String verificationCode)
 			throws UserDoesNotExistException, VerificationCodeMismatchException, CodeDoesNotExistException, UserAlreadyVerifiedException {
 		UserEntity user = getUserByEmail(email);
@@ -129,17 +132,20 @@ public class JpaUserService implements UsersService{
 		return this.userDao.save(user);
 	}
 
-	@Override
 	@MyLog
-	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException, UnverifiedUserActionException {
-		UserEntity user = getUserByEmail(userEntity.getEmail());
+	@Override
+	@IsUserVerified
+	public UserEntity login(String userEmail) throws UserDoesNotExistException, UnverifiedUserActionException {
+		UserEntity user = getUserByEmail(userEmail);
 		
 		user.setLastLogin(new Date());
+		
 		return this.userDao.save(user);
 	}
 
-	@Override
 	@MyLog
+	@Override
+	@IsUserVerified
 	public void updateUserDetails(String playground, String email, UserEntity entityUpdates)
 			throws UserDoesNotExistException, AttributeUpdateException, RoleDoesNotExistException, UnverifiedUserActionException {
 		UserEntity user = getUserByEmail(email);

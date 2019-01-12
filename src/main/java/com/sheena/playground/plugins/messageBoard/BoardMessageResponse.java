@@ -1,20 +1,15 @@
-package com.sheena.playground.plugins;
+package com.sheena.playground.plugins.messageBoard;
 
-public class BoardMessage {
+public class BoardMessageResponse {
 
 	private String text;
 	private String publisherEmail;
 	private String publisherPlayground;
 	
-	public BoardMessage() {
+	public BoardMessageResponse() {
 	}
-	
-	public BoardMessage(String text) {
-		super();
-		this.text = text;
-	}
-	
-	public BoardMessage(String text, String publisherEmail, String publisherPlayground) {
+
+	public BoardMessageResponse(String text, String publisherEmail, String publisherPlayground) {
 		super();
 		this.text = text;
 		this.publisherEmail = publisherEmail;
@@ -69,7 +64,7 @@ public class BoardMessage {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BoardMessage other = (BoardMessage) obj;
+		BoardMessageResponse other = (BoardMessageResponse) obj;
 		if (publisherEmail == null) {
 			if (other.publisherEmail != null)
 				return false;

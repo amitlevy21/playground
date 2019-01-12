@@ -51,11 +51,11 @@ public class DummyUsersService implements UsersService {
 	}
 
 	@Override
-	public UserEntity login(UserEntity userEntity) throws UserDoesNotExistException {
+	public UserEntity login(String userEmail) throws UserDoesNotExistException {
 		UserEntity existing;
 		
 		synchronized (this.users) {
-			existing = this.getUserByEmail(userEntity.getEmail());
+			existing = this.getUserByEmail(userEmail);
 			existing.setLastLogin(new Date());
 			this.users.put(existing.getEmail(), existing);
 		}
