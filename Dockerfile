@@ -31,4 +31,4 @@ COPY . /playground
 WORKDIR /playground
 
 # start the server
-CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/test","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-Dspring.data.mongodb.uri=mongodb://playground-mongo:27017/playground","-Djava.security.egd=file:/dev/./urandom","-jar","./playground-0.0.1-SNAPSHOT.jar"]
