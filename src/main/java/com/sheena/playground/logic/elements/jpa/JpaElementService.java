@@ -2,7 +2,6 @@ package com.sheena.playground.logic.elements.jpa;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.sheena.playground.aop.IsUserManager;
 import com.sheena.playground.dal.ElementDao;
@@ -86,18 +85,22 @@ public class JpaElementService implements ElementService {
 	@Transactional(readOnly = true)
 	public List<ElementEntity> getAllElements(String requestorEmail, int size, int page) throws UserDoesNotExistException {
 		String requestorRole = getUserRole(requestorEmail);
-		
-		Page<ElementEntity> elementsPage = elementDao.findAll(PageRequest.of(page, size));
-		List<ElementEntity> allElements = elementsPage.getContent();
-		
 		if(requestorRole.equalsIgnoreCase(Roles.PLAYER.toString())) {
-			Date currentTime = new Date(); // for comparing the elements expiration date
-			
-			allElements = allElements.stream().filter(element -> element.getExpirationDate().after(currentTime)).collect(Collectors.toList());
-			return getAllElementsForPlayer(size, allElements, elementsPage, currentTime);
+			return this.elementDao.findByExpirationDateAfter(new Date(), PageRequest.of(page, size));
 		}
-		// else the requestor's role is a manager, meaning we can return all elements
-		return allElements;
+		Page<ElementEntity> elementsPage = elementDao.findAll(PageRequest.of(page, size));
+		return elementsPage.getContent();
+//		Page<ElementEntity> elementsPage = elementDao.findAll(PageRequest.of(page, size));
+//		List<ElementEntity> allElements = elementsPage.getContent();
+//		
+//		if(requestorRole.equalsIgnoreCase(Roles.PLAYER.toString())) {
+//			Date currentTime = new Date(); // for comparing the elements expiration date
+//			
+//			allElements = allElements.stream().filter(element -> element.getExpirationDate().after(currentTime)).collect(Collectors.toList());
+//			return getAllElementsForPlayer(size, allElements, elementsPage, currentTime);
+//		}
+//		// else the requestor's role is a manager, meaning we can return all elements
+//		return allElements;
 	}
 
 	@Override
@@ -153,46 +156,5 @@ public class JpaElementService implements ElementService {
 	
 	private String getUserRole(String userEmail) throws UserDoesNotExistException {
 		return usersService.getUserByEmail(userEmail).getRole();
-	}
-	
-	/**
-	 * 
-	 * @param requestedSize number of elements requested by the user
-	 * @param allElements the contents of the first page of elements that was retrieved from the storage
-	 * @param elementsPage the first page of elements that was retrieved from the storage
-	 * @return List<ElementEntity> a list containing all elements that matched for player
-	 */
-	private List<ElementEntity> getAllElementsForPlayer(
-			int requestedSize, 
-			List<ElementEntity> allElements, 
-			Page<ElementEntity> elementsPage,
-			Date currentTime) {
-		if(allElements.size() < requestedSize) {
-			Page<ElementEntity> currentPage = elementsPage;
-			
-			while(currentPage.hasNext() || currentPage.isLast()) {
-				
-				if(currentPage.hasNext()) {
-					Page<ElementEntity> p = elementDao.findAll(currentPage.nextPageable());
-					List<ElementEntity> pElements = p.getContent();
-					
-					if(pElements.isEmpty())
-						return allElements; // no more elements
-					
-					pElements = pElements.stream().filter(element -> element.getExpirationDate().after(currentTime)).collect(Collectors.toList());
-					
-					for (ElementEntity e : pElements) {
-						if(!allElements.contains(e))
-							allElements.add(e);
-						if(allElements.size() == requestedSize) // if we filled the requested size
-							return allElements;
-					}
-				}
-				else { // this is the last page
-					return allElements;
-				}
-			}
-		}
-		return allElements;
 	}
 }
