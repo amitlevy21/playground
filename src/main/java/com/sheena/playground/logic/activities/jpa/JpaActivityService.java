@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sheena.playground.aop.IsUserPlayer;
 import com.sheena.playground.dal.ActivityDao;
-import com.sheena.playground.logic.jpa.IdGenerator;
-import com.sheena.playground.logic.jpa.IdGeneratorDao;
 
 import com.sheena.playground.plugins.PlaygroundPlugin;
 
@@ -27,7 +25,6 @@ import com.sheena.playground.logic.activities.ActivityWithNoTypeException;
 @Service
 public class JpaActivityService implements ActivityService {
 	private ActivityDao activities;
-	private IdGeneratorDao idGenerator;
 	private ApplicationContext spring;
 	private String playgroundName;
 
@@ -37,10 +34,9 @@ public class JpaActivityService implements ActivityService {
 	}
 
 	@Autowired
-	public JpaActivityService(ActivityDao activities, IdGeneratorDao idGenerator, ApplicationContext spring) {
+	public JpaActivityService(ActivityDao activities, ApplicationContext spring) {
 		super();
 		this.activities = activities;
-		this.idGenerator = idGenerator;
 		this.spring = spring;
 	}
 
@@ -48,7 +44,6 @@ public class JpaActivityService implements ActivityService {
 	@Transactional
 	public void cleanup() {
 		this.activities.deleteAll();
-
 	}
 
 	@Override
@@ -90,16 +85,9 @@ public class JpaActivityService implements ActivityService {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
-		IdGenerator tmp = this.idGenerator.save(new IdGenerator());
-		Long dummyId = tmp.getId();
-		this.idGenerator.delete(tmp);
-
-		activityEntity.setId("" + dummyId);
+		
 		activityEntity.setPlayground(this.playgroundName);
-
 		this.activities.save(activityEntity);
-
 		return rv;
 	}
 

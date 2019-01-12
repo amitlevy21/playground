@@ -2,6 +2,8 @@ package com.sheena.playground.logic.activities;
 
 import java.util.Map;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -41,6 +43,8 @@ public class ActivityEntity {
 		this.playground = playground;
 	}
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	public String getId() {
 		return id;
 	}
@@ -65,7 +69,6 @@ public class ActivityEntity {
 		this.elementId = elementId;
 	}
 
-	@Id
 	public String getType() {
 		return type;
 	}

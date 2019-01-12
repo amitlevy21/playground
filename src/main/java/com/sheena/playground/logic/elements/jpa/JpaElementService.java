@@ -10,8 +10,6 @@ import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 import com.sheena.playground.logic.elements.exceptions.ElementNotExistException;
 import com.sheena.playground.logic.elements.exceptions.NoSuceElementAttributeException;
-import com.sheena.playground.logic.jpa.IdGenerator;
-import com.sheena.playground.logic.jpa.IdGeneratorDao;
 import com.sheena.playground.logic.users.Roles;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
@@ -27,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaElementService implements ElementService {
 
 	private ElementDao elementDao;
-	private IdGeneratorDao idGenerator;
 	private UsersService usersService;
 	private String playgroundName;
 
@@ -37,9 +34,8 @@ public class JpaElementService implements ElementService {
 	}
 	
 	@Autowired
-	public JpaElementService(ElementDao elementDao, IdGeneratorDao idGenerator, UsersService usersService) {
+	public JpaElementService(ElementDao elementDao, UsersService usersService) {
 		this.elementDao = elementDao;
-		this.idGenerator = idGenerator;
 		this.usersService = usersService;
 	}
 
@@ -47,13 +43,7 @@ public class JpaElementService implements ElementService {
 	@Transactional
 	@IsUserManager
 	public ElementEntity addNewElement(String creatorEmail, ElementEntity element) {
-		IdGenerator tmp = this.idGenerator.save(new IdGenerator());
-		Long id = tmp.getId();
-		this.idGenerator.delete(tmp);
-		
-		element.setId("" + id);
 		element.setPlayground(this.playgroundName);
-		
 		return this.elementDao.save(element);
 	}
 
@@ -159,7 +149,6 @@ public class JpaElementService implements ElementService {
 	@Override
 	public void cleanup() {
 		this.elementDao.deleteAll();
-		this.idGenerator.deleteAll();
 	}
 	
 	private String getUserRole(String userEmail) throws UserDoesNotExistException {
