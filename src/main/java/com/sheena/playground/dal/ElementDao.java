@@ -43,4 +43,8 @@ public interface ElementDao extends PagingAndSortingRepository<ElementEntity, St
     		@Param("y2") double g,
     		@Param("after") Date after,
     		Pageable pageable);
+    
+    public List<ElementEntity> findByExpirationDateAfter(
+    		@Param("after") Date after,
+    		Pageable pageable);
 }
