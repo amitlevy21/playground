@@ -5,7 +5,6 @@ public class ShiftRegisteryDateMismatchException extends Exception {
 	private static final long serialVersionUID = -8619710071619745284L;
 
 	public ShiftRegisteryDateMismatchException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public ShiftRegisteryDateMismatchException(String message) {
