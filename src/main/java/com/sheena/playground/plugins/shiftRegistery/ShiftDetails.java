@@ -13,6 +13,7 @@ public class ShiftDetails {
 	private List<String> workers;
 	
 	public ShiftDetails() {
+	
 	}
 
 	public Date getShiftDate() {

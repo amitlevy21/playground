@@ -5,7 +5,6 @@ public class fullShiftException extends Exception {
 	private static final long serialVersionUID = -691919585855680653L;
 
 	public fullShiftException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public fullShiftException(String message) {

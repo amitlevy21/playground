@@ -7,6 +7,7 @@ public class ShiftForm {
 	private Date wantedShiftDate;
 	
 	public ShiftForm() {
+	
 	}
 
 	public Date getWantedShiftDate() {

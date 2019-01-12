@@ -9,6 +9,7 @@ public class ShiftResponse {
 	private String playerPlaygorund;
 	
 	public ShiftResponse() {
+	
 	}
 
 	public ShiftResponse(Date shiftDate, String playerEmail, String playerPlaygorund) {
