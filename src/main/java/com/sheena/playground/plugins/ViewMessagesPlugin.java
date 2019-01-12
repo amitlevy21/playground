@@ -10,11 +10,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sheena.playground.api.ActivityTO;
 import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
+import com.sheena.playground.plugins.messageBoard.ViewMessagesParameters;
 
 @Component
 public class ViewMessagesPlugin implements PlaygroundPlugin {
@@ -22,8 +23,12 @@ public class ViewMessagesPlugin implements PlaygroundPlugin {
 	private ElementService elementService;
 	private ActivityDao activityDao;
 	private ObjectMapper jackson;
-	public final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
-	public final String POST_MESSAGE_ACTIVITY_TYPE = "PostMessage";
+	private final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
+	private final String POST_MESSAGE_ACTIVITY_TYPE = "PostMessage";
+	
+	private final String MESSAGE_TEXT_ATTRIBUTE = "text";
+	private final String PUBLISHER_EMAIL_ATTRIBUTE = "publisherEmail";
+	private final String PUBLISHER_PLAYGROUND_ATTRIBUTE = "publisherPlayground";
 	
 	public ViewMessagesPlugin() {
 	}
@@ -38,34 +43,26 @@ public class ViewMessagesPlugin implements PlaygroundPlugin {
 	public void init() {
 		this.jackson = new ObjectMapper();
 	}
-	
-	@Override
-	public Object invokeOperation(ActivityEntity activityEntity) {
-		try {
-			ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
-			if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
-				throw new ElementDoesNotMatchActivityException("activity PostMessage requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
-			
-			ViewMessagesParameters parameters = this.jackson.readValue(
-					this.jackson.writeValueAsString(
-							activityEntity.getAttributes()), ViewMessagesParameters.class);
 
-			activityEntity.getAttributes().remove("size");
-			activityEntity.getAttributes().remove("page");
-//			List<ActivityEntity> messages = activityDao.findActivityByType(
-//					POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()));
-//			
-			return new ViewMessages(
-					this.activityDao.findActivityByType(
-						POST_MESSAGE_ACTIVITY_TYPE, PageRequest.of(parameters.getPage(), parameters.getSize()))
-						.stream()
-						.map(ActivityTO::new)
-						.collect(Collectors.toList())
-						);
-			
-			//return messages.stream().map(ActivityTO::new).collect(Collectors.toList())/*.toArray(new ActivityTO[0])*/;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	@Override
+	public Object invokeOperation(ActivityEntity activityEntity) throws Exception {
+		ElementEntity entity = elementService.getElementById(activityEntity.getElementId());
+		if(!entity.getType().equals(MESSAGE_BOARD_ELEMENT_TYPE))
+			throw new ElementDoesNotMatchActivityException("activity requires element of type: " + MESSAGE_BOARD_ELEMENT_TYPE);
+		
+		ViewMessagesParameters parameters = this.jackson.readValue(
+				this.jackson.writeValueAsString(
+						activityEntity.getAttributes()), ViewMessagesParameters.class);
+		
+		List<ActivityEntity> postMessageActivities = activityDao.findActivityByType(
+				POST_MESSAGE_ACTIVITY_TYPE, 
+				PageRequest.of(parameters.getPage(), parameters.getSize()));
+		
+		Object[] messages = postMessageActivities.stream()
+				.map(activity -> activity.getResponse()[0])
+				.collect(Collectors.toList())
+				.toArray(new Object[0]);
+		
+		return messages;
 	}
 }

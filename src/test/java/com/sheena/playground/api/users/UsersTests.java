@@ -54,7 +54,6 @@ public class UsersTests {
 	
 	private String url;
 	private RestTemplate restTemplate;
-	@SuppressWarnings("unused")
 	private ObjectMapper jsonMapper;
 	private Comparator<UserTO> userTOComparator;
 	

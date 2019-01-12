@@ -47,7 +47,6 @@ public class UsersRestController {
 			method=RequestMethod.GET,
 			path="/playground/users/confirm/{playground}/{email}/{code}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
-	@IsExistUser
 	public UserTO verifyUserRegistration(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email, 
@@ -59,11 +58,10 @@ public class UsersRestController {
 			method=RequestMethod.GET,
 			path="/playground/users/login/{playground}/{email}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
-	@IsUserVerified
 	public UserTO userLoginRequest(
 			@PathVariable("playground") String playground, 
 			@PathVariable("email") String email) throws UserDoesNotExistException, UnverifiedUserActionException {
-		return new UserTO(this.usersService.login(this.usersService.getUserByEmail(email)));
+		return new UserTO(this.usersService.login(email));
 	}
 	
 	@RequestMapping(
@@ -71,7 +69,6 @@ public class UsersRestController {
 			path="/playground/users/{playground}/{email}",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			consumes=MediaType.APPLICATION_JSON_VALUE)
-	@IsUserVerified
 	public void updateUserProfile(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,

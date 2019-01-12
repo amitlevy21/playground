@@ -2,6 +2,7 @@ package com.sheena.playground.dal;
 
 import com.sheena.playground.logic.elements.ElementEntity;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -23,5 +24,23 @@ public interface ElementDao extends PagingAndSortingRepository<ElementEntity, St
     		@Param("x2") double e,
     		@Param("y1") double f,
     		@Param("y2") double g,
+    		Pageable pageable);
+    
+    public List<ElementEntity> findByNameEqualsAndExpirationDateAfter(
+    		@Param("name") String name,
+    		@Param("after") Date after,
+    		Pageable pageable);
+    
+    public List<ElementEntity> findByTypeEqualsAndExpirationDateAfter(
+    		@Param("type") String type,
+    		@Param("after") Date after,
+    		Pageable pageable);
+    
+    public List<ElementEntity> findByXBetweenAndYBetweenAndExpirationDateAfter(
+    		@Param("x1") double d,
+    		@Param("x2") double e,
+    		@Param("y1") double f,
+    		@Param("y2") double g,
+    		@Param("after") Date after,
     		Pageable pageable);
 }
