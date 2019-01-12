@@ -14,7 +14,7 @@ import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
-import com.sheena.playground.plugins.messageBoard.BoardMessage;
+import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 import com.sheena.playground.plugins.messageBoard.ViewMessagesParameters;
 
 @Component
@@ -58,13 +58,10 @@ public class ViewMessagesPlugin implements PlaygroundPlugin {
 				POST_MESSAGE_ACTIVITY_TYPE, 
 				PageRequest.of(parameters.getPage(), parameters.getSize()));
 		
-		BoardMessage[] messages = postMessageActivities.stream()
-				.map(a -> new BoardMessage(
-						a.getAttributes().get(MESSAGE_TEXT_ATTRIBUTE)+"", 
-						a.getAttributes().get(PUBLISHER_EMAIL_ATTRIBUTE)+"", 
-						a.getAttributes().get(PUBLISHER_PLAYGROUND_ATTRIBUTE)+""))
+		Object[] messages = postMessageActivities.stream()
+				.map(activity -> activity.getResponse()[0])
 				.collect(Collectors.toList())
-				.toArray(new BoardMessage[0]);
+				.toArray(new Object[0]);
 		
 		return messages;
 	}

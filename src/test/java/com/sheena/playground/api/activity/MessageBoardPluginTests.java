@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -42,7 +41,7 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
-import com.sheena.playground.plugins.messageBoard.BoardMessage;
+import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
@@ -170,8 +169,6 @@ public class MessageBoardPluginTests {
 		
 		Map<String, Object> activityAttributes = new HashMap<>();
 		activityAttributes.put("text", "text01");
-		activityAttributes.put("publisherEmail", "publisherEmail01");
-		activityAttributes.put("publisherPlayground", "publisherPlayground01");
 		
 		ActivityEntity postMessageActivity = new ActivityEntity(
 				this.messageBoardElement.getPlayground(), 
@@ -182,11 +179,9 @@ public class MessageBoardPluginTests {
 				activityAttributes);
 		
 		Object rv = this.restTemplate.postForObject(this.host+targetUrl, postMessageActivity, Object.class);
-		BoardMessage rvMessage = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(rv), BoardMessage.class);
+		BoardMessageResponse rvMessage = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(rv), BoardMessageResponse.class);
 		
-		ActivityEntity expectedEntity = this.activityDao.findActivityByElementId(this.messageBoardElement.getId(), PageRequest.of(this.pageablePage, this.pageableSize)).toArray(new ActivityEntity[0])[0];
-		
-		BoardMessage expectedMessage = new BoardMessage(expectedEntity.getAttributes().get("text")+"", expectedEntity.getAttributes().get("publisherEmail")+"", expectedEntity.getAttributes().get("publisherPlayground")+"");
+		BoardMessageResponse expectedMessage = new BoardMessageResponse(activityAttributes.get("text")+"", postMessageActivity.getPlayerEmail(), postMessageActivity.getPlayerPlayground());
 		
 		assertThat(rvMessage).isNotNull().isEqualTo(expectedMessage);
 	}
@@ -238,32 +233,11 @@ public class MessageBoardPluginTests {
 	}
 	
 	@Test
-	public void testPostMessageWithEmptyActivityAttributes() {
-		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
-		
-		Map<String, Object> activityAttributes = new HashMap<>();
-		
-		ActivityEntity postMessageActivity = new ActivityEntity(
-				this.messageBoardElement.getPlayground(), 
-				this.messageBoardElement.getId(), 
-				POST_MESSAGE,
-				this.playerUser.getPlayground(), 
-				this.playerUser.getEmail(), 
-				activityAttributes);
-		
-		Object rv = this.restTemplate.postForObject(this.host+targetUrl, postMessageActivity, Object.class);
-		
-		
-	}
-	
-	@Test
 	public void testViewMessagesSuccessfully() throws ActivityTypeNotAllowedException, ActivityWithNoTypeException, JsonParseException, JsonMappingException, JsonProcessingException, IOException {
 		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
 		
 		Map<String, Object> activityAttributes1 = new HashMap<>();
 		activityAttributes1.put("text", "text0301");
-		activityAttributes1.put("publisherEmail", "publisherEmail0301");
-		activityAttributes1.put("publisherPlayground", "publisherPlayground0301");
 		
 		ActivityEntity postMessageActivity1 = new ActivityEntity(
 				this.viewMessagesBoardElement.getPlayground(), 
@@ -275,8 +249,6 @@ public class MessageBoardPluginTests {
 		
 		Map<String, Object> activityAttributes2 = new HashMap<>();
 		activityAttributes2.put("text", "text0302");
-		activityAttributes2.put("publisherEmail", "publisherEmail0302");
-		activityAttributes2.put("publisherPlayground", "publisherPlayground0302");
 		
 		ActivityEntity postMessageActivity2 = new ActivityEntity(
 				this.viewMessagesBoardElement.getPlayground(), 
@@ -288,8 +260,6 @@ public class MessageBoardPluginTests {
 		
 		Map<String, Object> activityAttributes3 = new HashMap<>();
 		activityAttributes3.put("text", "text0303");
-		activityAttributes3.put("publisherEmail", "publisherEmail0303");
-		activityAttributes3.put("publisherPlayground", "publisherPlayground0303");
 		
 		ActivityEntity postMessageActivity3 = new ActivityEntity(
 				this.viewMessagesBoardElement.getPlayground(), 
@@ -307,26 +277,20 @@ public class MessageBoardPluginTests {
 				this.playerUser.getEmail(), 
 				new HashMap<>());
 		
-//		this.restTemplate.postForObject(this.host+targetUrl, postMessageActivity1, Object.class);
-//		this.restTemplate.postForObject(this.host+targetUrl, postMessageActivity2, Object.class);
-//		this.restTemplate.postForObject(this.host+targetUrl, postMessageActivity3, Object.class);
-		
 		this.activityService.addNewActivity(postMessageActivity1, this.playgroundName, this.playerUser.getEmail());
 		this.activityService.addNewActivity(postMessageActivity2, this.playgroundName, this.playerUser.getEmail());
 		this.activityService.addNewActivity(postMessageActivity3, this.playgroundName, this.playerUser.getEmail());
 		
 		int numExpectedMessages = 3;
 		
-		BoardMessage[] expectedMessages = new BoardMessage[numExpectedMessages];
+		BoardMessageResponse[] expectedMessages = new BoardMessageResponse[numExpectedMessages];
 		
-		expectedMessages[0] = new BoardMessage(activityAttributes1.get("text")+"", activityAttributes1.get("publisherEmail")+"", activityAttributes1.get("publisherPlayground")+"");
-		expectedMessages[1] = new BoardMessage(activityAttributes2.get("text")+"", activityAttributes2.get("publisherEmail")+"", activityAttributes2.get("publisherPlayground")+"");
-		expectedMessages[2] = new BoardMessage(activityAttributes3.get("text")+"", activityAttributes3.get("publisherEmail")+"", activityAttributes3.get("publisherPlayground")+"");
+		expectedMessages[0] = new BoardMessageResponse(activityAttributes1.get("text")+"", this.playerUser.getEmail(), this.playerUser.getPlayground());
+		expectedMessages[1] = new BoardMessageResponse(activityAttributes2.get("text")+"", this.playerUser.getEmail(), this.playerUser.getPlayground());
+		expectedMessages[2] = new BoardMessageResponse(activityAttributes3.get("text")+"", this.playerUser.getEmail(), this.playerUser.getPlayground());
 		
-		Object rv = this.restTemplate.postForObject(this.host+targetUrl, viewMessagesActivity, Object.class);
-		BoardMessage[] rvMessages = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(rv), BoardMessage[].class);
-		
-//		BoardMessage[] rv = activityDao.findActivityByElementId(this.viewMessagesBoardElement.getId(), PageRequest.of(this.pageablePage, this.pageableSize)).toArray(new BoardMessage[0]);
+		Object[] rv = this.restTemplate.postForObject(this.host+targetUrl, viewMessagesActivity, Object[].class);
+		BoardMessageResponse[] rvMessages = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(rv), BoardMessageResponse[].class);
 		
 		assertThat(rvMessages).isNotNull().hasSize(numExpectedMessages).isEqualTo(expectedMessages);
 	}

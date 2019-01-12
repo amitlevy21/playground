@@ -1,7 +1,6 @@
 package com.sheena.playground.api;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.sheena.playground.logic.activities.ActivityEntity;
 

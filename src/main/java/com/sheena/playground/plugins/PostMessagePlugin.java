@@ -10,6 +10,7 @@ import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
 import com.sheena.playground.plugins.messageBoard.BoardMessage;
+import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 
 @Component
 public class PostMessagePlugin implements PlaygroundPlugin {
@@ -42,9 +43,6 @@ public class PostMessagePlugin implements PlaygroundPlugin {
 				this.jackson.writeValueAsString(
 						activityEntity.getAttributes()), BoardMessage.class);
 		
-		message.setPublisherEmail(activityEntity.getPlayerEmail());
-		message.setPublisherPlayground(activityEntity.getPlayerPlayground());
-		
-		return message;
+		return new BoardMessageResponse(message.getText(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}
 }
