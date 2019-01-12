@@ -125,7 +125,7 @@ public class ElementRestControllerTest {
     	String requestUrl = String.format(BASE_URL, host, playgroundName, managerUser.getEmail());
     	ElementTO returnValue = this.restTemplate.postForObject(requestUrl, e, ElementTO.class);
     	
-    	assertThat(returnValue).isNotNull().isEqualToIgnoringGivenFields(e, "id");
+    	assertThat(returnValue).isNotNull().isEqualToIgnoringGivenFields(e, "id", "playground");
     }
 
     @Test
@@ -379,8 +379,7 @@ public class ElementRestControllerTest {
 		List<ElementTO> tos = new ArrayList<>();
 		
 		for (int i = 0; i < numCases; i++) {
-			tos.add(new ElementTO(
-					playgroundName, 
+			tos.add(new ElementTO( 
 					new Location(), 
 					ELEMENT_NAME + "_" + i, 
 					new Date(), 

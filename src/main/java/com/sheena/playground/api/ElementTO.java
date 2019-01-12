@@ -22,10 +22,9 @@ public class ElementTO {
 	public ElementTO() {
 	}
 
-	public ElementTO(String playground, Location location, String name, Date creationDate, Date expirationDate, String type,
+	public ElementTO(Location location, String name, Date creationDate, Date expirationDate, String type,
 		Map<String, Object> attributes, String creatorPlayground, String creatorEmail) {
 	super();
-	this.playground = playground;
 	this.location = location;
 	this.name = name;
 	this.creationDate = creationDate;
