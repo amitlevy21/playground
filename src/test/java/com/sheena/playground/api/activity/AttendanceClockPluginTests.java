@@ -104,8 +104,8 @@ public class AttendanceClockPluginTests {
 
 	@Before
 	public void setup() throws UserAlreadyExistsException, RoleDoesNotExistException, ParseException {
-		this.managerUser = new UserEntity(userName1 + emailDomain, playgroundName, userName1, avatar, managerRole);
-		this.playerUser = new UserEntity(userName2 + emailDomain, playgroundName, userName2, avatar, playerRole);
+		this.managerUser = new UserEntity(userName1 + emailDomain, userName1, avatar, managerRole);
+		this.playerUser = new UserEntity(userName2 + emailDomain, userName2, avatar, playerRole);
 
 		this.managerUser.setVerifiedUser(true);
 		this.playerUser.setVerifiedUser(true);

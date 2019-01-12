@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "users")
 public class UserEntity {
 
-	// Currently email + playground concatenated String
+	// Email + playground concatenated
 	private String id;
 
 	private String email;
@@ -28,10 +28,9 @@ public class UserEntity {
 		this.setLastLogin(null);
 	}
 
-	public UserEntity(String email, String playground, String username, String avatar, String role) {
+	public UserEntity(String email, String username, String avatar, String role) {
 		super();
 		this.email = email;
-		this.playground = playground;
 		this.username = username;
 		this.avatar = avatar;
 		this.role = role;

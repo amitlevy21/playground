@@ -19,7 +19,7 @@ public class UserTO {
 		this.points = 0L;
 	}
 	
-	public UserTO(String email, String playground, String username, String avatar, String role) {
+	public UserTO(String email, String username, String avatar, String role) {
 		super();
 		setAvatar(avatar);
 		setEmail(email);
@@ -28,12 +28,11 @@ public class UserTO {
 		setUsername(username);
 	}
 	
-	public UserTO(NewUserForm newUserForm, String playground) {
+	public UserTO(NewUserForm newUserForm) {
 		setEmail(newUserForm.getEmail());
 		setUsername(newUserForm.getUsername());
 		setAvatar(newUserForm.getAvatar());
 		setRole(newUserForm.getRole());
-		setPlayground(playground);
 		this.points = 0L;
 	}
 	
