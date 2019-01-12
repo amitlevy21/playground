@@ -2,10 +2,8 @@ package com.sheena.playground.init;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -27,9 +25,6 @@ import com.sheena.playground.logic.users.exceptions.UserAlreadyVerifiedException
 import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.VerificationCodeMismatchException;
 import com.sheena.playground.plugins.attendanceClock.AttendanceClock;
-import com.sheena.playground.plugins.messageBoard.BoardMessage;
-import com.sheena.playground.plugins.messageBoard.ViewMessagesParameters;
-import com.sheena.playground.plugins.shiftRegistery.ShiftDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -53,7 +48,6 @@ public class DemoInitializer {
     private ActivityEntity viewMessages;
     private ActivityEntity postMessage;
     private ActivityEntity registerShift;
-    private ActivityEntity cancelShift;
     private ActivityEntity declareWorkDay;
 
     @Autowired
@@ -99,12 +93,14 @@ public class DemoInitializer {
         Date creationDate = new SimpleDateFormat("yyyy-MM-dd").parse("2019-01-01");
         Date expirationDate = new SimpleDateFormat("yyyy-MM-dd").parse("2222-01-01");
 
+        Map<String, Object> messageAttributes = new HashMap<>();
 
         Map<String, Object> shiftFormAttributes = new HashMap<>();
-        shiftFormAttributes.put("shift", new ShiftDetails());
+        shiftFormAttributes.put("shiftDate", new Date());
+        shiftFormAttributes.put("maxWorkersInShift", 7);
 
         Map<String, Object> attendanceClockAttributes = new HashMap<>();
-        attendanceClockAttributes.put("attendanceClock", new AttendanceClock());
+        attendanceClockAttributes.put("workDate", new Date());
 
         // only managers can create elements
 
@@ -126,44 +122,40 @@ public class DemoInitializer {
     @MyLog
     public void createDemoActivities() {
 
+        Map<String, Object> postMessageAttributes = new HashMap<>();
+        postMessageAttributes.put("text", "Hello World!");
+
         Map<String, Object> viewMessageAttributes = new HashMap<>();
         viewMessageAttributes.put("page", 0);
         viewMessageAttributes.put("size", 10);
 
-        Map<String, Object> postMessageAttributes = new HashMap<>();
-        postMessageAttributes.put("text", new Date());
-
-        Map<String, Object> shiftFormAttributes = new HashMap<>();
-        shiftFormAttributes.put("shift", new ShiftForm());
+        Map<String, Object> registerShiftFormAttributes = new HashMap<>();
+        registerShiftFormAttributes.put("wantedShiftDate", new Date());
 
         Map<String, Object> attendanceClockAttributes = new HashMap<>();
-        attendanceClockAttributes.put("attendanceClock", new AttendanceClock());
+        attendanceClockAttributes.put("clockingDate", new Date());
 
         // only players can create activities
-
-        this.viewMessages = new ActivityEntity("sheena", this.messageBoard.getId(), "ViewMessages",
-                this.player.getPlayground(), this.player.getEmail(), viewMessageAttributes);
 
         this.postMessage = new ActivityEntity("sheena", this.messageBoard.getId(), "PostMessage",
                 this.player.getPlayground(), this.player.getEmail(), postMessageAttributes);
 
+        this.viewMessages = new ActivityEntity("sheena", this.messageBoard.getId(), "ViewMessages",
+                this.player.getPlayground(), this.player.getEmail(), viewMessageAttributes);
+
         this.registerShift = new ActivityEntity("sheena", this.shiftManager.getId(), "RegisterShift",
-                this.player.getPlayground(), this.player.getEmail(), shiftFormAttributes);
+                this.player.getPlayground(), this.player.getEmail(), registerShiftFormAttributes);
 
-        this.cancelShift = new ActivityEntity("sheena", this.shiftManager.getId(), "CancelShift",
-                this.player.getPlayground(), this.player.getEmail(), shiftFormAttributes);
+        this.declareWorkDay = new ActivityEntity("sheena", this.attendanceClock.getId(), "Clock",
+                this.player.getPlayground(), this.player.getEmail(), attendanceClockAttributes);
 
-        this.declareWorkDay = new ActivityEntity("sheena", this.shiftManager.getId(), "Clock",
-                this.player.getPlayground(), this.player.getEmail(), shiftFormAttributes);
-
-        Stream.of(this.viewMessages, this.postMessage, this.registerShift, this.cancelShift, this.declareWorkDay)
-                .forEach(t -> {
-                    try {
-                        this.activityService.addNewActivity(t, t.getPlayerPlayground(), t.getPlayerEmail());
-                    } catch (ActivityTypeNotAllowedException | ActivityWithNoTypeException e) {
-                        e.printStackTrace();
-                    }
-                });
+        Stream.of(this.postMessage, this.viewMessages, this.registerShift, this.declareWorkDay).forEach(t -> {
+            try {
+                this.activityService.addNewActivity(t, t.getPlayerPlayground(), t.getPlayerEmail());
+            } catch (ActivityTypeNotAllowedException | ActivityWithNoTypeException e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
