@@ -27,7 +27,6 @@ public class PlaygroundDemoClient {
 	private Scanner s;
 
 	// Finals resources
-
 	// Playground
 	private final String PLAYGROUND = "Sheena.2019A";
 
@@ -45,7 +44,17 @@ public class PlaygroundDemoClient {
 
 	// Activities
 	private final String ACTIVITIES_URL = "/playground/activities/{userPlayground}/{email}";
-
+	
+	// Elements
+	private final String ATTENDANCE_CLOCK_ELEMENT_TYPE = "attendanceClock";
+	private final String ATTENDANCE_CLOCK_ATTRIBUTE_NAME_DATE = "workDate";
+	
+	private final String SHIFT_REGISTERY_ELEMENT_TYPE = "shift";
+	private final String SHIFT_REGISTERY_ATTRIBUTE_NAME1_DATE = "shiftDate";
+	private final String SHIFT_REGISTERY_ATTRIBUTE_NAME2_INT = "maxWorkersInShift";
+	
+	private final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
+	
 	public PlaygroundDemoClient() {
 	}
 
@@ -97,7 +106,7 @@ public class PlaygroundDemoClient {
 			try {
 				user = loginSystem();
 			} catch (Exception e) {
-				System.out.println("Please confirm your account in your mailbox!");
+				System.out.println("Please check your mailbox to activate your account!");
 				break;
 			}
 			operationScreen(user);
@@ -177,52 +186,64 @@ public class PlaygroundDemoClient {
 			}
 
 	private void managerUpdateElement(UserTO user) {
-		System.out.println("Please enter element's id: ");
-		String id = s.nextLine();
-		ElementTO elementFromUser = getElementFromUser(user);
-		this.rest.put(this.url + ELEMENTS_UPDATE, elementFromUser, ElementTO.class, user.getPlayground(),
-				user.getEmail(), PLAYGROUND, id);
-
-		System.out.println("Updated succesfully!");
+//		System.out.println("Please enter element's id: ");
+//		String id = s.nextLine();
+//		ElementTO elementFromUser = getElementFromUser(user);
+//		this.rest.put(this.url + ELEMENTS_UPDATE, elementFromUser, ElementTO.class, user.getPlayground(),
+//				user.getEmail(), PLAYGROUND, id);
+//
+//		System.out.println("Updated succesfully!");
 	}
 
 	private void managerCreateElement(UserTO user) {
-		ElementTO elementFromUser = getElementFromUser(user);
-		Object res = this.rest.postForObject(this.url + ELEMENTS_CREATE, elementFromUser, ElementTO.class,
-				user.getPlayground(), user.getEmail());
+		
+		System.out.println("Create Element - Please choose what element you want to create");
+		System.out.println("1: Attendance Clock [" + ATTENDANCE_CLOCK_ELEMENT_TYPE + "]");
+		System.out.println("2: Message Board [" + MESSAGE_BOARD_ELEMENT_TYPE + "]");
+		System.out.println("3: Shift Registery [" + SHIFT_REGISTERY_ELEMENT_TYPE + "]");
+		
+		String op = s.nextLine();
+		
+		ElementTO elementFromUser = null;
+		switch (op) {
+		case "1":
+			elementFromUser = createElementByType(user, ATTENDANCE_CLOCK_ELEMENT_TYPE);
+			break;
+		case "2":
+			elementFromUser = createElementByType(user, MESSAGE_BOARD_ELEMENT_TYPE);
+			break;
+		case "3":
+			elementFromUser = createElementByType(user, SHIFT_REGISTERY_ELEMENT_TYPE);
+			break;
+		default:
+			System.out.println("Invalid opeartion. Exit Create Element menu.");
+			return;
+		}
+		
+		Object res = this.rest.postForObject(
+				this.url + ELEMENTS_CREATE,
+				elementFromUser,
+				ElementTO.class,
+				user.getPlayground(),
+				user.getEmail());
 
 		System.out.println(res);
 	}
 
-	private ElementTO getElementFromUser(UserTO user) {
+	private ElementTO createElementByType(UserTO user, String type) {
 		Location location;
 		String name;
 		Date creationDate = new Date();
 		Date expirationDate = new Date();
-		String type;
 		Double x, y;
 		String creatorPlayground = user.getPlayground();
 		String creatorEmail = user.getEmail();
-		String format = "dd/MM/yyyy";
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		Map<String, Object> attributes = new HashMap<>();
-		boolean toContinue = true;
-		String loopRes;
-		String key, value;
 
 		System.out.println("Please enter element's name:");
 		name = s.nextLine();
 
-		System.out.println("Please enter element's type:");
-		type = s.nextLine();
-
-		System.out.println("Please enter an expiration date for the element: (" + format + "):");
-		String date = s.nextLine();
-		try {
-			expirationDate = sdf.parse(date);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		expirationDate = getDateFromUserByName("expirationDate");
 
 		System.out.println("Please enter X coordinate:");
 		x = Double.parseDouble(s.nextLine());
@@ -230,23 +251,35 @@ public class PlaygroundDemoClient {
 		y = Double.parseDouble(s.nextLine());
 		location = new Location(x, y);
 
-		System.out.println("Please enter keys and values");
-		do {
-			System.out.println("Do you want adding to the map? (Y / N)");
-			loopRes = s.nextLine();
-			if (loopRes.equalsIgnoreCase("Y")) {
-				System.out.println("Enter key:");
-				key = s.nextLine();
-				System.out.println("Enter value:");
-				value = s.nextLine();
-				attributes.put(key, value);
-			} else {
-				toContinue = false;
-			}
+		Date dateForMap = null;
+		if (type.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE)) {
+			dateForMap = getDateFromUserByName(ATTENDANCE_CLOCK_ATTRIBUTE_NAME_DATE);
+			attributes.put(ATTENDANCE_CLOCK_ATTRIBUTE_NAME_DATE, dateForMap);
+		} else if (type.equalsIgnoreCase(SHIFT_REGISTERY_ELEMENT_TYPE)) {
+			dateForMap = getDateFromUserByName(SHIFT_REGISTERY_ATTRIBUTE_NAME1_DATE);
+			System.out.println("Please enter max workers in shift: ");
+			String strForMap = s.nextLine();
+			int intForMap = Integer.parseInt(strForMap);
+			attributes.put(SHIFT_REGISTERY_ATTRIBUTE_NAME1_DATE, dateForMap);
+			attributes.put(SHIFT_REGISTERY_ATTRIBUTE_NAME2_INT, intForMap);
+		}
 
-		} while (toContinue);
+		return new ElementTO(location, name, creationDate, expirationDate, type, attributes, creatorPlayground,
+				creatorEmail);
+	}
 
-		return new ElementTO(location, name, creationDate, expirationDate, type, attributes, creatorPlayground, creatorEmail);
+	private Date getDateFromUserByName(String name) { 
+		String format = "dd/MM/yyyy";
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		Date date = null;
+		System.out.println("Please enter "+ name + ": (Date format: " + format + "):");
+		String dateString = s.nextLine();
+		try {
+			date = sdf.parse(dateString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return date;
 	}
 
 	private void playerAddNewActivity(UserTO user) {

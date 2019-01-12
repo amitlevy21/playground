@@ -19,8 +19,8 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
 			@Param("id") String id,
 			Pageable pageable);
 	
-	public List<ActivityEntity> findActivityByElementIdAndType(
-			@Param("id") String id,
+	public List<ActivityEntity> findByElementIdEqualsAndTypeEquals(
+			@Param("elementId") String elementId,
 			@Param("type") String type,
 			Pageable pageable);
 	

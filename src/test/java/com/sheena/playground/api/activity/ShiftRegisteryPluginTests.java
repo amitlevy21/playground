@@ -106,10 +106,7 @@ public class ShiftRegisteryPluginTests {
 		
 		Map<String, Object> shiftRegisteryAttributes = new HashMap<>();
 		shiftRegisteryAttributes.put("shiftDate", new SimpleDateFormat("yyyy-MM-dd").parse("2019-01-13"));
-		shiftRegisteryAttributes.put("shiftHours", 8);
 		shiftRegisteryAttributes.put("maxWorkersInShift", 1);
-		shiftRegisteryAttributes.put("currentWorkersInShift", 0);
-		shiftRegisteryAttributes.put("workers", new ArrayList<>());
 		
 		this.shiftRegisteryElement = new ElementEntity(
 				playgroundName, 
@@ -240,5 +237,45 @@ public class ShiftRegisteryPluginTests {
 		this.exception.expectMessage("500");
 		
 		Object rv = this.restTemplate.postForObject(this.host+targetUrl, registerShiftActivity, Object.class);
+	}
+	
+	
+	@Test
+	public void testRegisterShiftWithNoSptsLeft() throws Exception {
+		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
+		
+		Map<String, Object> activityAttributes = new HashMap<>();
+		
+		activityAttributes.put("wantedShiftDate", new SimpleDateFormat("yyyy-MM-dd").parse("2019-01-13"));
+
+		ActivityEntity registerShiftActivity = new ActivityEntity(
+				this.shiftRegisteryElement.getPlayground(), 
+				this.shiftRegisteryElement.getId(), 
+				REGISTER_SHIFT,
+				this.playerUser.getPlayground(), 
+				this.playerUser.getEmail(), 
+				activityAttributes);
+		
+		Object rv1 = this.restTemplate.postForObject(this.host+targetUrl, registerShiftActivity, Object.class);
+		
+		UserEntity playerUser2 = new UserEntity(userName2+"_"+emailDomain, playgroundName, userName2, avatar, playerRole);
+		playerUser2.setVerifiedUser(true);
+		
+		// Creating the user already verified - a hack to avoid verification via server
+		playerUser2 = this.usersService.createNewUser(playerUser2);
+		String targetUrl2 = String.format(this.url, this.playgroundName, playerUser2.getEmail());
+		
+		ActivityEntity registerShiftActivity2 = new ActivityEntity(
+				this.shiftRegisteryElement.getPlayground(), 
+				this.shiftRegisteryElement.getId(), 
+				REGISTER_SHIFT,
+				playerUser2.getPlayground(), 
+				playerUser2.getEmail(), 
+				activityAttributes);
+		
+		this.exception.expect(HttpServerErrorException.class);
+		this.exception.expectMessage("500");
+		
+		Object rv2 = this.restTemplate.postForObject(this.host+targetUrl2, registerShiftActivity2, Object.class);
 	}
 }
