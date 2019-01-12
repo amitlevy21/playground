@@ -54,10 +54,11 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 					"activity requires element of type: " + SHIFT_ELEMENT_TYPE);
 		}
 
-		ShiftDetails shiftDetails = jackson.readValue(this.jackson.writeValueAsString(elementEntity.getAttributes()),
+		ShiftDetails shiftDetails = this.jackson.readValue(
+				this.jackson.writeValueAsString(elementEntity.getAttributes()),
 				ShiftDetails.class);
 		
-		ShiftForm form = jackson.readValue(this.jackson.writeValueAsString(
+		ShiftForm form = this.jackson.readValue(this.jackson.writeValueAsString(
 				activityEntity.getAttributes()), ShiftForm.class);
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -65,11 +66,11 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 			throw new ShiftRegisteryDateMismatchException("cannot register to shift in date " + form.getWantedShiftDate() + ". no such shift");
 
 		int numOfWorkers = this.activityDao
-							.findActivityByElementIdAndType(
+							.findActivityByElementId(
 									activityEntity.getElementId(),
-									elementType,
 									PageRequest.of(0, shiftDetails.getMaxWorkersInShift()))
 							.size();
+
 		if (numOfWorkers == shiftDetails.getMaxWorkersInShift())
 			throw new fullShiftException("cannot register to shift in date: " + shiftDetails.getShiftDate() + " because shift is already full");
 		

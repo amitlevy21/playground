@@ -11,11 +11,8 @@ services:
       - mongo
   
   mongo:
-    image: mongo3.6
+    image: mongo:3.6
     container_name: playground-mongo
     ports:
       - 27017:27017
-    volumes:
-      - ./data:/data/db
-      - ./data_bkp:/data/bkp
     restart: always

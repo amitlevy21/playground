@@ -379,7 +379,7 @@ public class ElementRestControllerTest {
 		List<ElementTO> tos = new ArrayList<>();
 		
 		for (int i = 0; i < numCases; i++) {
-			tos.add(new ElementTO( 
+			tos.add(new ElementTO(
 					new Location(), 
 					ELEMENT_NAME + "_" + i, 
 					new Date(), 
