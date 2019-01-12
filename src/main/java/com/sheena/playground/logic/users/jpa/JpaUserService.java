@@ -106,7 +106,6 @@ public class JpaUserService implements UsersService{
 		}
 	}
 
-	@SuppressWarnings("static-access")
 	@Override
 	@MyLog
 	public String generateUserVerificationCode(UserEntity userEntity) {
