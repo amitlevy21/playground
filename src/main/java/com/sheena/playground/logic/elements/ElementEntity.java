@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -70,6 +72,7 @@ public class ElementEntity {
     }
     
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     public String getId() {
         return id;
     }
@@ -150,15 +153,6 @@ public class ElementEntity {
         this.creatorEmail = creatorEmail;
     }
     
-//    @Override
-//    public String toString() {
-//        return "{" + " dummyId='" + getId() + "'" + ", playground='" + getPlayground() + "'" + ", x='" + getX()
-//                + "'" + ", y='" + getY() + "'" + ", name='" + getName() + "'" + ", creationDate='" + getCreationDate()
-//                + "'" + ", expirationDate='" + getExpirationDate() + "'" + ", type='" + getType() + "'"
-//                + ", attributes='" + getAttributes() + "'" + ", creatorPlayground='" + getCreatorPlayground() + "'"
-//                + ", creatorEmail='" + getCreatorEmail() + "'" + "}";
-//    }
-    
     @Override
 	public String toString() {
 		return "ElementEntity [id=" + id + ", playground=" + playground + ", x=" + x + ", y=" + y + ", name=" + name
@@ -184,8 +178,6 @@ public class ElementEntity {
 		result = prime * result + ((y == null) ? 0 : y.hashCode());
 		return result;
 	}
-
-	
 
 	@Override
 	public boolean equals(Object obj) {
