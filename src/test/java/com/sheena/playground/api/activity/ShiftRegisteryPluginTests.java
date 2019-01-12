@@ -258,7 +258,7 @@ public class ShiftRegisteryPluginTests {
 		
 		Object rv1 = this.restTemplate.postForObject(this.host+targetUrl, registerShiftActivity, Object.class);
 		
-		UserEntity playerUser2 = new UserEntity(userName2+"_"+emailDomain, playgroundName, userName2, avatar, playerRole);
+		UserEntity playerUser2 = new UserEntity(userName2+"_"+emailDomain, userName2, avatar, playerRole);
 		playerUser2.setVerifiedUser(true);
 		
 		// Creating the user already verified - a hack to avoid verification via server

@@ -75,8 +75,8 @@ public class DemoInitializer {
             throws UserDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException,
             VerificationCodeMismatchException, UserAlreadyExistsException, RoleDoesNotExistException {
 
-        this.player = new UserEntity("user1@gmail.com", "sheena", "user1", "turtle", "player");
-        this.manager = new UserEntity("user3@gmail.com", "sheena", "user3", "sheep", "manager");
+        this.player = new UserEntity("user1@gmail.com", "user1", "turtle", "player");
+        this.manager = new UserEntity("user3@gmail.com", "user3", "sheep", "manager");
 
         this.userService.createNewUser(this.player);
         this.player = this.userService.verifyUserRegistration(this.player.getPlayground(), this.player.getEmail(),
