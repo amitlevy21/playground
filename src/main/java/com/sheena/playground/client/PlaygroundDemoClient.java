@@ -47,13 +47,24 @@ public class PlaygroundDemoClient {
 	
 	// Elements
 	private final String ATTENDANCE_CLOCK_ELEMENT_TYPE = "attendanceClock";
-	private final String ATTENDANCE_CLOCK_ATTRIBUTE_NAME_DATE = "workDate";
+	private final String ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE = "workDate";
+	private final String CLOCK_ACTIVITY_TYPE = "Clock";
+	private final String CLOCK_ACTIVITY_ATTRIBUTE_NAME_DATE = "clockingDate";
 	
 	private final String SHIFT_REGISTERY_ELEMENT_TYPE = "shift";
-	private final String SHIFT_REGISTERY_ATTRIBUTE_NAME1_DATE = "shiftDate";
-	private final String SHIFT_REGISTERY_ATTRIBUTE_NAME2_INT = "maxWorkersInShift";
+	private final String SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME1_DATE = "shiftDate";
+	private final String SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME2_INT = "maxWorkersInShift";
+	private final String REGISTER_SHIFT_ACTIVITY_TYPE = "RegisterShift";
+	private final String REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE = "wantedShiftDate";
 	
 	private final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
+	private final String VIEW_MESSAGES_ACTIVITY_TYPE = "ViewMessages";
+	private final String POST_MESSAGE_ACTIVITY_TYPE = "PostMessage";
+	
+	// MANAGER OPERATIONS
+	private final String MANAGER_CREATE = "create";
+	private final String MANAGER_UPDATE = "update";
+	
 	
 	public PlaygroundDemoClient() {
 	}
@@ -167,10 +178,10 @@ public class PlaygroundDemoClient {
 				playerAddNewActivity(user);
 				break;
 			case "5Manager":
-				managerCreateElement(user);
+				managerCreateOrUpdateElement(user, MANAGER_CREATE);
 				break;
 			case "6Manager":
-				managerUpdateElement(user);
+				managerCreateOrUpdateElement(user, MANAGER_UPDATE);
 				break;
 			case "X":
 			case "x":
@@ -184,150 +195,55 @@ public class PlaygroundDemoClient {
 			}
 		} while (toExitOperationScreen);
 			}
+	
+	private UserTO loginSystem() {
+		String email;
+		String playground;
+		UserTO rvUser = null;
+		System.out.println("\nPlease enter your email:");
+		email = s.nextLine();
+		System.out.println("Please choose your playground:");
+		playground = s.nextLine();
 
-	private void managerUpdateElement(UserTO user) {
-//		System.out.println("Please enter element's id: ");
-//		String id = s.nextLine();
-//		ElementTO elementFromUser = getElementFromUser(user);
-//		this.rest.put(this.url + ELEMENTS_UPDATE, elementFromUser, ElementTO.class, user.getPlayground(),
-//				user.getEmail(), PLAYGROUND, id);
-//
-//		System.out.println("Updated succesfully!");
-	}
-
-	private void managerCreateElement(UserTO user) {
-		
-		System.out.println("Create Element - Please choose what element you want to create");
-		System.out.println("1: Attendance Clock [" + ATTENDANCE_CLOCK_ELEMENT_TYPE + "]");
-		System.out.println("2: Message Board [" + MESSAGE_BOARD_ELEMENT_TYPE + "]");
-		System.out.println("3: Shift Registery [" + SHIFT_REGISTERY_ELEMENT_TYPE + "]");
-		
-		String op = s.nextLine();
-		
-		ElementTO elementFromUser = null;
-		switch (op) {
-		case "1":
-			elementFromUser = createElementByType(user, ATTENDANCE_CLOCK_ELEMENT_TYPE);
-			break;
-		case "2":
-			elementFromUser = createElementByType(user, MESSAGE_BOARD_ELEMENT_TYPE);
-			break;
-		case "3":
-			elementFromUser = createElementByType(user, SHIFT_REGISTERY_ELEMENT_TYPE);
-			break;
-		default:
-			System.out.println("Invalid opeartion. Exit Create Element menu.");
-			return;
-		}
-		
-		Object res = this.rest.postForObject(
-				this.url + ELEMENTS_CREATE,
-				elementFromUser,
-				ElementTO.class,
-				user.getPlayground(),
-				user.getEmail());
-
-		System.out.println(res);
-	}
-
-	private ElementTO createElementByType(UserTO user, String type) {
-		Location location;
-		String name;
-		Date creationDate = new Date();
-		Date expirationDate = new Date();
-		Double x, y;
-		String creatorPlayground = user.getPlayground();
-		String creatorEmail = user.getEmail();
-		Map<String, Object> attributes = new HashMap<>();
-
-		System.out.println("Please enter element's name:");
-		name = s.nextLine();
-
-		expirationDate = getDateFromUserByName("expirationDate");
-
-		System.out.println("Please enter X coordinate:");
-		x = Double.parseDouble(s.nextLine());
-		System.out.println("Please enter Y coordinate:");
-		y = Double.parseDouble(s.nextLine());
-		location = new Location(x, y);
-
-		Date dateForMap = null;
-		if (type.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE)) {
-			dateForMap = getDateFromUserByName(ATTENDANCE_CLOCK_ATTRIBUTE_NAME_DATE);
-			attributes.put(ATTENDANCE_CLOCK_ATTRIBUTE_NAME_DATE, dateForMap);
-		} else if (type.equalsIgnoreCase(SHIFT_REGISTERY_ELEMENT_TYPE)) {
-			dateForMap = getDateFromUserByName(SHIFT_REGISTERY_ATTRIBUTE_NAME1_DATE);
-			System.out.println("Please enter max workers in shift: ");
-			String strForMap = s.nextLine();
-			int intForMap = Integer.parseInt(strForMap);
-			attributes.put(SHIFT_REGISTERY_ATTRIBUTE_NAME1_DATE, dateForMap);
-			attributes.put(SHIFT_REGISTERY_ATTRIBUTE_NAME2_INT, intForMap);
-		}
-
-		return new ElementTO(location, name, creationDate, expirationDate, type, attributes, creatorPlayground,
-				creatorEmail);
-	}
-
-	private Date getDateFromUserByName(String name) { 
-		String format = "dd/MM/yyyy";
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		Date date = null;
-		System.out.println("Please enter "+ name + ": (Date format: " + format + "):");
-		String dateString = s.nextLine();
 		try {
-			date = sdf.parse(dateString);
-		} catch (ParseException e) {
+			rvUser = this.rest.getForObject(this.url + LOGIN_URL, UserTO.class, playground, email);
+		} catch (RestClientException e) {
 			e.printStackTrace();
+			throw e;
 		}
-		return date;
+
+		return rvUser;
 	}
 
-	private void playerAddNewActivity(UserTO user) {
-		ActivityTO playerActivity = getActivityFromUser(user);
-		Object res = this.rest.postForObject(this.url + ACTIVITIES_URL, playerActivity, ActivityTO.class,
-				user.getPlayground(), user.getEmail());
+	private void registerNewUser() {
+		String email;
+		String username;
+		String avatar;
+		String role;
 
-		System.out.println(res);
+		System.out.println("Please enter your email:");
+		email = s.nextLine();
+		System.out.println("Please choose an username:");
+		username = s.nextLine();
+		System.out.println("Please choose an avatar:");
+		avatar = s.nextLine();
+		System.out.println("Please choose a role (PLAYER / MANAGER):");
+		role = s.nextLine();
+
+		try {
+			NewUserForm newUserForm = new NewUserForm(email, username, avatar, role);
+			this.rest.postForObject(this.url + USERS_MAIN_URL, newUserForm, UserTO.class);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		System.out.println("Please check your mailbox to activate your account!");
 	}
 
-	private ActivityTO getActivityFromUser(UserTO user) {
-		String elementPlayground;
-		String elementId;
-		String type;
-		String playerPlayground = user.getPlayground();
-		String playerEmail = user.getEmail();
-		Map<String, Object> attributes = new HashMap<>();
-		boolean toContinue = true;
-		String loopRes;
-		String key, value;
-
-		System.out.println("Please enter element playground:");
-		elementPlayground = s.nextLine();
-
-		System.out.println("Please enter element id:");
-		elementId = s.nextLine();
-
-		System.out.println("Please enter type:");
-		type = s.nextLine();
-
-		System.out.println("Please enter keys and values");
-		do {
-			System.out.println("Do you want adding to the map? (Y / N)");
-			loopRes = s.nextLine();
-			if (loopRes.equalsIgnoreCase("Y")) {
-				System.out.println("Enter key:");
-				key = s.nextLine();
-				System.out.println("Enter value:");
-				value = s.nextLine();
-				attributes.put(key, value);
-			} else {
-				toContinue = false;
-			}
-
-		} while (toContinue);
-
-		return new ActivityTO(elementPlayground, elementId, type, playerPlayground, playerEmail, attributes);
-	}
+	
+///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////Element Getters//////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 	private void getElementsById(UserTO user) {
 		System.out.println("Please enter id:");
@@ -376,48 +292,247 @@ public class PlaygroundDemoClient {
 		Stream.of(allElementsReturned).forEach(System.out::println);
 	}
 
-	private UserTO loginSystem() {
-		String email;
-		String playground;
-		UserTO rvUser = null;
-		System.out.println("\nPlease enter your email:");
-		email = s.nextLine();
-		System.out.println("Please choose your playground:");
-		playground = s.nextLine();
-
-		try {
-			rvUser = this.rest.getForObject(this.url + LOGIN_URL, UserTO.class, playground, email);
-		} catch (RestClientException e) {
-			e.printStackTrace();
-			throw e;
+///////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////Manager Create or Update Element//////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+	
+	private void managerCreateOrUpdateElement(UserTO user, String typeOfOpeartion) {
+		String id = "";
+		
+		if (typeOfOpeartion.equalsIgnoreCase(MANAGER_UPDATE)) {
+			System.out.println("Please enter element's id: ");
+			id = s.nextLine();
 		}
-
-		return rvUser;
+		System.out.println("Please choose what element you want to " + typeOfOpeartion);
+		System.out.println("1: Attendance Clock [" + ATTENDANCE_CLOCK_ELEMENT_TYPE + "]");
+		System.out.println("2: Message Board [" + MESSAGE_BOARD_ELEMENT_TYPE + "]");
+		System.out.println("3: Shift Registery [" + SHIFT_REGISTERY_ELEMENT_TYPE + "]");
+		
+		String op = s.nextLine();
+		
+		ElementTO elementFromUser = null;
+		switch (op) {
+		case "1":
+			elementFromUser = ElementFromManagerByType(user, ATTENDANCE_CLOCK_ELEMENT_TYPE);
+			break;
+		case "2":
+			elementFromUser = ElementFromManagerByType(user, MESSAGE_BOARD_ELEMENT_TYPE);
+			break;
+		case "3":
+			elementFromUser = ElementFromManagerByType(user, SHIFT_REGISTERY_ELEMENT_TYPE);
+			break;
+		default:
+			System.out.println("Invalid opeartion. Exit"+ typeOfOpeartion +"element menu.");
+			return;
+		}
+		
+		if (typeOfOpeartion.equalsIgnoreCase(MANAGER_UPDATE)) {
+			this.rest.put(
+					this.url + ELEMENTS_UPDATE,
+					elementFromUser,
+					ElementTO.class,
+					user.getPlayground(),
+					user.getEmail(),
+					PLAYGROUND,
+					id);
+			System.out.println("Element updated succesfully!");
+		} else {
+			Object res = this.rest.postForObject(
+					this.url + ELEMENTS_CREATE,
+					elementFromUser,
+					ElementTO.class,
+					user.getPlayground(),
+					user.getEmail());
+			
+			System.out.println("Element created succesfully!");
+			System.out.println(res);
+		}
 	}
 
-	private void registerNewUser() {
-		String email;
-		String username;
-		String avatar;
-		String role;
+	private ElementTO ElementFromManagerByType(UserTO user, String type) {
+		Location location;
+		String name;
+		Date creationDate = new Date();
+		Date expirationDate = new Date();
+		Double x, y;
+		String creatorPlayground = user.getPlayground();
+		String creatorEmail = user.getEmail();
+		Map<String, Object> attributes = new HashMap<>();
 
-		System.out.println("Please enter your email:");
-		email = s.nextLine();
-		System.out.println("Please choose an username:");
-		username = s.nextLine();
-		System.out.println("Please choose an avatar:");
-		avatar = s.nextLine();
-		System.out.println("Please choose a role (PLAYER / MANAGER):");
-		role = s.nextLine();
+		System.out.println("Please enter element's name:");
+		name = s.nextLine();
 
-		try {
-			NewUserForm newUserForm = new NewUserForm(email, username, avatar, role);
-			this.rest.postForObject(this.url + USERS_MAIN_URL, newUserForm, UserTO.class);
-		} catch (RestClientException e) {
-			e.printStackTrace();
-			throw e;
+		expirationDate = getDateFromUserByName("expirationDate");
+
+		System.out.println("Please enter X coordinate:");
+		x = Double.parseDouble(s.nextLine());
+		System.out.println("Please enter Y coordinate:");
+		y = Double.parseDouble(s.nextLine());
+		location = new Location(x, y);
+
+		Date dateForMap = null;
+		if (type.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE)) {
+			dateForMap = getDateFromUserByName(ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE);
+			attributes.put(ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE, dateForMap);
+		} else if (type.equalsIgnoreCase(SHIFT_REGISTERY_ELEMENT_TYPE)) {
+			dateForMap = getDateFromUserByName(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME1_DATE);
+			System.out.println("Please enter max workers in shift: ");
+			String strForMap = s.nextLine();
+			int intForMap = Integer.parseInt(strForMap);
+			attributes.put(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME1_DATE, dateForMap);
+			attributes.put(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME2_INT, intForMap);
 		}
-		firstScreen();
+
+		return new ElementTO(location, name, creationDate, expirationDate, type, attributes, creatorPlayground,
+				creatorEmail);
 	}
 
+	private Date getDateFromUserByName(String name) { 
+		String format = "dd/MM/yyyy";
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		Date date = null;
+		System.out.println("Please enter "+ name + ": (Date format: " + format + "):");
+		String dateString = s.nextLine();
+		try {
+			date = sdf.parse(dateString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return date;
+	}
+
+	
+///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////Player Create New Activity/////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+	
+	private void playerAddNewActivity(UserTO user) {
+		ActivityTO playerActivity = null;
+		
+		System.out.println("Please choose what element you want to add activity");
+		System.out.println("1: Attendance Clock [" + ATTENDANCE_CLOCK_ELEMENT_TYPE + "]");
+		System.out.println("2: Message Board [" + MESSAGE_BOARD_ELEMENT_TYPE + "]");
+		System.out.println("3: Shift Registery [" + SHIFT_REGISTERY_ELEMENT_TYPE + "]");
+		
+		String op = s.nextLine();
+		
+		switch (op) {
+		case "1":
+			playerActivity = getActivityFromPLayer(user, ATTENDANCE_CLOCK_ELEMENT_TYPE);
+			break;
+		case "2":
+			break;
+		case "3":
+			break;
+		default:
+			System.out.println("Invalid opeartion. Exit add activity to element menu.");
+			return;
+		}
+		
+		Object res = this.rest.postForObject(
+				this.url + ACTIVITIES_URL,
+				playerActivity,
+				ActivityTO.class,
+				user.getPlayground(),
+				user.getEmail());
+		
+		System.out.println("Activity created succesfully!");
+		System.out.println(res);
+	}
+
+	private ActivityTO getActivityFromPLayer(UserTO user, String elementType) {
+		String elementPlayground;
+		String elementId;
+		String type;
+		String playerPlayground = user.getPlayground();
+		String playerEmail = user.getEmail();
+		Map<String, Object> attributes = new HashMap<>();
+		boolean toContinue = true;
+		String loopRes;
+		String key, value;
+
+		System.out.println("Please enter element playground:");
+		elementPlayground = s.nextLine();
+
+		System.out.println("Please enter element id:");
+		elementId = s.nextLine();
+		
+		Date dateForMap = null;
+		if (elementType.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE)) {
+			type = this.CLOCK_ACTIVITY_TYPE;
+			dateForMap = getDateFromUserByName(CLOCK_ACTIVITY_ATTRIBUTE_NAME_DATE);
+			attributes.put(CLOCK_ACTIVITY_ATTRIBUTE_NAME_DATE, dateForMap);
+		} else if (elementType.equalsIgnoreCase(SHIFT_REGISTERY_ELEMENT_TYPE)) {
+			type = this.REGISTER_SHIFT_ACTIVITY_TYPE;
+			dateForMap = getDateFromUserByName(REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE);
+			attributes.put(REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE, dateForMap);
+		} else if (elementType.equalsIgnoreCase(MESSAGE_BOARD_ELEMENT_TYPE)) {
+			type = playerChooseMessageBoardActivityType();
+		}
+		
+		
+		System.out.println("Please enter type:");
+		type = s.nextLine();
+		
+		
+		if (type.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE)) {
+			dateForMap = getDateFromUserByName(ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE);
+			attributes.put(ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE, dateForMap);
+		} else if (type.equalsIgnoreCase(SHIFT_REGISTERY_ELEMENT_TYPE)) {
+			dateForMap = getDateFromUserByName(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME1_DATE);
+			System.out.println("Please enter max workers in shift: ");
+			String strForMap = s.nextLine();
+			int intForMap = Integer.parseInt(strForMap);
+			attributes.put(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME1_DATE, dateForMap);
+			attributes.put(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME2_INT, intForMap);
+		}
+		
+		
+		
+		System.out.println("Please enter keys and values");
+		do {
+			System.out.println("Do you want adding to the map? (Y / N)");
+			loopRes = s.nextLine();
+			if (loopRes.equalsIgnoreCase("Y")) {
+				System.out.println("Enter key:");
+				key = s.nextLine();
+				System.out.println("Enter value:");
+				value = s.nextLine();
+				attributes.put(key, value);
+			} else {
+				toContinue = false;
+			}
+
+		} while (toContinue);
+
+		return new ActivityTO(elementPlayground, elementId, type, playerPlayground, playerEmail, attributes);
+	}
+
+	private String playerChooseMessageBoardActivityType() {
+		String op = "";
+		String res = "";
+		do {
+			System.out.println("Please choose an activity");
+			System.out.println("1: Post Message [" + POST_MESSAGE_ACTIVITY_TYPE + "]");
+			System.out.println("1: View Messages [" + VIEW_MESSAGES_ACTIVITY_TYPE + "]");
+			op = s.nextLine();
+			
+			switch (op) {
+			case "1":
+				res = POST_MESSAGE_ACTIVITY_TYPE;
+				break;
+			case "2":
+				res = VIEW_MESSAGES_ACTIVITY_TYPE;
+				break;
+			default:
+				System.out.println("Invalid operation, please try again.");
+				break;
+			}
+		} while (!op.equalsIgnoreCase("1") || !op.equalsIgnoreCase("2"));
+		
+		return res;
+	}
+	
+	
+	
 }
