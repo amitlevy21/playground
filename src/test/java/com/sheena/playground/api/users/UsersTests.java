@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -60,7 +61,9 @@ public class UsersTests {
 	@Autowired
 	private UsersService usersService;
 	
-	private final String playground = "Sheena.2019A";
+	@Value("${playground.name:defaultPlayground}")
+	private String playground;
+	
 	private final String verificationCodeSuffix = "code";
 	
 	//Data attributes for test suite
@@ -101,12 +104,12 @@ public class UsersTests {
 	
 	@Test
 	public void testRegisterNewUser() throws JsonParseException, JsonMappingException, IOException {
-		UserTO expectedUserTO = new UserTO(this.newUserForms.get(0), this.playground);
+		UserTO expectedUserTO = new UserTO(this.newUserForms.get(0));
 		UserTO actualReturnedValue = this.restTemplate.postForObject(this.url, this.newUserForms.get(0), UserTO.class);
 		
 		assertThat(actualReturnedValue)
 		.isNotNull()
-		.usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
+		.usingComparator(this.userTOComparator).isEqualToIgnoringNullFields(expectedUserTO);
 	}
 	
 	@Test
@@ -128,7 +131,7 @@ public class UsersTests {
 	public void testVerifyNewUserAccount() throws JsonParseException, JsonMappingException, IOException, UserAlreadyExistsException, RoleDoesNotExistException {
 		NewUserForm newUser = this.newUserForms.get(2);
 		UserTO expectedUserTO = new UserTO(this.usersService.createNewUser(
-				new UserTO(newUser, playground).toEntity()));
+				new UserTO(newUser).toEntity()));
 
 		//When
 		UserTO returnedAnswer = this.restTemplate.getForObject(
@@ -139,14 +142,14 @@ public class UsersTests {
 		//Then
 		assertThat(returnedAnswer)
 		.isNotNull()
-		.usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
+		.isEqualToIgnoringNullFields(expectedUserTO);
 	}
 	
 	@Test
 	public void testVerifyNewUserAccountWithWrongCode() throws JsonParseException, JsonMappingException, IOException, UserAlreadyExistsException, RoleDoesNotExistException {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(3);
-		this.usersService.createNewUser(new UserTO(newUser, playground).toEntity());
+		this.usersService.createNewUser(new UserTO(newUser).toEntity());
 		
 		String wrongCode = newUser.getEmail() + this.verificationCodeSuffix + "NOPE";
 		
@@ -167,7 +170,7 @@ public class UsersTests {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(4);
 		UserEntity newUserEntity = this.usersService.createNewUser(
-				new UserTO(newUser, playground).toEntity());
+				new UserTO(newUser).toEntity());
 		this.usersService.verifyUserRegistration(
 				playground, newUserEntity.getEmail(), 
 				newUserEntity.getEmail() + this.verificationCodeSuffix);
@@ -180,7 +183,7 @@ public class UsersTests {
 		//Then
 		assertThat(returnedAnswer)
 		.isNotNull()
-		.usingComparator(this.userTOComparator).isEqualTo(expectedUserTO);
+		.isEqualToIgnoringNullFields(expectedUserTO);
 		
 	}
 	
@@ -189,7 +192,7 @@ public class UsersTests {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(5);
 		UserEntity newUserEntity = this.usersService.createNewUser(
-				new UserTO(newUser, playground).toEntity());
+				new UserTO(newUser).toEntity());
 		this.usersService.verifyUserRegistration(
 				playground, newUserEntity.getEmail(), 
 				newUserEntity.getEmail() + this.verificationCodeSuffix);
@@ -210,7 +213,7 @@ public class UsersTests {
 	public void testUnverifiedUserLogin() throws UserAlreadyExistsException, RoleDoesNotExistException, UserDoesNotExistException, CodeDoesNotExistException, UserAlreadyVerifiedException, VerificationCodeMismatchException {
 		//Given there is a sign up request
 		NewUserForm newUser = this.newUserForms.get(6);
-		this.usersService.createNewUser(new UserTO(newUser, playground).toEntity());
+		this.usersService.createNewUser(new UserTO(newUser).toEntity());
 		
 		this.exception.expect(HttpClientErrorException.class);
 		this.exception.expectMessage("404");
@@ -228,12 +231,12 @@ public class UsersTests {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(7);
 		UserEntity newUserEntity = this.usersService.createNewUser(
-				new UserTO(newUser, playground).toEntity());
+				new UserTO(newUser).toEntity());
 		this.usersService.verifyUserRegistration(
-				playground, newUserEntity.getEmail(), 
+				playground, newUserEntity.getEmail(),
 				newUserEntity.getEmail() + this.verificationCodeSuffix);
 		
-		UserTO userWithUpdate = new UserTO(newUser, this.playground);
+		UserTO userWithUpdate = new UserTO(newUser);
 		userWithUpdate.setUsername("leon");
 		userWithUpdate.setAvatar("giraffe");
 		userWithUpdate.setRole("manager");
@@ -248,7 +251,7 @@ public class UsersTests {
 		
 		assertThat(new UserTO(actualEntity))
 		.isNotNull()
-		.usingComparator(this.userTOComparator).isEqualTo(userWithUpdate);
+		.isEqualToIgnoringNullFields(userWithUpdate);
 	}
 	
 	@Test
@@ -256,12 +259,12 @@ public class UsersTests {
 		//Given
 		NewUserForm newUser = this.newUserForms.get(8);
 		UserEntity newUserEntity = this.usersService.createNewUser(
-				new UserTO(newUser, playground).toEntity());
+				new UserTO(newUser).toEntity());
 		this.usersService.verifyUserRegistration(
 				playground, newUserEntity.getEmail(), 
 				newUserEntity.getEmail() + this.verificationCodeSuffix);
 		
-		UserTO userWithUnAllowedUpdate = new UserTO(newUser, this.playground);
+		UserTO userWithUnAllowedUpdate = new UserTO(newUser);
 		userWithUnAllowedUpdate.setPoints(1250L);
 				
 		this.exception.expect(HttpClientErrorException.class);

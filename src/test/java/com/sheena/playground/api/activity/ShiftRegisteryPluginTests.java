@@ -94,8 +94,8 @@ public class ShiftRegisteryPluginTests {
     
     @Before
     public void setup() throws UserAlreadyExistsException, RoleDoesNotExistException, ParseException {
-    	this.managerUser = new UserEntity(userName1+emailDomain, playgroundName, userName1, avatar, managerRole);
-		this.playerUser = new UserEntity(userName2+emailDomain, playgroundName, userName2, avatar, playerRole);
+    	this.managerUser = new UserEntity(userName1+emailDomain, userName1, avatar, managerRole);
+		this.playerUser = new UserEntity(userName2+emailDomain, userName2, avatar, playerRole);
 		
 		this.managerUser.setVerifiedUser(true);
 		this.playerUser.setVerifiedUser(true);
@@ -258,7 +258,7 @@ public class ShiftRegisteryPluginTests {
 		
 		Object rv1 = this.restTemplate.postForObject(this.host+targetUrl, registerShiftActivity, Object.class);
 		
-		UserEntity playerUser2 = new UserEntity(userName2+"_"+emailDomain, playgroundName, userName2, avatar, playerRole);
+		UserEntity playerUser2 = new UserEntity(userName2+"_"+emailDomain, userName2, avatar, playerRole);
 		playerUser2.setVerifiedUser(true);
 		
 		// Creating the user already verified - a hack to avoid verification via server
