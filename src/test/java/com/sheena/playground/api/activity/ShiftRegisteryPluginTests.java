@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +36,8 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.plugins.PostMessagePlugin;
+import com.sheena.playground.plugins.RegisterShiftPlugin;
 import com.sheena.playground.plugins.shiftRegistery.ShiftResponse;
 
 @RunWith(SpringRunner.class)
@@ -173,6 +174,32 @@ public class ShiftRegisteryPluginTests {
 		ShiftResponse expectedShiftResponse = (ShiftResponse) expectedEntity.getResponse()[0]; 
 
 		assertThat(rvShift).isNotNull().isEqualTo(expectedShiftResponse);
+	}
+	
+	@Test
+	public void testRegisterShiftSuccessfullyAffectsPlayerPoints() throws Exception {
+		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
+		
+		Map<String, Object> activityAttributes = new HashMap<>();
+		
+		activityAttributes.put("wantedShiftDate", new SimpleDateFormat("yyyy-MM-dd").parse("2019-01-13"));
+
+		ActivityEntity registerShiftActivity = new ActivityEntity(
+				this.shiftRegisteryElement.getPlayground(), 
+				this.shiftRegisteryElement.getId(), 
+				REGISTER_SHIFT,
+				this.playerUser.getPlayground(), 
+				this.playerUser.getEmail(), 
+				activityAttributes);
+		
+		long playerPointsBefore = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		long expectedPointsAfter = playerPointsBefore + RegisterShiftPlugin.AWARD_POINTS;
+		
+		this.restTemplate.postForObject(this.host+targetUrl, registerShiftActivity, Object.class); 
+
+		long playerPointsAfter = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		
+		assertThat(playerPointsAfter).isNotNull().isEqualTo(expectedPointsAfter);
 	}
 	
 	@Test

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.logic.users.UserEntity;
+import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.plugins.messageBoard.BoardMessage;
 import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 
@@ -16,15 +18,18 @@ import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 public class PostMessagePlugin implements PlaygroundPlugin {
 
 	private ElementService elementService;
+	private UsersService usersService;
 	private ObjectMapper jackson;
 	public static final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
+	public static final long AWARD_POINTS = 5L;
 	
 	public PostMessagePlugin() {
 	}
 
 	@Autowired
-	public PostMessagePlugin(ElementService elementService) {
+	public PostMessagePlugin(ElementService elementService, UsersService usersService) {
 		this.elementService = elementService;
+		this.usersService = usersService;
 	}
 	
 	@PostConstruct
@@ -42,6 +47,9 @@ public class PostMessagePlugin implements PlaygroundPlugin {
 		BoardMessage message = this.jackson.readValue(
 				this.jackson.writeValueAsString(
 						activityEntity.getAttributes()), BoardMessage.class);
+		
+		UserEntity player = this.usersService.getUserByEmail(activityEntity.getPlayerEmail());
+		this.usersService.updatePoints(player, AWARD_POINTS);
 		
 		return new BoardMessageResponse(message.getText(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}

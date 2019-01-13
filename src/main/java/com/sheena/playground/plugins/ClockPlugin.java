@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.logic.users.UserEntity;
+import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.plugins.attendanceClock.AttendanceClock;
 import com.sheena.playground.plugins.attendanceClock.AttendanceClockResponse;
 import com.sheena.playground.plugins.attendanceClock.ClockingDateMismatchException;
@@ -20,9 +22,11 @@ import com.sheena.playground.plugins.attendanceClock.ClockingForm;
 public class ClockPlugin implements PlaygroundPlugin {
 	public static final String ATTENDANCE_CLOCK_ELEMENT_TYPE = "attendanceClock";
 	public static final String CLOCK_ACTIVITY_TYPE = "Clock";
+	public static final long AWARD_POINTS = 1L;
 	
 	private ObjectMapper jackson;
 	private ElementService elementService;
+	private UsersService usersService;
 
 	@PostConstruct
 	public void init() {
@@ -30,8 +34,9 @@ public class ClockPlugin implements PlaygroundPlugin {
 	}
 	
 	@Autowired
-	public void setElementService(ElementService elementService) {
+	public void setElementService(ElementService elementService, UsersService usersService) {
 		this.elementService = elementService;
+		this.usersService = usersService;
 	}
 
 	@Override
@@ -57,7 +62,9 @@ public class ClockPlugin implements PlaygroundPlugin {
 		if(!dateFormat.format(attendanceClock.getWorkDate()).equals(dateFormat.format(form.getClockingDate())))
 			throw new ClockingDateMismatchException("Cannot clock date: " + form.getClockingDate() + " to another work date");
 		
+		UserEntity player = this.usersService.getUserByEmail(activityEntity.getPlayerEmail());
+		this.usersService.updatePoints(player, AWARD_POINTS);
+		
 		return new AttendanceClockResponse(form.getClockingDate(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}
-
 }

@@ -23,5 +23,7 @@ public interface UsersService {
 	
 	public UserEntity getUserByEmail(String email) throws UserDoesNotExistException;
 	
+	public UserEntity updatePoints(UserEntity userEntity, Long points);
+	
 	public void cleanup();
 }

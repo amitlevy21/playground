@@ -189,6 +189,22 @@ public class JpaUserService implements UsersService{
 		return (UserEntity) users.toArray()[0];
 	}
 
+	@Override
+	public UserEntity updatePoints(UserEntity userEntity, Long points) {
+		Long currentPoints = userEntity.getPoints();
+		
+		if(points > 0)
+			userEntity.setPoints(currentPoints + points);
+		
+		else { // points is a negative number
+			if((currentPoints + points) > 0)
+				userEntity.setPoints(currentPoints + points);
+			else
+				userEntity.setPoints(0L);
+		}
+		return userDao.save(userEntity);
+	}
+
 	private boolean isRoleExists(String givenRole) {
 		Roles roles[] = Roles.values();
 		
