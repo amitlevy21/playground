@@ -37,10 +37,10 @@ public class PlaygroundDemoClient {
 	// Elements
 	private final String ELEMENTS_GET_ALL_URL = "/playground/elements/{userPlayground}/{email}/all";
 	private final String ELEMENTS_GET_NEAR_URL = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}";
-	private final String ELEMENTS_BY_ATTRIBUTES = "/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}";
-	private final String ELEMENTS_BY_ID = "/playground/elements/{userPlayground}/{email}/{playground}/{id}";
-	private final String ELEMENTS_UPDATE = "/playground/elements/{userPlayground}/{email}/{playground}/{id}";
-	private final String ELEMENTS_CREATE = "/playground/elements/{userPlayground}/{email}";
+	private final String ELEMENTS_BY_ATTRIBUTES_URL = "/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}";
+	private final String ELEMENTS_BY_ID_URL = "/playground/elements/{userPlayground}/{email}/{playground}/{id}";
+	private final String ELEMENTS_UPDATE_URL = "/playground/elements/{userPlayground}/{email}/{playground}/{id}";
+	private final String ELEMENTS_CREATE_URL = "/playground/elements/{userPlayground}/{email}";
 
 	// Activities
 	private final String ACTIVITIES_URL = "/playground/activities/{userPlayground}/{email}";
@@ -251,7 +251,7 @@ public class PlaygroundDemoClient {
 		System.out.println("Please enter id:");
 		String id = s.nextLine();
 
-		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ID, ElementTO[].class,
+		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ID_URL, ElementTO[].class,
 				user.getPlayground(), user.getEmail(), PLAYGROUND, id);
 
 		Stream.of(allElementsReturned).forEach(System.out::println);
@@ -264,7 +264,7 @@ public class PlaygroundDemoClient {
 		System.out.println("Please enter value to check:");
 		String value = s.nextLine();
 
-		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ATTRIBUTES, ElementTO[].class,
+		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ATTRIBUTES_URL, ElementTO[].class,
 				user.getPlayground(), user.getEmail(), attributeName, value);
 
 		Stream.of(allElementsReturned).forEach(System.out::println);
@@ -334,7 +334,7 @@ public class PlaygroundDemoClient {
 		if (typeOfOpeartion.equalsIgnoreCase(MANAGER_UPDATE)) {
 			try {
 				this.rest.put(
-						this.url + ELEMENTS_UPDATE,
+						this.url + ELEMENTS_UPDATE_URL,
 						elementFromUser,
 						ElementTO.class,
 						user.getPlayground(),
@@ -348,7 +348,7 @@ public class PlaygroundDemoClient {
 			System.out.println("Element updated succesfully!");
 		} else {
 			Object res = this.rest.postForObject(
-					this.url + ELEMENTS_CREATE,
+					this.url + ELEMENTS_CREATE_URL,
 					elementFromUser,
 					ElementTO.class,
 					user.getPlayground(),
