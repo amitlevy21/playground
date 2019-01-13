@@ -1,6 +1,5 @@
 package com.sheena.playground.dal;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -19,15 +18,4 @@ public interface ActivityDao extends PagingAndSortingRepository<ActivityEntity, 
 			@Param("id") String id,
 			Pageable pageable);
 	
-	public List<ActivityEntity> findByElementIdEqualsAndTypeEquals(
-			@Param("elementId") String elementId,
-			@Param("type") String type,
-			Pageable pageable);
-	
-	public List<ActivityEntity> findByPlayerEmailEqualsAndPlayerPlaygroundEqualsAndTypeEqualsAndAttributesContaining(
-			@Param("playerEmail") String playerEmail,
-			@Param("playerPlayground") String playerPlayground,
-			@Param("type") String type,
-			@Param("workDate") Date workDate,
-			Pageable pageable);
 }
