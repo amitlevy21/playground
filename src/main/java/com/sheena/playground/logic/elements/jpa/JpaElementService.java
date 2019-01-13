@@ -62,7 +62,7 @@ public class JpaElementService implements ElementService {
 			existing.setCreatorPlayground(entityUpdates.getCreatorPlayground());
 		if(entityUpdates.getExpirationDate() != null && !entityUpdates.getExpirationDate().equals(existing.getExpirationDate()))
 			existing.setExpirationDate(entityUpdates.getExpirationDate());
-		if(entityUpdates.getName() != null && entityUpdates.getName().equals(existing.getName()))
+		if(entityUpdates.getName() != null && !entityUpdates.getName().equals(existing.getName()))
 			existing.setName(entityUpdates.getName());
 		if(entityUpdates.getType() != null && !entityUpdates.getType().equals(existing.getType()))
 			existing.setType(entityUpdates.getType());

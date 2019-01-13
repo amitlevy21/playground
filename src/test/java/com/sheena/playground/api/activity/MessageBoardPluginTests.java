@@ -41,6 +41,10 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
+import com.sheena.playground.plugins.PostMessagePlugin;
+import com.sheena.playground.plugins.RegisterShiftPlugin;
+import com.sheena.playground.plugins.ViewMessagesPlugin;
 import com.sheena.playground.plugins.messageBoard.BoardMessageResponse;
 
 @RunWith(SpringRunner.class)
@@ -187,6 +191,31 @@ public class MessageBoardPluginTests {
 	}
 	
 	@Test
+	public void testPostMessageSuccessfullyAffectsPlayerPoints() throws JsonParseException, JsonMappingException, IOException, UserDoesNotExistException {
+		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
+		
+		Map<String, Object> activityAttributes = new HashMap<>();
+		activityAttributes.put("text", "text04");
+		
+		ActivityEntity postMessageActivity = new ActivityEntity(
+				this.messageBoardElement.getPlayground(), 
+				this.messageBoardElement.getId(), 
+				POST_MESSAGE,
+				this.playerUser.getPlayground(), 
+				this.playerUser.getEmail(), 
+				activityAttributes);
+		
+		long playerPointsBefore = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		long expectedPointsAfter = playerPointsBefore + PostMessagePlugin.AWARD_POINTS;
+		
+		this.restTemplate.postForObject(this.host+targetUrl, postMessageActivity, Object.class);
+		
+		long playerPointsAfter = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		
+		assertThat(playerPointsAfter).isNotNull().isEqualTo(expectedPointsAfter);
+	}
+	
+	@Test
 	public void testPostMessageWithWrongElementType() {
 		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
 		
@@ -293,5 +322,40 @@ public class MessageBoardPluginTests {
 		BoardMessageResponse[] rvMessages = this.jsonMapper.readValue(this.jsonMapper.writeValueAsString(rv), BoardMessageResponse[].class);
 		
 		assertThat(rvMessages).isNotNull().hasSize(numExpectedMessages).isEqualTo(expectedMessages);
+	}
+	
+	@Test
+	public void testViewMessagesSuccessfullyAffectsPlayerPoints() throws ActivityTypeNotAllowedException, ActivityWithNoTypeException, JsonParseException, JsonMappingException, JsonProcessingException, IOException, UserDoesNotExistException {
+		String targetUrl = String.format(this.url, this.playgroundName, this.playerUser.getEmail());
+		
+		Map<String, Object> activityAttributes1 = new HashMap<>();
+		activityAttributes1.put("text", "text05");
+		
+		ActivityEntity postMessageActivity1 = new ActivityEntity(
+				this.viewMessagesBoardElement.getPlayground(), 
+				this.viewMessagesBoardElement.getId(), 
+				POST_MESSAGE,
+				this.playerUser.getPlayground(), 
+				this.playerUser.getEmail(), 
+				activityAttributes1);
+		
+		ActivityEntity viewMessagesActivity = new ActivityEntity(
+				this.viewMessagesBoardElement.getPlayground(), 
+				this.viewMessagesBoardElement.getId(), 
+				VIEW_MESSAGES, 
+				this.playerUser.getPlayground(), 
+				this.playerUser.getEmail(), 
+				new HashMap<>());
+		
+		this.activityService.addNewActivity(postMessageActivity1, this.playgroundName, this.playerUser.getEmail());
+		
+		long playerPointsBefore = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		long expectedPointsAfter = playerPointsBefore + ViewMessagesPlugin.AWARD_POINTS;
+		
+		this.restTemplate.postForObject(this.host+targetUrl, viewMessagesActivity, Object[].class);
+		
+		long playerPointsAfter = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		
+		assertThat(playerPointsAfter).isNotNull().isEqualTo(expectedPointsAfter);
 	}
 }

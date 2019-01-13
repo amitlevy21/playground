@@ -24,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,7 +41,9 @@ import com.sheena.playground.logic.users.UserEntity;
 import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.logic.users.exceptions.RoleDoesNotExistException;
 import com.sheena.playground.logic.users.exceptions.UserAlreadyExistsException;
+import com.sheena.playground.logic.users.exceptions.UserDoesNotExistException;
 import com.sheena.playground.plugins.ClockPlugin;
+import com.sheena.playground.plugins.PostMessagePlugin;
 import com.sheena.playground.plugins.attendanceClock.AttendanceClockResponse;
 
 @RunWith(SpringRunner.class)
@@ -163,6 +164,29 @@ public class AttendanceClockPluginTests {
 		AttendanceClockResponse expected = (AttendanceClockResponse) activityEntity.getResponse()[0];
 		
 		assertThat(rvCastToResponse).isNotNull().isEqualTo(expected);
+	}
+	
+	@Test
+	public void testClockInSuccessfullyAffectsPlayerPoints()
+			throws ParseException, JsonParseException, JsonMappingException, JsonProcessingException, IOException, UserDoesNotExistException {
+		String requestUrl = this.host + String.format(url, playgroundName, playerUser.getEmail());
+
+		Map<String, Object> clockInActivityAttributes = new HashMap<>();
+		clockInActivityAttributes.put("clockingDate",
+				new SimpleDateFormat(attendanceClockDateFormat).parse(this.attendanceClock01Date));
+
+		ActivityTO clockInActivity = new ActivityTO(this.attendanceClock01.getPlayground(),
+				this.attendanceClock01.getId(), this.activityType, this.playerUser.getPlayground(),
+				this.playerUser.getEmail(), clockInActivityAttributes);
+
+		long playerPointsBefore = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		long expectedPointsAfter = playerPointsBefore + ClockPlugin.AWARD_POINTS;
+		
+		this.restTemplate.postForObject(requestUrl, clockInActivity, Object.class);
+		
+		long playerPointsAfter = usersService.getUserByEmail(this.playerUser.getEmail()).getPoints();
+		
+		assertThat(playerPointsAfter).isNotNull().isEqualTo(expectedPointsAfter);
 	}
 	
 	@Test
