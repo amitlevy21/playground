@@ -135,4 +135,10 @@ public class DummyUsersService implements UsersService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public UserEntity updatePoints(UserEntity userEntity, Long points) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

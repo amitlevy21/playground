@@ -1,7 +1,6 @@
 package com.sheena.playground.plugins;
 
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -14,6 +13,8 @@ import com.sheena.playground.dal.ActivityDao;
 import com.sheena.playground.logic.activities.ActivityEntity;
 import com.sheena.playground.logic.elements.ElementEntity;
 import com.sheena.playground.logic.elements.ElementService;
+import com.sheena.playground.logic.users.UserEntity;
+import com.sheena.playground.logic.users.UsersService;
 import com.sheena.playground.plugins.shiftRegistery.ShiftDetails;
 import com.sheena.playground.plugins.shiftRegistery.ShiftForm;
 import com.sheena.playground.plugins.shiftRegistery.ShiftRegisteryDateMismatchException;
@@ -22,10 +23,12 @@ import com.sheena.playground.plugins.shiftRegistery.fullShiftException;
 
 @Component
 public class RegisterShiftPlugin implements PlaygroundPlugin {
-	private final String SHIFT_ELEMENT_TYPE = "shift";
+	public static final String SHIFT_ELEMENT_TYPE = "shift";
+	public static final long AWARD_POINTS = 10L;
 
 	private ObjectMapper jackson;
 	private ElementService elementService;
+	private UsersService usersService;
 	private ActivityDao activityDao;
 	
 	@PostConstruct
@@ -34,8 +37,9 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 	}
 
 	@Autowired
-	public void setElementService(ElementService elementService) {
+	public void setElementService(ElementService elementService, UsersService usersService) {
 		this.elementService = elementService;
+		this.usersService = usersService;
 	}
 	
 	@Autowired
@@ -73,6 +77,9 @@ public class RegisterShiftPlugin implements PlaygroundPlugin {
 
 		if (numOfWorkers == shiftDetails.getMaxWorkersInShift())
 			throw new fullShiftException("cannot register to shift in date: " + shiftDetails.getShiftDate() + " because shift is already full");
+		
+		UserEntity player = this.usersService.getUserByEmail(activityEntity.getPlayerEmail());
+		this.usersService.updatePoints(player, AWARD_POINTS);
 		
 		return new ShiftResponse(shiftDetails.getShiftDate(), activityEntity.getPlayerEmail(), activityEntity.getPlayerPlayground());
 	}
