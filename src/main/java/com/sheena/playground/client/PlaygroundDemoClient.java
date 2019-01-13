@@ -45,7 +45,7 @@ public class PlaygroundDemoClient {
 	// Activities
 	private final String ACTIVITIES_URL = "/playground/activities/{userPlayground}/{email}";
 
-	// Elements and Activities 
+	// Elements and Activities
 	private final String ATTENDANCE_CLOCK_ELEMENT_TYPE = "attendanceClock";
 	private final String ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE = "workDate";
 	private final String CLOCK_ACTIVITY_TYPE = "Clock";
@@ -210,8 +210,10 @@ public class PlaygroundDemoClient {
 		try {
 			rvUser = this.rest.getForObject(this.url + LOGIN_URL, UserTO.class, playground, email);
 		} catch (RestClientException e) {
-			System.err.println("You are not registered to the system or please check your mailbox to activate your account");
+			System.err.println(
+					"You are not registered to the system or please check your mailbox to activate your account");
 		}
+
 		return rvUser;
 	}
 
@@ -240,22 +242,16 @@ public class PlaygroundDemoClient {
 		System.out.println("Please check your mailbox to activate your account!");
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////Element Getters//////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////Element Getters//////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 	private void getElementsById(UserTO user) {
 		System.out.println("Please enter id:");
 		String id = s.nextLine();
 
-		ElementTO elementReturned = 
-				this.rest.getForObject(
-						this.url + ELEMENTS_BY_ID_URL,
-						ElementTO.class,
-						user.getPlayground(),
-						user.getEmail(),
-						PLAYGROUND,
-						id);
+		ElementTO elementReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ID_URL, ElementTO.class,
+				user.getPlayground(), user.getEmail(), PLAYGROUND, id);
 
 		System.err.println(elementReturned.toString());
 	}
@@ -264,7 +260,7 @@ public class PlaygroundDemoClient {
 		String name = "name";
 		String type = "type";
 		String attributeName = "";
-		
+
 		System.out.println("Please enter attribute name key (name / type):");
 		attributeName = s.nextLine();
 		if (attributeName.equalsIgnoreCase(name)) {
@@ -277,10 +273,9 @@ public class PlaygroundDemoClient {
 		}
 		System.out.println("Please enter value to check:");
 		String value = s.nextLine();
-		
-		
-		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ATTRIBUTES_URL, ElementTO[].class,
-				user.getPlayground(), user.getEmail(), attributeName, value);
+
+		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ATTRIBUTES_URL,
+				ElementTO[].class, user.getPlayground(), user.getEmail(), attributeName, value);
 
 		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.err::println);
 	}
@@ -295,32 +290,23 @@ public class PlaygroundDemoClient {
 		System.out.println("Please enter distance:");
 		dist = Double.parseDouble(s.nextLine());
 
-		ElementTO[] allElementsReturned = 
-				this.rest.getForObject(
-						this.url + ELEMENTS_GET_NEAR_URL,
-						ElementTO[].class,
-						user.getPlayground(),
-						user.getEmail(),
-						x, y, dist);
+		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_GET_NEAR_URL, ElementTO[].class,
+				user.getPlayground(), user.getEmail(), x, y, dist);
 
 		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.err::println);
 	}
 
 	private void getAllElements(UserTO user) {
-		ElementTO[] allElementsReturned = 
-				this.rest.getForObject(
-						this.url + ELEMENTS_GET_ALL_URL,
-						ElementTO[].class,
-						user.getPlayground(),
-						user.getEmail());
+		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_GET_ALL_URL, ElementTO[].class,
+				user.getPlayground(), user.getEmail());
 
 		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.err::println);
 
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////Manager Create or Update Element//////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////Manager Create or Update Element//////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 	private void managerCreateOrUpdateElement(UserTO user, String typeOfOpeartion) {
 		String id = "";
@@ -348,31 +334,22 @@ public class PlaygroundDemoClient {
 			elementFromUser = ElementFromManagerByType(user, SHIFT_REGISTERY_ELEMENT_TYPE);
 			break;
 		default:
-			System.out.println("Invalid opeartion. Exit"+ typeOfOpeartion +"element menu.");
+			System.out.println("Invalid opeartion. Exit" + typeOfOpeartion + "element menu.");
 			return;
 		}
 
 		if (typeOfOpeartion.equalsIgnoreCase(MANAGER_UPDATE)) {
 			try {
-				this.rest.put(
-						this.url + ELEMENTS_UPDATE_URL,
-						elementFromUser,
-						user.getPlayground(),
-						user.getEmail(),
-						PLAYGROUND,
-						id);
+				this.rest.put(this.url + ELEMENTS_UPDATE_URL, elementFromUser, user.getPlayground(), user.getEmail(),
+						PLAYGROUND, id);
 			} catch (RestClientException e) {
 				e.printStackTrace();
 				throw e;
 			}
 			System.out.println("Element updated succesfully!");
 		} else {
-			Object res = this.rest.postForObject(
-					this.url + ELEMENTS_CREATE_URL,
-					elementFromUser,
-					ElementTO.class,
-					user.getPlayground(),
-					user.getEmail());
+			Object res = this.rest.postForObject(this.url + ELEMENTS_CREATE_URL, elementFromUser, ElementTO.class,
+					user.getPlayground(), user.getEmail());
 
 			System.out.println("Element created succesfully!");
 			System.out.println(res);
@@ -412,17 +389,17 @@ public class PlaygroundDemoClient {
 			attributes.put(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME_DATE, dateForMap);
 			attributes.put(SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME_NUM_WORKERS, intForMap);
 		}
-		ElementTO elementTO = new ElementTO(location, name, creationDate, expirationDate, type, attributes, creatorPlayground,
-				creatorEmail);
+		ElementTO elementTO = new ElementTO(location, name, creationDate, expirationDate, type, attributes,
+				creatorPlayground, creatorEmail);
 		System.err.println(elementTO.toString());
 		return elementTO;
 	}
 
-	private Date getDateFromUserByName(String name) { 
+	private Date getDateFromUserByName(String name) {
 		String format = "dd/MM/yyyy";
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
 		Date date = null;
-		System.out.println("Please enter "+ name + ": (Date format: " + format + "):");
+		System.out.println("Please enter " + name + ": (Date format: " + format + "):");
 		String dateString = s.nextLine();
 		try {
 			date = sdf.parse(dateString);
@@ -432,9 +409,9 @@ public class PlaygroundDemoClient {
 		return date;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////Player Create New Activity/////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////Player Create New Activity/////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 	private void playerAddNewActivity(UserTO user) {
 		ActivityTO playerActivity = null;
@@ -463,12 +440,8 @@ public class PlaygroundDemoClient {
 
 		Object res = null;
 		try {
-			res = this.rest.postForObject(
-					this.url + ACTIVITIES_URL,
-					playerActivity,
-					ActivityTO.class,
-					user.getPlayground(),
-					user.getEmail());
+			res = this.rest.postForObject(this.url + ACTIVITIES_URL, playerActivity, ActivityTO.class,
+					user.getPlayground(), user.getEmail());
 		} catch (RestClientException e) {
 			System.out.println("Something went worng, cancel operation");
 			return;
@@ -480,6 +453,7 @@ public class PlaygroundDemoClient {
 
 	private ActivityTO getActivityFromPLayer(UserTO user, String elementType) {
 		String elementPlayground = this.PLAYGROUND;
+
 		String elementId;
 		String type = "";
 		String playerPlayground = user.getPlayground();
@@ -488,7 +462,7 @@ public class PlaygroundDemoClient {
 
 //		System.out.println("Please enter element playground:");
 //		elementPlayground = s.nextLine();
-		
+
 		System.out.println("Please enter element id:");
 		elementId = s.nextLine();
 
@@ -503,11 +477,11 @@ public class PlaygroundDemoClient {
 			type = this.REGISTER_SHIFT_ACTIVITY_TYPE;
 			dateForMap = getDateFromUserByName(REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE);
 			attributes.put(REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE, dateForMap);
-		} 
+		}
 
 		else if (elementType.equalsIgnoreCase(MESSAGE_BOARD_ELEMENT_TYPE)) {
 			type = playerChooseMessageBoardActivityType();
-			while(type.equals("ERROR")) {
+			while (type.equals("ERROR")) {
 				type = playerChooseMessageBoardActivityType();
 			}
 
@@ -515,7 +489,7 @@ public class PlaygroundDemoClient {
 				System.out.println("Please enter text to post on message board: ");
 				String text = s.next();
 				attributes.put(POST_MESSAGE_ACTIVITY_TYPE_ATTRIBUTE_NAME_STRING, text);
-			} 
+			}
 
 			else {
 				System.out.println("Please enter page number: ");
