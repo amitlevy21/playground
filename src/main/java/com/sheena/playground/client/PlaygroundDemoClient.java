@@ -44,30 +44,30 @@ public class PlaygroundDemoClient {
 
 	// Activities
 	private final String ACTIVITIES_URL = "/playground/activities/{userPlayground}/{email}";
-	
+
 	// Elements and Activities 
 	private final String ATTENDANCE_CLOCK_ELEMENT_TYPE = "attendanceClock";
 	private final String ATTENDANCE_CLOCK_ELEMENT_ATTRIBUTE_NAME_DATE = "workDate";
 	private final String CLOCK_ACTIVITY_TYPE = "Clock";
 	private final String CLOCK_ACTIVITY_ATTRIBUTE_NAME_DATE = "clockingDate";
-	
+
 	private final String SHIFT_REGISTERY_ELEMENT_TYPE = "shift";
 	private final String SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME_DATE = "shiftDate";
 	private final String SHIFT_REGISTERY_ELEMENT_ATTRIBUTE_NAME_NUM_WORKERS = "maxWorkersInShift";
 	private final String REGISTER_SHIFT_ACTIVITY_TYPE = "RegisterShift";
 	private final String REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE = "wantedShiftDate";
-	
+
 	private final String MESSAGE_BOARD_ELEMENT_TYPE = "messageBoard";
 	private final String VIEW_MESSAGES_ACTIVITY_TYPE = "ViewMessages";
 	private final String VIEW_MESSAGES_ACTIVITY_ATTRIBUTE_NAME_PAGE = "page";
 	private final String VIEW_MESSAGES_ACTIVITY_ATTRIBUTE_NAME_SIZE = "size";
 	private final String POST_MESSAGE_ACTIVITY_TYPE = "PostMessage";
 	private final String POST_MESSAGE_ACTIVITY_TYPE_ATTRIBUTE_NAME_STRING = "text";
-	
+
 	// MANAGER OPERATIONS
 	private final String MANAGER_CREATE = "create";
 	private final String MANAGER_UPDATE = "update";
-	
+
 	public PlaygroundDemoClient() {
 	}
 
@@ -92,12 +92,15 @@ public class PlaygroundDemoClient {
 		} catch (Exception e) {
 			port = 8080;
 		}
-		
+
 		System.out.println("HOST: " + host + "\nPORT: " + port);
-		
 		PlaygroundDemoClient client = new PlaygroundDemoClient(host, port);
 		System.out.println("Hello, welcome to shift management system");
-		while (true) {
+		try {
+			while (true) {
+				client.firstScreen();
+			}
+		} catch (Exception e) {
 			client.firstScreen();
 		}
 
@@ -116,11 +119,9 @@ public class PlaygroundDemoClient {
 			break;
 		case "2":
 			UserTO user = null;
-			try {
-				user = loginSystem();
-			} catch (Exception e) {
-				System.out.println("Please check your mailbox to activate your account!");
-				break;
+			user = loginSystem();
+			if (user == null) {
+				return;
 			}
 			operationScreen(user);
 			break;
@@ -135,7 +136,7 @@ public class PlaygroundDemoClient {
 		int count = 0;
 		String op;
 		String key;
-		System.out.println("Hello " + user.getUsername());
+		System.out.println("\nHello " + user.getUsername());
 		do {
 			System.out.println("Opeartion menu:");
 			System.out.println("Logout: enter 'x'");
@@ -198,23 +199,19 @@ public class PlaygroundDemoClient {
 			count = 0;
 		} while (!toExitOperationScreen);
 	}
-	
+
 	private UserTO loginSystem() {
 		String email;
-		String playground;
+		String playground = this.PLAYGROUND;
 		UserTO rvUser = null;
 		System.out.println("\nPlease enter your email:");
 		email = s.nextLine();
-		System.out.println("Please choose your playground:");
-		playground = s.nextLine();
 
 		try {
 			rvUser = this.rest.getForObject(this.url + LOGIN_URL, UserTO.class, playground, email);
 		} catch (RestClientException e) {
-			e.printStackTrace();
-			throw e;
+			System.err.println("You are not registered to the system or please check your mailbox to activate your account");
 		}
-
 		return rvUser;
 	}
 
@@ -243,31 +240,49 @@ public class PlaygroundDemoClient {
 		System.out.println("Please check your mailbox to activate your account!");
 	}
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////Element Getters//////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////Element Getters//////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
 
 	private void getElementsById(UserTO user) {
 		System.out.println("Please enter id:");
 		String id = s.nextLine();
 
-		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ID_URL, ElementTO[].class,
-				user.getPlayground(), user.getEmail(), PLAYGROUND, id);
+		ElementTO elementReturned = 
+				this.rest.getForObject(
+						this.url + ELEMENTS_BY_ID_URL,
+						ElementTO.class,
+						user.getPlayground(),
+						user.getEmail(),
+						PLAYGROUND,
+						id);
 
-		Stream.of(allElementsReturned).forEach(System.out::println);
-
+		System.err.println(elementReturned.toString());
 	}
 
 	private void getElementsByAttribute(UserTO user) {
-		System.out.println("Please enter attribute name key (NAME / TYPE):");
-		String attributeName = s.nextLine();
+		String name = "name";
+		String type = "type";
+		String attributeName = "";
+		
+		System.out.println("Please enter attribute name key (name / type):");
+		attributeName = s.nextLine();
+		if (attributeName.equalsIgnoreCase(name)) {
+			attributeName = name;
+		} else if (attributeName.equalsIgnoreCase(type)) {
+			attributeName = type;
+		} else {
+			System.out.println("Invalid attribute name key.");
+			return;
+		}
 		System.out.println("Please enter value to check:");
 		String value = s.nextLine();
-
+		
+		
 		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_BY_ATTRIBUTES_URL, ElementTO[].class,
 				user.getPlayground(), user.getEmail(), attributeName, value);
 
-		Stream.of(allElementsReturned).forEach(System.out::println);
+		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.err::println);
 	}
 
 	private void GetElementsByDistance(UserTO user) {
@@ -280,30 +295,36 @@ public class PlaygroundDemoClient {
 		System.out.println("Please enter distance:");
 		dist = Double.parseDouble(s.nextLine());
 
-		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_GET_NEAR_URL, ElementTO[].class,
-				user.getPlayground(), user.getEmail(), x, y, dist);
+		ElementTO[] allElementsReturned = 
+				this.rest.getForObject(
+						this.url + ELEMENTS_GET_NEAR_URL,
+						ElementTO[].class,
+						user.getPlayground(),
+						user.getEmail(),
+						x, y, dist);
 
-		Stream.of(allElementsReturned).forEach(System.out::println);
-
+		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.err::println);
 	}
 
 	private void getAllElements(UserTO user) {
-		ElementTO[] allElementsReturned = this.rest.getForObject(this.url + ELEMENTS_GET_ALL_URL, ElementTO[].class,
-				user.getPlayground(), user.getEmail());
+		ElementTO[] allElementsReturned = 
+				this.rest.getForObject(
+						this.url + ELEMENTS_GET_ALL_URL,
+						ElementTO[].class,
+						user.getPlayground(),
+						user.getEmail());
 
-//		for (ElementTO elementTO : allElementsReturned) {
-//			System.out.println(elementTO.toString());
-//		}
-		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.out::println);
+		Stream.of(allElementsReturned).map(ElementTO::toString).forEach(System.err::println);
+
 	}
 
-///////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////Manager Create or Update Element//////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-	
+	///////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////Manager Create or Update Element//////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+
 	private void managerCreateOrUpdateElement(UserTO user, String typeOfOpeartion) {
 		String id = "";
-		
+
 		if (typeOfOpeartion.equalsIgnoreCase(MANAGER_UPDATE)) {
 			System.out.println("Please enter element's id: ");
 			id = s.nextLine();
@@ -312,9 +333,9 @@ public class PlaygroundDemoClient {
 		System.out.println("1: Attendance Clock [" + ATTENDANCE_CLOCK_ELEMENT_TYPE + "]");
 		System.out.println("2: Message Board [" + MESSAGE_BOARD_ELEMENT_TYPE + "]");
 		System.out.println("3: Shift Registery [" + SHIFT_REGISTERY_ELEMENT_TYPE + "]");
-		
+
 		String op = s.nextLine();
-		
+
 		ElementTO elementFromUser = null;
 		switch (op) {
 		case "1":
@@ -330,13 +351,12 @@ public class PlaygroundDemoClient {
 			System.out.println("Invalid opeartion. Exit"+ typeOfOpeartion +"element menu.");
 			return;
 		}
-		
+
 		if (typeOfOpeartion.equalsIgnoreCase(MANAGER_UPDATE)) {
 			try {
 				this.rest.put(
 						this.url + ELEMENTS_UPDATE_URL,
 						elementFromUser,
-						ElementTO.class,
 						user.getPlayground(),
 						user.getEmail(),
 						PLAYGROUND,
@@ -353,7 +373,7 @@ public class PlaygroundDemoClient {
 					ElementTO.class,
 					user.getPlayground(),
 					user.getEmail());
-			
+
 			System.out.println("Element created succesfully!");
 			System.out.println(res);
 		}
@@ -412,20 +432,20 @@ public class PlaygroundDemoClient {
 		return date;
 	}
 
-///////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////Player Create New Activity/////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
-	
+	///////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////Player Create New Activity/////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+
 	private void playerAddNewActivity(UserTO user) {
 		ActivityTO playerActivity = null;
-		
+
 		System.out.println("Please choose what element you want to add activity");
 		System.out.println("1: Attendance Clock [" + ATTENDANCE_CLOCK_ELEMENT_TYPE + "]");
 		System.out.println("2: Message Board [" + MESSAGE_BOARD_ELEMENT_TYPE + "]");
 		System.out.println("3: Shift Registery [" + SHIFT_REGISTERY_ELEMENT_TYPE + "]");
-		
+
 		String op = s.nextLine();
-		
+
 		switch (op) {
 		case "1":
 			playerActivity = getActivityFromPLayer(user, ATTENDANCE_CLOCK_ELEMENT_TYPE);
@@ -440,7 +460,7 @@ public class PlaygroundDemoClient {
 			System.out.println("Invalid opeartion. Exit add activity to element menu.");
 			return;
 		}
-		
+
 		Object res = null;
 		try {
 			res = this.rest.postForObject(
@@ -453,47 +473,50 @@ public class PlaygroundDemoClient {
 			System.out.println("Something went worng, cancel operation");
 			return;
 		}
-		
+
 		System.out.println("Activity created succesfully!");
 		System.out.println(res);
 	}
 
 	private ActivityTO getActivityFromPLayer(UserTO user, String elementType) {
-		String elementPlayground;
+		String elementPlayground = this.PLAYGROUND;
 		String elementId;
 		String type = "";
 		String playerPlayground = user.getPlayground();
 		String playerEmail = user.getEmail();
 		Map<String, Object> attributes = new HashMap<>();
 
-		System.out.println("Please enter element playground:");
-		elementPlayground = s.nextLine();
-
+//		System.out.println("Please enter element playground:");
+//		elementPlayground = s.nextLine();
+		
 		System.out.println("Please enter element id:");
 		elementId = s.nextLine();
-		
+
 		Date dateForMap = null;
 		if (elementType.equalsIgnoreCase(ATTENDANCE_CLOCK_ELEMENT_TYPE)) {
 			type = this.CLOCK_ACTIVITY_TYPE;
 			dateForMap = getDateFromUserByName(CLOCK_ACTIVITY_ATTRIBUTE_NAME_DATE);
 			attributes.put(CLOCK_ACTIVITY_ATTRIBUTE_NAME_DATE, dateForMap);
 		}
-		
+
 		else if (elementType.equalsIgnoreCase(SHIFT_REGISTERY_ELEMENT_TYPE)) {
 			type = this.REGISTER_SHIFT_ACTIVITY_TYPE;
 			dateForMap = getDateFromUserByName(REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE);
 			attributes.put(REGISTER_SHIFT_ACTIVITY_ATTRIBUTE_NAME_DATE, dateForMap);
 		} 
-		
+
 		else if (elementType.equalsIgnoreCase(MESSAGE_BOARD_ELEMENT_TYPE)) {
 			type = playerChooseMessageBoardActivityType();
-			
+			while(type.equals("ERROR")) {
+				type = playerChooseMessageBoardActivityType();
+			}
+
 			if (type.equalsIgnoreCase(POST_MESSAGE_ACTIVITY_TYPE)) {
 				System.out.println("Please enter text to post on message board: ");
 				String text = s.next();
 				attributes.put(POST_MESSAGE_ACTIVITY_TYPE_ATTRIBUTE_NAME_STRING, text);
 			} 
-			
+
 			else {
 				System.out.println("Please enter page number: ");
 				int page = Integer.parseInt(s.nextLine());
@@ -502,34 +525,31 @@ public class PlaygroundDemoClient {
 				attributes.put(VIEW_MESSAGES_ACTIVITY_ATTRIBUTE_NAME_PAGE, page);
 				attributes.put(VIEW_MESSAGES_ACTIVITY_ATTRIBUTE_NAME_SIZE, size);
 			}
-			
+
 		}
 		return new ActivityTO(elementPlayground, elementId, type, playerPlayground, playerEmail, attributes);
 	}
 
 	private String playerChooseMessageBoardActivityType() {
 		String op = "";
-		String res = "";
-		do {
-			System.out.println("Please choose an activity");
-			System.out.println("1: Post Message [" + POST_MESSAGE_ACTIVITY_TYPE + "]");
-			System.out.println("1: View Messages [" + VIEW_MESSAGES_ACTIVITY_TYPE + "]");
-			op = s.nextLine();
-			
-			switch (op) {
-			case "1":
-				res = POST_MESSAGE_ACTIVITY_TYPE;
-				break;
-			case "2":
-				res = VIEW_MESSAGES_ACTIVITY_TYPE;
-				break;
-			default:
-				System.out.println("Invalid operation, please try again.");
-				break;
-			}
-		} while (!op.equalsIgnoreCase("1") || !op.equalsIgnoreCase("2"));
-		
+		String res = "ERROR";
+		System.out.println("Please choose an activity");
+		System.out.println("1: Post Message [" + POST_MESSAGE_ACTIVITY_TYPE + "]");
+		System.out.println("2: View Messages [" + VIEW_MESSAGES_ACTIVITY_TYPE + "]");
+		op = s.nextLine();
+
+		switch (op) {
+		case "1":
+			res = POST_MESSAGE_ACTIVITY_TYPE;
+			break;
+		case "2":
+			res = VIEW_MESSAGES_ACTIVITY_TYPE;
+			break;
+		default:
+			System.out.println("Invalid operation, please try again.");
+			break;
+		}
 		return res;
 	}
-	
+
 }
