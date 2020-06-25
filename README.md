@@ -1,5 +1,5 @@
-# playground.2019A.Sheena
-An academic class project, building an infrastructure using JAVA and Spring framework
+# Playground
+An academic class project, A general-porpuse infrastructure using Java and Spring framework.
 
 ## How to integrate your code into master branch
 1. Open a new branch with a name describing the feature you are adding.
