@@ -1,5 +1,5 @@
 # Playground
-An academic class project, A general-porpuse infrastructure using Java and Spring framework.
+An academic class project, A general-purpose infrastructure using Java and Spring framework.
 
 ## How to integrate your code into master branch
 1. Open a new branch with a name describing the feature you are adding.
